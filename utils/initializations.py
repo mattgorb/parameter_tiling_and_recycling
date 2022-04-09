@@ -16,22 +16,22 @@ def _init_weight(args,weight):
     set_seed(args.weight_seed)
     if args.weight_init == "signed_constant":
 
-        fan = nn.init._calculate_correct_fan(conv.weight, args.mode)
+        fan = nn.init._calculate_correct_fan(weight, args.mode)
         # if args.scale_fan:
         # fan = fan * (1 - args.prune_rate)
         gain = nn.init.calculate_gain(args.nonlinearity)
         std = gain / math.sqrt(fan)
-        conv.weight.data = conv.weight.data.sign() * std
+        weight.data = weight.data.sign() * std
 
     elif args.weight_init == "unsigned_constant":
 
-        fan = nn.init._calculate_correct_fan(conv.weight, args.mode)
+        fan = nn.init._calculate_correct_fan(weight, args.mode)
         if args.scale_fan:
             fan = fan * (1 - args.prune_rate)
 
         gain = nn.init.calculate_gain(args.nonlinearity)
         std = gain / math.sqrt(fan)
-        conv.weight.data = torch.ones_like(weight.data) * std
+        weight.data = torch.ones_like(weight.data) * std
 
     elif args.weight_init == "kaiming_normal":
 
@@ -66,6 +66,8 @@ def _init_weight(args,weight):
     else:
         raise ValueError(f"{args.init} is not an initialization option!")
 
+    return weight
+
 def _init_score(args, scores):
     set_seed(args.score_seed)
     if args.score_init == "kaiming_normal_score_gt0":
@@ -96,3 +98,5 @@ def _init_score(args, scores):
         scores = nn.Parameter(scores - args.x_percent_init)
     else:
         print("Using default score initialization")
+
+    return scores

@@ -35,10 +35,10 @@ class SubnetConv(nn.Conv2d):
     def init(self,args):
         self.args=args
         print(self.weight)
-        _init_weight(self.args, self.weight)
+        self.weight=_init_weight(self.args, self.weight)
         print(self.weight)
         sys.exit()
-        _init_score(self.args, self.scores)
+        self.scores=_init_score(self.args, self.scores)
         if args.threshold is None:
             self.th=0
         else:
