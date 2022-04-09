@@ -6,7 +6,7 @@ import torch.nn as nn
 
 import utils.conv_type
 import utils.bn_type
-
+from utils.initializations import _init_weight
 
 class Builder(object):
     def __init__(self, conv_layer, bn_layer, first_layer=None):
