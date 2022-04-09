@@ -25,7 +25,7 @@ weight_init: signed_constant
 score_init: None
 weight_seed: 0
 score_seed: 0
-gpu: 6
+gpu: 5
 
 # ===== Hardware setup ===== #
 workers: 4
