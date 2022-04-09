@@ -1,0 +1,32 @@
+# Architecture
+arch: Conv6
+
+# ===== Dataset ===== #
+data: /s/luffy/b/nobackup/mgorb/data
+set: CIFAR10
+name: baseline
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.1
+lr_policy: cosine_lr
+
+# ===== Network training config ===== #
+epochs: 500
+weight_decay: 0.0001
+momentum: 0.9
+batch_size: 128
+
+# ===== Sparsity =========== #
+conv_type: SubnetConv
+bn_type: NonAffineBatchNorm
+freeze_weights: True
+prune_rate: -1
+
+
+
+gpu: 4
+seed: 1
+# ===== Hardware setup ===== #
+workers: 4
+pretrained: '/s/luffy/b/nobackup/mgorb/runs/conv6_dense-cifar10/conv6_sgd_baseline/checkpoints/model_best.pth'

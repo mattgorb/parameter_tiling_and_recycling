@@ -1,0 +1,32 @@
+# Architecture
+arch: cResNet18
+
+# ===== Dataset ===== #
+data: /s/luffy/b/nobackup/mgorb/data
+set: CIFAR10
+name: baseline
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.1
+lr_policy: cosine_lr
+
+# ===== Network training config ===== #
+epochs: 1000
+weight_decay: 0.0005
+momentum: 0.9
+batch_size: 256
+
+# ===== Sparsity =========== #
+conv_type: SubnetConv
+bn_type: NonAffineBatchNorm
+init: uniform_x_lt0
+x_percent_init: 0.99
+mode: fan_in
+nonlinearity: relu
+scale_fan: True
+freeze_weights: True
+gpu: 0
+
+# ===== Hardware setup ===== #
+workers: 4

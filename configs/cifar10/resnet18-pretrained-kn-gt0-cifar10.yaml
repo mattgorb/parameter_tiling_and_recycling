@@ -1,0 +1,32 @@
+# Architecture
+arch: cResNet18 
+
+# ===== Dataset ===== #
+data: /s/luffy/b/nobackup/mgorb/data
+set: CIFAR10
+name: baseline
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.1
+lr_policy: cosine_lr
+
+# ===== Network training config ===== #
+epochs: 1000
+weight_decay: 0.0005
+momentum: 0.9
+batch_size: 256
+
+# ===== Sparsity =========== #
+conv_type: SubnetConv
+bn_type: LearnedBatchNorm
+init: kaiming_normal_score_gt0
+mode: fan_in
+nonlinearity: relu
+scale_fan: True
+freeze_weights: True
+pretrained: '/s/luffy/b/nobackup/mgorb/runs/resnet18-dense-cifar10/baseline/prune_rate=0.0/2/checkpoints/model_best.pth'
+gpu: 5
+
+# ===== Hardware setup ===== #
+workers: 4
