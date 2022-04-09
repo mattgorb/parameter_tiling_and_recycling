@@ -29,16 +29,12 @@ import importlib
 
 import data
 import models
-
+from utils.initializations import set_seed
 
 def main():
     print(args)
 
-    if args.seed is not None:
-        random.seed(args.seed)
-        torch.manual_seed(args.seed)
-        torch.cuda.manual_seed(args.seed)
-        torch.cuda.manual_seed_all(args.seed)
+    set_seed(args.seed)
 
     # Simply call main_worker function
     main_worker(args)
@@ -54,6 +50,9 @@ def main_worker(args):
     # create model and optimizer
     model = get_model(args)
     model,device = set_gpu(args, model)
+
+    seed(args.seed)
+
     data = get_dataset(args)
 
     optimizer = get_optimizer(args, model)
