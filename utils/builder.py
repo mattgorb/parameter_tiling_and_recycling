@@ -61,7 +61,7 @@ class Builder(object):
             conv.weight = _init_weight(conv.args, conv.weight)
 
         print(conv.weight[0][:10].flatten())
-        print(conv.score[0][:10].flatten())
+        print(conv.scores[0][:10].flatten())
         #sys.exit()
         return conv
 
