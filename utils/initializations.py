@@ -11,6 +11,7 @@ def set_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
 
 def _init_weight(args,weight):
     set_seed(args.weight_seed)
