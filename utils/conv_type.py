@@ -120,7 +120,11 @@ class SubnetBinaryConv(nn.Conv2d):
         subnet = GetSubnet.apply(self.scores)
         temp = subnet.detach().cpu()
         return temp.mean()
+    def init(self,args):
+        self.args=args
+        self.weight=_init_weight(self.args, self.weight)
 
+        self.scores=_init_score(self.args, self.scores)
     def forward(self, x):
         # For debugging gradients, prints out maximum value in gradients
         # Get binary mask and gain term for subnetwork
@@ -171,7 +175,11 @@ class SubnetConvOrig(nn.Conv2d):
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
         self.prune_rate = 0.5
+    def init(self,args):
+        self.args=args
+        self.weight=_init_weight(self.args, self.weight)
 
+        self.scores=_init_score(self.args, self.scores)
     @property
     def clamped_scores(self):
         return self.scores.abs()
@@ -242,6 +250,13 @@ class SubnetBinaryConvOrig(nn.Conv2d):
         subnet = GetQuantnet_binaryOrig.apply(self.scores)
         temp = subnet.detach().cpu()
         return temp.mean()
+
+    def init(self,args):
+        self.args=args
+        self.weight=_init_weight(self.args, self.weight)
+
+        self.scores=_init_score(self.args, self.scores)
+
     def forward(self, x):
         # For debugging gradients, prints out maximum value in gradients
         if parser_args.debug:
