@@ -112,7 +112,7 @@ def parse_arguments():
         help="use pre-trained model",
     )
     parser.add_argument(
-        "--seed", default=None, type=int, help="seed for initializing training. "
+        "--seed", default=0, type=int, help="seed for initializing training. "
     )
     parser.add_argument(
         "--multigpu",
