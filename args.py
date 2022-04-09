@@ -111,9 +111,7 @@ def parse_arguments():
         type=str,
         help="use pre-trained model",
     )
-    parser.add_argument(
-        "--seed", default=0, type=int, help="seed for initializing training. "
-    )
+
     parser.add_argument(
         "--multigpu",
         default=None,
@@ -231,7 +229,9 @@ def parse_arguments():
     parser.add_argument(
         "--score_seed", default=0, help="Weight initialization modifications"
     )
-
+    parser.add_argument(
+        "--seed", default=0, type=int, help="seed for initializing training. "
+    )
 
     args = parser.parse_args()
 

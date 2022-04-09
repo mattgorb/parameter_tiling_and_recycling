@@ -51,6 +51,7 @@ def main_worker(args):
     model = get_model(args)
     model,device = set_gpu(args, model)
 
+    print(args)
     seed(args.seed)
 
     data = get_dataset(args)
