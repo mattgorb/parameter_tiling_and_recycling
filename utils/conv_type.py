@@ -258,9 +258,7 @@ class SubnetBinaryConvOrig(nn.Conv2d):
         self.scores=_init_score(self.args, self.scores)
 
     def forward(self, x):
-        # For debugging gradients, prints out maximum value in gradients
-        if parser_args.debug:
-            if quantnet.grad: print ("subnetconv fwd quantnet grad ", torch.max(quantnet.grad))
+
         # Get binary mask and gain term for subnetwork
         quantnet = GetQuantnet_binaryOrig.apply(self.clamped_scores, self.weight, self.prune_rate)
         # Binarize weights by taking sign, multiply by pruning mask and gain term (alpha)
