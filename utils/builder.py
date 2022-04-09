@@ -54,10 +54,6 @@ class Builder(object):
         else:
             return None
 
-        print(conv_layer)
-        print(args.conv_type)
-        sys.exit()
-
         if args.conv_type!='DenseConv':
             conv.init(args)
 
