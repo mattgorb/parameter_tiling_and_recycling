@@ -117,7 +117,7 @@ class SubnetBinaryConv(nn.Conv2d):
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
     def get_sparsity(self):
-        subnet = GetSubnet.apply(self.scores)
+        subnet = GetSubnet.apply(self.scores,self.weight)
         temp = subnet.detach().cpu()
         return temp.mean()
     def init(self,args):
@@ -185,7 +185,7 @@ class SubnetConvOrig(nn.Conv2d):
         return self.scores.abs()
 
     def get_sparsity(self):
-        subnet = GetSubnetOrig.apply(self.scores)
+        subnet = GetSubnetOrig.apply(self.clamped_scores,self.prune_rate)
         temp = subnet.detach().cpu()
         return temp.mean()
 
@@ -246,8 +246,9 @@ class SubnetBinaryConvOrig(nn.Conv2d):
     def clamped_scores(self):
         # For unquantized activations
         return self.scores.abs()
+
     def get_sparsity(self):
-        subnet = GetQuantnet_binaryOrig.apply(self.scores)
+        subnet = GetQuantnet_binaryOrig.apply(self.clamped_scores, self.weight, self.prune_rate)
         temp = subnet.detach().cpu()
         return temp.mean()
 
