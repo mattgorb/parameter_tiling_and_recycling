@@ -56,6 +56,9 @@ class Builder(object):
 
         if args.conv_type!='DenseConv':
             conv.init(args)
+        else:
+            conv.args = args
+            conv.weight = _init_weight(conv.args, conv.weight)
 
         return conv
 

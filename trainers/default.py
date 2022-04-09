@@ -87,7 +87,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
         module_meters={}
         for n, m in model.named_modules():
             if isinstance(m, SubnetConv):
-                module_meters[n]=AverageMeter(n, ":6.2f", write_val=False)
+                module_meters[n+'_pct_prn']=AverageMeter(n, ":6.2f", write_val=False)
 
         avg_meters.extend(module_meters.values())
 
@@ -105,7 +105,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
         total_parameters=0
         for n, m in model.named_modules():
             if isinstance(m, SubnetConv):
-                module_meters[n].update(m.get_sparsity())
+                module_meters[n+'_pct_prn'].update(1-m.get_sparsity().item())
                 total_parameters+=m.scores.size().numel()
                 total_not_pruned+=(m.scores.size().numel()*m.get_sparsity())
 
