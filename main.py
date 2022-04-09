@@ -364,7 +364,7 @@ def get_directories(args):
     config = pathlib.Path(args.config).stem
     if args.log_dir is None:
         run_base_dir = pathlib.Path(
-            f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/"
+            f"/s/luffy/b/nobackup/mgorb/runs_opt/{config}/{args.name}/"
         )
     else:
         run_base_dir = pathlib.Path(
