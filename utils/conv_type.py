@@ -56,7 +56,8 @@ class SubnetConv(nn.Conv2d):
                 indices_to_replace=torch.randperm(len(scores_lt0))[:j]
                 inds=scores_lt0[indices_to_replace]
                 self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
-            elif self.args.rerand_type=='iterand_threshold':
+
+            elif self.args.rerand_type=='iterand_th':
                 scores_temp=self.scores[scores_lt0[:,0], scores_lt0[:,1]]
                 sorted, indices = torch.sort(scores_temp.flatten())
                 j = int((self.args.rerand_rate) * scores_temp.size(0))
