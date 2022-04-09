@@ -46,6 +46,7 @@ class SubnetConv(nn.Conv2d):
         with torch.no_grad():
             self.args.weight_seed+=1
             weight_twin=torch.zeros_like(self.weight)
+            nn.init.kaiming_normal_(weight_twin, mode="fan_in", nonlinearity="relu")
             print(weight_twin)
             weight_twin=_init_weight(self.args, weight_twin)
             print(weight_twin)
