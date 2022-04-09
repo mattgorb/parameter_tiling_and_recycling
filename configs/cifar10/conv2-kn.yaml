@@ -12,13 +12,13 @@ lr: 0.1
 lr_policy: cosine_lr
 
 # ===== Network training config ===== #
-epochs: 100
+epochs: 5
 weight_decay: 0.0001
 momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConv
+conv_type: SubnetConvOrig
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 
