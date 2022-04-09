@@ -79,8 +79,8 @@ def validate(val_loader, model, criterion, args, writer, epoch):
     avg_meters=[ losses, top1, top5,]
 
     track_subnet=False
-    for n, m in model.named_modules() or isinstance(m, SubnetBinaryConv) or isinstance(m, SubnetConvOrig) or isinstance(m, SubnetBinaryConvOrig):
-        if isinstance(m, SubnetConv):
+    for n, m in model.named_modules() :
+        if isinstance(m, SubnetConv) or isinstance(m, SubnetBinaryConv) or isinstance(m, SubnetConvOrig) or isinstance(m, SubnetBinaryConvOrig):
             track_subnet=True
             break
     if track_subnet:
