@@ -5,7 +5,7 @@ from torchvision import transforms
 import random
 from torch.utils.data.sampler import SubsetRandomSampler
 from args import args
-
+import numpy as np
 #import torch.multiprocessing
 
 #torch.multiprocessing.set_sharing_strategy("file_system")
@@ -49,5 +49,5 @@ class CIFAR10:
             transform=transforms.Compose([transforms.ToTensor(), normalize]),
         )
         self.val_loader = torch.utils.data.DataLoader(
-            test_dataset, batch_size=args.batch_size, shuffle=False, **kwargs
+            test_dataset, batch_size=args.batch_size, shuffle=False,worker_init_fn=np.random.seed(0), **kwargs
         )
