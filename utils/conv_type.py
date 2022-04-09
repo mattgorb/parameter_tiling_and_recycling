@@ -47,32 +47,23 @@ class SubnetConv(nn.Conv2d):
         with torch.no_grad():
             self.args.weight_seed+=1
             weight_twin=torch.zeros_like(self.weight)
+            print(weight_twin)
+            _init_weight(self.args, weight_twin)
+            print(weight_twin)
+            sys.exit()
             scores_lt0=(self.scores<=0).nonzero(as_tuple=False)
-            print("TEST")
             if self.args.rerand_type=='iterand':
                 j = int((self.args.rerand_rate) * scores_lt0.size(0))
                 indices_to_replace=torch.randperm(len(scores_lt0))[:j]
                 inds=scores_lt0[indices_to_replace]
-                weight_temp=nn.Parameter(self.weight)
-                weight_temp.requires_grad_(False)
-                weight_temp[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
-                self.weight=nn.Parameter(weight_temp)
+                self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
             elif self.args.rerand_type=='iterand_threshold':
                 scores_temp=self.scores[scores_lt0[:,0], scores_lt0[:,1]]
                 sorted, indices = torch.sort(scores_temp.flatten())
                 j = int((self.args.rerand_rate) * scores_temp.size(0))
                 cutoff=sorted[j].item()
-                #print(cutoff)
-                #inds=((self.scores<=0) & (self.scores<cutoff)).nonzero(as_tuple=False)
                 inds = (self.scores < cutoff).nonzero(as_tuple=False)
-                #print(self.scores[inds[:,0], inds[:,1]])
-                #print(self.scores[scores_lt0[:,0], scores_lt0[:,1]])
-                #sys.exit()
-                #inds=scores_lt0[indices_to_replace]
-                weight_temp=nn.Parameter(self.weight)
-                weight_temp.requires_grad_(False)
-                weight_temp[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
-                self.weight=nn.Parameter(weight_temp)
+                self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
 
     def get_sparsity(self):
         subnet = GetSubnet.apply(self.scores,self.th)

@@ -19,6 +19,7 @@ from utils.net_utils import (
     save_checkpoint,
     get_lr,
     LabelSmoothing,
+    rerandomize_model
 )
 from utils.schedulers import get_policy
 
@@ -146,6 +147,11 @@ def main_worker(args):
         validation_time.update((time.time() - start_validation) / 60)
 
         print('Current best: {}'.format(best_acc1))
+
+        if args.rerand_freq is not None:
+            if epoch%args.rerand_freq==0 and epoch>0:
+                rerandomize_model(model, args)
+
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1

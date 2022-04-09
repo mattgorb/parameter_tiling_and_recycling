@@ -21,12 +21,12 @@ batch_size: 128
 conv_type: SubnetConv
 bn_type: NonAffineBatchNorm
 freeze_weights: True
-weight_init: signed_constant
 
+weight_init: signed_constant
 score_init: None
 weight_seed: 0
 score_seed: 0
-rerand_freq: 100
+rerand_freq: 5
 rerand_rate: 0.1
 rerand_type: iterand
 

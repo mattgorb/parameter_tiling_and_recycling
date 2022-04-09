@@ -27,6 +27,16 @@ def get_lr(optimizer):
     return optimizer.param_groups[0]["lr"]
 
 
+def rerandomize_model(model, args):
+    print("=> Freezing model weights")
+
+    for n, m in model.named_modules():
+        if hasattr(m, "weight") and m.weight is not None:
+            print(f"==> Rerandomizing weights of {n} with ")
+            m.rerandomize()
+
+
+
 def freeze_model_weights(model):
     print("=> Freezing model weights")
 
