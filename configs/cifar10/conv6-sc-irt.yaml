@@ -30,7 +30,7 @@ rerand_freq: 50
 rerand_rate: 0.1
 rerand_type: iterand_th
 
-gpu: 4
+gpu: 0
 seed: 1
 # ===== Hardware setup ===== #
 workers: 4
