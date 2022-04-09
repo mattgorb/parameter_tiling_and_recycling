@@ -8,24 +8,29 @@ name: baseline
 
 # ===== Learning Rate Policy ======== #
 optimizer: sgd
-lr: 0.01
+lr: 0.1
 lr_policy: cosine_lr
 
 # ===== Network training config ===== #
-epochs: 500
+epochs: 300
 weight_decay: 0.0001
 momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: DenseConv
+conv_type: SubnetConv
 bn_type: NonAffineBatchNorm
+freeze_weights: True
 
-weight_init: kaiming_normal
+weight_init: signed_constant
 score_init: None
 weight_seed: 0
 score_seed: 0
-gpu: 6
+rerand_freq: 100
+rerand_rate: 0.25
+rerand_type: iterand_th
 
+gpu: 0
+seed: 1
 # ===== Hardware setup ===== #
 workers: 4
