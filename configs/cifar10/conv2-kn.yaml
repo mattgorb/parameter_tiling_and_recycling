@@ -1,5 +1,5 @@
 # Architecture
-arch: Conv2
+arch: Conv6
 
 # ===== Dataset ===== #
 data: /s/luffy/b/nobackup/mgorb/data
@@ -18,7 +18,7 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConv
+conv_type: SubnetConvOrig
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 
@@ -26,10 +26,6 @@ weight_init: kaiming_normal
 score_init: None
 weight_seed: 0
 score_seed: 0
-
-rerand_freq: 20
-rerand_rate: 0.5
-rerand_type: iterand_th
 
 gpu: 4
 # ===== Hardware setup ===== #
