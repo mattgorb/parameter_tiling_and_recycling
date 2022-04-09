@@ -15,7 +15,7 @@ class GetSubnet(autograd.Function):
     @staticmethod
     def forward(ctx, scores, th=0):
         out = scores.clone()
-        out=(out > th).float()
+        out=(out > 0).float()
 
         return out
     @staticmethod

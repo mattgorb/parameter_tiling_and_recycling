@@ -61,7 +61,7 @@ class Builder(object):
             conv.weight = _init_weight(conv.args, conv.weight)
 
         print(conv.weight[0][:10])
-        sys.exit()
+        #sys.exit()
         return conv
 
     def conv3x3(self, in_planes, out_planes, stride=1, first_layer=False):
