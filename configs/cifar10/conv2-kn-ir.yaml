@@ -1,5 +1,5 @@
 # Architecture
-arch: Conv6
+arch: Conv2
 
 # ===== Dataset ===== #
 data: /s/luffy/b/nobackup/mgorb/data
@@ -8,7 +8,7 @@ name: baseline
 
 # ===== Learning Rate Policy ======== #
 optimizer: sgd
-lr: 0.01
+lr: 0.1
 lr_policy: cosine_lr
 
 # ===== Network training config ===== #
@@ -18,14 +18,19 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: DenseConv
+conv_type: SubnetConv
 bn_type: NonAffineBatchNorm
+freeze_weights: True
 
 weight_init: kaiming_normal
 score_init: None
 weight_seed: 0
 score_seed: 0
-gpu: 6
+rerand_freq: 100
+rerand_rate: 0.1
+rerand_type: iterand
 
+gpu: 2
+seed: 1
 # ===== Hardware setup ===== #
 workers: 4
