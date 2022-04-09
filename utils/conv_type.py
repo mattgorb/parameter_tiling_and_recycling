@@ -63,6 +63,7 @@ class SubnetConv(nn.Conv2d):
                 j = int((self.args.rerand_rate) * scores_temp.size(0))
                 cutoff=sorted[j].item()
                 inds = (self.scores < cutoff).nonzero(as_tuple=False)
+                print('rerandomizing {} out of {} weights'.format(inds.size()[0],self.weight.numel()))
                 self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
 
     def get_sparsity(self):
