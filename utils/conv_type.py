@@ -48,7 +48,7 @@ class SubnetConv(nn.Conv2d):
             self.args.weight_seed+=1
             weight_twin=torch.zeros_like(self.weight)
             scores_lt0=(self.scores<=0).nonzero(as_tuple=False)
-
+            print("TEST")
             if self.args.rerand_type=='iterand':
                 j = int((self.args.rerand_rate) * scores_lt0.size(0))
                 indices_to_replace=torch.randperm(len(scores_lt0))[:j]
