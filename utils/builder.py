@@ -58,7 +58,8 @@ class Builder(object):
         print(args.conv_type)
         sys.exit()
 
-        conv.init(args)
+        if args.conv_type!='DenseConv':
+            conv.init(args)
 
         return conv
 
