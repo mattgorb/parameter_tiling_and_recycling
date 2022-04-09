@@ -27,7 +27,7 @@ score_init: None
 weight_seed: 0
 score_seed: 0
 rerand_freq: 100
-rerand_rate: 0.25
+rerand_rate: 0.1
 rerand_type: iterand_th
 
 gpu: 0
