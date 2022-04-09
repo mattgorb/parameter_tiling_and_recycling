@@ -5,7 +5,7 @@ import tqdm
 from utils.eval_utils import accuracy
 from utils.logging import AverageMeter, ProgressMeter
 
-from utils.conv_type import SubnetConv
+from utils.conv_type import SubnetConv,SubnetConvOrig,SubnetBinaryConvOrig,SubnetBinaryConv
 
 __all__ = ["train", "validate", "modifier","validate_pretrained"]
 
