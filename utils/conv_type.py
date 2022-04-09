@@ -49,6 +49,7 @@ class SubnetConv(nn.Conv2d):
             nn.init.kaiming_normal_(weight_twin, mode="fan_in", nonlinearity="relu")
             print(weight_twin)
             weight_twin=_init_weight(self.args, weight_twin)
+            print(self.weight)
             print(weight_twin)
             sys.exit()
             scores_lt0=(self.scores<=0).nonzero(as_tuple=False)
