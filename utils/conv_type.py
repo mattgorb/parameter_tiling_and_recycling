@@ -34,10 +34,8 @@ class SubnetConv(nn.Conv2d):
 
     def init(self,args):
         self.args=args
-        print(self.weight)
         self.weight=_init_weight(self.args, self.weight)
-        print(self.weight)
-        sys.exit()
+
         self.scores=_init_score(self.args, self.scores)
         if args.threshold is None:
             self.th=0
@@ -49,7 +47,7 @@ class SubnetConv(nn.Conv2d):
             self.args.weight_seed+=1
             weight_twin=torch.zeros_like(self.weight)
             print(weight_twin)
-            _init_weight(self.args, weight_twin)
+            weight_twin=_init_weight(self.args, weight_twin)
             print(weight_twin)
             sys.exit()
             scores_lt0=(self.scores<=0).nonzero(as_tuple=False)

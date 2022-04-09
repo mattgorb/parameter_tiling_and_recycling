@@ -17,8 +17,8 @@ def _init_weight(args,weight):
     if args.weight_init == "signed_constant":
 
         fan = nn.init._calculate_correct_fan(weight, args.mode)
-        # if args.scale_fan:
-        # fan = fan * (1 - args.prune_rate)
+        if args.scale_fan:
+            fan = fan * (1 - args.prune_rate)
         gain = nn.init.calculate_gain(args.nonlinearity)
         std = gain / math.sqrt(fan)
         weight.data = weight.data.sign() * std

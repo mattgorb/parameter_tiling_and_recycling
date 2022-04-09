@@ -20,10 +20,8 @@ batch_size: 256
 # ===== Sparsity =========== #
 conv_type: SubnetConv
 bn_type: NonAffineBatchNorm
-init: signed_constant
-#mode: fan_in
-#ssnonlinearity: relu
-#scale_fan: True
+weight_init: signed_constant
+
 freeze_weights: True
 
 # ===== Hardware setup ===== #
