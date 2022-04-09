@@ -86,7 +86,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
     if track_subnet:
         module_meters={}
         for n, m in model.named_modules():
-            if isinstance(m, SubnetConv):
+            if isinstance(m, SubnetConv) or isinstance(m, SubnetBinaryConv) or isinstance(m, SubnetConvOrig) or isinstance(m, SubnetBinaryConvOrig):
                 module_meters[n+'_pct_prn']=AverageMeter(n, ":6.2f", write_val=False)
 
         avg_meters.extend(module_meters.values())
