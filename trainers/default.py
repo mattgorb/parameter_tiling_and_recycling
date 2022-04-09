@@ -104,7 +104,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
         total_not_pruned=0
         total_parameters=0
         for n, m in model.named_modules():
-            if isinstance(m, SubnetConv):
+            if isinstance(m, SubnetConv) or isinstance(m, SubnetBinaryConv) or isinstance(m, SubnetConvOrig) or isinstance(m, SubnetBinaryConvOrig):
                 module_meters[n+'_pct_prn'].update(1-m.get_sparsity().item())
                 total_parameters+=m.scores.size().numel()
                 total_not_pruned+=(m.scores.size().numel()*m.get_sparsity())
