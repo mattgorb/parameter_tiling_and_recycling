@@ -54,6 +54,10 @@ class Builder(object):
         else:
             return None
 
+        print(conv_layer)
+        print(conv)
+        sys.exit()
+
         conv.init(args)
 
         return conv
