@@ -27,6 +27,10 @@ score_init: None
 weight_seed: 0
 score_seed: 0
 
+rerand_freq: 20
+rerand_rate: 0.5
+rerand_type: iterand_th
+
 gpu: 4
 # ===== Hardware setup ===== #
 workers: 4
