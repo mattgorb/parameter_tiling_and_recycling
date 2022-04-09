@@ -39,7 +39,7 @@ class CIFAR10:
             ),
         )
         self.train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=args.batch_size, shuffle=True, **kwargs
+            train_dataset, batch_size=args.batch_size, shuffle=True,worker_init_fn=np.random.seed(0), **kwargs
         )
 
         test_dataset = torchvision.datasets.CIFAR10(
