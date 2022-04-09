@@ -22,7 +22,7 @@ conv_type: SubnetBinaryConvOrig
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 
-weight_init: signed_constant
+weight_init: kaiming_normal
 score_init: None
 weight_seed: 0
 score_seed: 0
