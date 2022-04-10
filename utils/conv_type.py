@@ -11,7 +11,7 @@ from utils.initializations import _init_weight,_init_score
 DenseConv = nn.Conv2d
 
 
-class GetSubnetOrig(autograd.Function):
+class GetSubnet(autograd.Function):
     @staticmethod
     def forward(ctx, scores, k):
         # Get the subnetwork by sorting the scores and using the top k%
@@ -77,12 +77,12 @@ class SubnetConv(nn.Conv2d):
         return self.scores.abs()
 
     def get_sparsity(self):
-        subnet = GetSubnetOrig.apply(self.clamped_scores,self.prune_rate)
+        subnet = GetSubnet.apply(self.clamped_scores,.5)
         temp = subnet.detach().cpu()
         return temp.mean()
 
     def forward(self, x):
-        subnet = GetSubnetOrig.apply(self.clamped_scores, .5)
+        subnet = GetSubnet.apply(self.clamped_scores, .5)
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
