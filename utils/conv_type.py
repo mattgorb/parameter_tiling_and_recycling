@@ -28,13 +28,20 @@ class GetSubnet(autograd.Function):
         '''
 
         #out = scores.clone()
-        #_, idx = scores.flatten().sort()
-        #j = int((1 - k) * scores.numel())
-        return (scores>torch.mean(scores)).float()
-        # flat_out and out access the same memory.
-        #flat_out = out.flatten()
-        #flat_out[idx[:j]] = 0
-        #flat_out[idx[j:]] = 1
+
+        if (scores>torch.mean(scores)).float()>0.55:
+            _, idx = scores.flatten().sort()
+            j = int((1 - .55) * scores.numel())
+            flat_out = out.flatten()
+            flat_out[idx[:j]] = 0
+            flat_out[idx[j:]] = 1
+            #flat_out and out access the same memory.
+            flat_out = out.flatten()
+            flat_out[idx[:j]] = 0
+            flat_out[idx[j:]] = 1
+        else:
+           return (scores>torch.mean(scores)).float()
+
 
 
 
