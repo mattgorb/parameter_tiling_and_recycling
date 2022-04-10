@@ -42,7 +42,7 @@ class GetSubnet(autograd.Function):
             flat_out[idx[j:]] = 1
             return out
         else:'''
-        return (scores>torch.mean(scores)).float()
+        return (scores>0).float()
 
 
 

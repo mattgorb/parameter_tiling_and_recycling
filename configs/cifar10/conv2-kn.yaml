@@ -21,6 +21,7 @@ batch_size: 128
 conv_type: SubnetConv
 bn_type: NonAffineBatchNorm
 freeze_weights: True
+first_layer_type: SubnetConvOrig
 
 weight_init: kaiming_normal
 score_init: None
