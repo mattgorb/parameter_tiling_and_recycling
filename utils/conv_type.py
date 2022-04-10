@@ -95,14 +95,14 @@ class SubnetConv(nn.Conv2d):
                 print('rerandomized {} out of {} weights'.format(inds.size()[0],self.weight.numel()))
                 self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
 
-    @property
-    def clamped_scores(self):
+    #@property
+    #def clamped_scores(self):
         #x=(self.scores-self.scores.mean())/self.scores.std()
         #self.scores=self.scores-self.scores.mean()
-        return ((self.scores-self.scores.mean())/self.scores.std()).abs()
+        #return ((self.scores-self.scores.mean())/self.scores.std()).abs()
 
     def get_sparsity(self):
-        subnet = GetSubnet.apply(self.clamped_scores,.5)
+        subnet = GetSubnet.apply(self.scores,.5)
         temp = subnet.detach().cpu()
         return temp.mean()
 
@@ -110,7 +110,7 @@ class SubnetConv(nn.Conv2d):
         #print('here')
         #print(torch.norm(self.scores))
         #print("% above zero {}".format(torch.sum((self.scores>0).float())/self.scores.flatten().numel()))
-        subnet = GetSubnet.apply(self.clamped_scores, .5)
+        subnet = GetSubnet.apply(self.scores, .5)
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
