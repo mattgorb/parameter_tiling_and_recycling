@@ -11,35 +11,25 @@ from utils.initializations import _init_weight,_init_score
 DenseConv = nn.Conv2d
 
 
-class GetSubnet(autograd.Function):
+class GetSubnetOrig(autograd.Function):
     @staticmethod
-    def forward(ctx, scores, k=0):
+    def forward(ctx, scores, k):
+        # Get the subnetwork by sorting the scores and using the top k%
         out = scores.clone()
-
-        '''out = (out > 0).float()
-        percent=torch.sum(out)/scores.numel()
-
-        if percent<0.525:
-            return out
-        else:'''
-        #scores=torch.abs(scores)
         _, idx = scores.flatten().sort()
-        j = int((0.5) * scores.numel())
+        j = int((1 - k) * scores.numel())
 
         # flat_out and out access the same memory.
         flat_out = out.flatten()
         flat_out[idx[:j]] = 0
         flat_out[idx[j:]] = 1
 
-
-
         return out
+
     @staticmethod
     def backward(ctx, g):
         # send the gradient g straight-through on the backward pass.
         return g, None
-
-
 # Not learning weights, finding subnet
 class SubnetConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
@@ -82,19 +72,22 @@ class SubnetConv(nn.Conv2d):
                 print('rerandomized {} out of {} weights'.format(inds.size()[0],self.weight.numel()))
                 self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
 
+    @property
+    def clamped_scores(self):
+        return self.scores.abs()
+
     def get_sparsity(self):
-        subnet = GetSubnet.apply(self.scores.abs(),self.th)
+        subnet = GetSubnetOrig.apply(self.clamped_scores,self.prune_rate)
         temp = subnet.detach().cpu()
         return temp.mean()
 
     def forward(self, x):
-        subnet = GetSubnet.apply(self.scores.abs(),self.th)
+        subnet = GetSubnetOrig.apply(self.clamped_scores, self.prune_rate)
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
         return x
-
 
 
 
