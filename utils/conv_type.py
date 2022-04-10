@@ -15,6 +15,8 @@ class GetSubnet(autograd.Function):
     @staticmethod
     def forward(ctx, scores, k):
         k=(.48-.55)*torch.rand(0,1)+.49
+        print(k)
+        print(k.item())
         # Get the subnetwork by sorting the scores and using the top k%
         out = scores.clone()
         _, idx = scores.flatten().sort()
