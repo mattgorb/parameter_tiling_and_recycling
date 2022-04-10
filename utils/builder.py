@@ -62,7 +62,7 @@ class Builder(object):
 
 
         #print(conv.scores)
-        conv=wn(conv, name='scores' )
+        conv=wn(conv, name='scores' ,dim=0)
         #print(conv)
         #print(conv.scores_g)
         #print(conv.scores_v)
