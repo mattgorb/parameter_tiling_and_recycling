@@ -92,7 +92,7 @@ class SubnetConv(nn.Conv2d):
 
     def forward(self, x):
         print('here')
-        print(torch.norm(scores))
+        print(torch.norm(self.scores))
         #print("% above zero {}".format(torch.sum((self.scores>0).float())/self.scores.flatten().numel()))
         subnet = GetSubnet.apply(self.clamped_scores, .5)
         w = self.weight * subnet
