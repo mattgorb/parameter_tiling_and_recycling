@@ -14,14 +14,9 @@ DenseConv = nn.Conv2d
 class GetSubnet(autograd.Function):
     @staticmethod
     def forward(ctx, scores, k):
-        #k=torch.FloatTensor(1).uniform_(.49, .53).item()
-        #print(k)
-        #print(k.item())
+
         # Get the subnetwork by sorting the scores and using the top k%
-        out = scores.clone()
-        print(out.mean())
-        print(torch.norm(scores))
-        sys.exit()
+        '''out = scores.clone()
         _, idx = scores.flatten().sort()
         j = int((1 - k) * scores.numel())
 
@@ -29,8 +24,19 @@ class GetSubnet(autograd.Function):
         flat_out = out.flatten()
         flat_out[idx[:j]] = 0
         flat_out[idx[j:]] = 1
-
         return out
+        '''
+
+        #out = scores.clone()
+        #_, idx = scores.flatten().sort()
+        #j = int((1 - k) * scores.numel())
+        return (out>torch.mean(out)).float()
+        # flat_out and out access the same memory.
+        #flat_out = out.flatten()
+        #flat_out[idx[:j]] = 0
+        #flat_out[idx[j:]] = 1
+
+
 
     @staticmethod
     def backward(ctx, g):
