@@ -22,7 +22,7 @@ class GetSubnet(autograd.Function):
         if percent<0.525:
             return out
         else:'''
-        scores=torch.abs(scores)
+        #scores=torch.abs(scores)
         _, idx = scores.flatten().sort()
         j = int((0.5) * scores.numel())
 
@@ -83,7 +83,7 @@ class SubnetConv(nn.Conv2d):
                 self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
 
     def get_sparsity(self):
-        subnet = GetSubnet.apply(self.scores,self.th)
+        subnet = GetSubnet.apply(self.scores.abs(),self.th)
         temp = subnet.detach().cpu()
         return temp.mean()
 
