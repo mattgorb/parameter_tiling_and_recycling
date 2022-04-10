@@ -80,8 +80,7 @@ class SubnetConv(nn.Conv2d):
     @property
     def clamped_scores(self):
         #x=(self.scores-self.scores.mean())/self.scores.std()
-        x=self.bn(self.scores)
-        return x.abs()
+        return self.scores.abs()
 
     def get_sparsity(self):
         subnet = GetSubnet.apply(self.clamped_scores,.5)
