@@ -30,7 +30,7 @@ class GetSubnet(autograd.Function):
         #out = scores.clone()
         #_, idx = scores.flatten().sort()
         #j = int((1 - k) * scores.numel())
-        return (out>torch.mean(out)).float()
+        return (scores>torch.mean(out)).float()
         # flat_out and out access the same memory.
         #flat_out = out.flatten()
         #flat_out[idx[:j]] = 0
