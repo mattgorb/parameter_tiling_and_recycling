@@ -14,7 +14,7 @@ DenseConv = nn.Conv2d
 class GetSubnet(autograd.Function):
     @staticmethod
     def forward(ctx, scores, k):
-        k=torch.FloatTensor(1).uniform_(.49, .53).item()
+        #k=torch.FloatTensor(1).uniform_(.49, .53).item()
         #print(k)
         #print(k.item())
         # Get the subnetwork by sorting the scores and using the top k%
@@ -85,6 +85,8 @@ class SubnetConv(nn.Conv2d):
         return temp.mean()
 
     def forward(self, x):
+
+        print("% above zero".format((self.scores>0).float()/self.scores.flatten().numel()))
         subnet = GetSubnet.apply(self.clamped_scores, .5)
         w = self.weight * subnet
         x = F.conv2d(
