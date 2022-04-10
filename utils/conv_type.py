@@ -13,9 +13,23 @@ DenseConv = nn.Conv2d
 
 class GetSubnet(autograd.Function):
     @staticmethod
-    def forward(ctx, scores, th=0):
+    def forward(ctx, scores, k=0):
         out = scores.clone()
-        out=(out > 0).float()
+
+        out = (out > 0).float()
+        percent=torch.sum(out)/scores.numel()
+        print(percent)
+
+        sys.exit()
+        _, idx = scores.flatten().sort()
+        j = int((1 - .62) * scores.numel())
+
+        # flat_out and out access the same memory.
+        flat_out = out.flatten()
+        flat_out[idx[:j]] = 0
+        flat_out[idx[j:]] = 1
+
+
 
         return out
     @staticmethod
