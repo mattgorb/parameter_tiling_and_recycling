@@ -88,7 +88,7 @@ class SubnetConv(nn.Conv2d):
         return temp.mean()
 
     def forward(self, x):
-        subnet = GetSubnet.apply(self.scores,self.th)
+        subnet = GetSubnet.apply(self.scores.abs(),self.th)
         w = self.weight * subnet
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
