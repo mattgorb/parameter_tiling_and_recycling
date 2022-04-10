@@ -40,7 +40,7 @@ class SubnetConv(nn.Conv2d):
         self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
         self.scores=nn.Parameter(self.scores)
-        #self.bn=torch.nn.BatchNorm(affine=False)
+        self.bn=torch.nn.BatchNorm2d(affine=False)
 
     def init(self,args):
         self.args=args
@@ -78,7 +78,8 @@ class SubnetConv(nn.Conv2d):
 
     @property
     def clamped_scores(self):
-        x=(self.scores-self.scores.mean())/self.scores.std()
+        #x=(self.scores-self.scores.mean())/self.scores.std()
+        x=self.bn(self.scores)
         return x.abs()
 
     def get_sparsity(self):
