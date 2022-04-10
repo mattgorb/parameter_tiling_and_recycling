@@ -29,7 +29,7 @@ class GetSubnet(autograd.Function):
 
         #out = scores.clone()
 
-        if torch.sum((scores>torch.mean(scores)).float())>0.55:
+        '''if torch.sum((scores>torch.mean(scores)).float())>0.55:
             out = scores.clone()
             _, idx = scores.flatten().sort()
             j = int((1 - .55) * scores.numel())
@@ -41,8 +41,8 @@ class GetSubnet(autograd.Function):
             flat_out[idx[:j]] = 0
             flat_out[idx[j:]] = 1
             return out
-        else:
-           return (scores>torch.mean(scores)).float()
+        else:'''
+        return (scores>torch.mean(scores)).float()
 
 
 
@@ -98,6 +98,7 @@ class SubnetConv(nn.Conv2d):
     @property
     def clamped_scores(self):
         #x=(self.scores-self.scores.mean())/self.scores.std()
+        self.scores=self.scores-self.scores.mean()
         return self.scores.abs()
 
     def get_sparsity(self):
