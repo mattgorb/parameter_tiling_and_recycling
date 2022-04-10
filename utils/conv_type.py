@@ -20,11 +20,11 @@ class GetSubnet(autograd.Function):
         percent=torch.sum(out)/scores.numel()
         #print(percent)
         #print(out)
-        if percent<0.6:
+        if percent<0.525:
             return out
         else:
             _, idx = scores.flatten().sort()
-            j = int((0.6) * scores.numel())
+            j = int((0.525) * scores.numel())
 
             # flat_out and out access the same memory.
             flat_out = out.flatten()
