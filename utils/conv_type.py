@@ -29,7 +29,7 @@ class GetSubnet(autograd.Function):
 
         #out = scores.clone()
 
-        if (scores>torch.mean(scores)).float()>0.55:
+        if torch.sum((scores>torch.mean(scores)).float())>0.55:
             _, idx = scores.flatten().sort()
             j = int((1 - .55) * scores.numel())
             flat_out = out.flatten()
