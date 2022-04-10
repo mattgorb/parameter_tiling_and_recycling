@@ -2,7 +2,7 @@ import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
-
+from torch.nn.utils import weight_norm as wn
 import math
 
 from args import args as parser_args
@@ -40,12 +40,13 @@ class SubnetConv(nn.Conv2d):
         self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
         self.scores=nn.Parameter(self.scores)
-        self.bn=torch.nn.BatchNorm2d(affine=False)
+
 
     def init(self,args):
         self.args=args
         self.weight=_init_weight(self.args, self.weight)
         self.scores=_init_score(self.args, self.scores)
+
 
         if args.threshold is None:
             self.th=0

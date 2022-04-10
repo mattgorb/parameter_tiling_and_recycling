@@ -3,7 +3,7 @@ import math
 
 import torch
 import torch.nn as nn
-
+from torch.nn.utils import weight_norm as wn
 import utils.conv_type
 import utils.bn_type
 from utils.initializations import _init_weight
@@ -59,6 +59,15 @@ class Builder(object):
         else:
             conv.args = args
             conv.weight = _init_weight(conv.args, conv.weight)
+
+
+        #print(conv.scores)
+        conv=wn(conv, name='scores' )
+        #print(conv)
+        #print(conv.scores_g)
+        #print(conv.scores_v)
+        #sys.exit()
+
 
         return conv
 
