@@ -86,7 +86,7 @@ class SubnetConv(nn.Conv2d):
 
     def forward(self, x):
 
-        print("% above zero".format((self.scores>0).float()/self.scores.flatten().numel()))
+        print("% above zero {}".format((self.scores>0).float()/self.scores.flatten().numel()))
         subnet = GetSubnet.apply(self.clamped_scores, .5)
         w = self.weight * subnet
         x = F.conv2d(
