@@ -77,7 +77,7 @@ class SubnetConv(nn.Conv2d):
 
     @property
     def clamped_scores(self):
-        return self.scores.abs()
+        return self.scores.abs()+2*torch.log((1+torch.exp(-(self.scores.abs())))/2)
 
     def get_sparsity(self):
         subnet = GetSubnet.apply(self.clamped_scores,.5)
@@ -86,7 +86,7 @@ class SubnetConv(nn.Conv2d):
 
     def forward(self, x):
 
-        print("% above zero {}".format(torch.sum((self.scores>0).float())/self.scores.flatten().numel()))
+        #print("% above zero {}".format(torch.sum((self.scores>0).float())/self.scores.flatten().numel()))
         subnet = GetSubnet.apply(self.clamped_scores, .5)
         w = self.weight * subnet
         x = F.conv2d(
