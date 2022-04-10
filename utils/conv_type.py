@@ -14,6 +14,7 @@ DenseConv = nn.Conv2d
 class GetSubnet(autograd.Function):
     @staticmethod
     def forward(ctx, scores, k):
+        k=(.49-.53)*torch.rand(0,1)+.49
         # Get the subnetwork by sorting the scores and using the top k%
         out = scores.clone()
         _, idx = scores.flatten().sort()
@@ -43,7 +44,7 @@ class SubnetConv(nn.Conv2d):
         self.weight=_init_weight(self.args, self.weight)
         self.scores=_init_score(self.args, self.scores)
 
-        '''if args.threshold is None:
+        if args.threshold is None:
             self.th=0
         else:
             self.th=self.args.threshold
@@ -70,7 +71,7 @@ class SubnetConv(nn.Conv2d):
                 cutoff=sorted[j].item()
                 inds = (self.scores < cutoff).nonzero(as_tuple=False)
                 print('rerandomized {} out of {} weights'.format(inds.size()[0],self.weight.numel()))
-                self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]'''
+                self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
 
     @property
     def clamped_scores(self):
