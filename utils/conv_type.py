@@ -19,6 +19,9 @@ class GetSubnet(autograd.Function):
         #print(k.item())
         # Get the subnetwork by sorting the scores and using the top k%
         out = scores.clone()
+        print(out.mean())
+        print(torch.norm(scores))
+        sys.exit()
         _, idx = scores.flatten().sort()
         j = int((1 - k) * scores.numel())
 
@@ -88,7 +91,8 @@ class SubnetConv(nn.Conv2d):
         return temp.mean()
 
     def forward(self, x):
-
+        print('here')
+        print(torch.norm(scores))
         #print("% above zero {}".format(torch.sum((self.scores>0).float())/self.scores.flatten().numel()))
         subnet = GetSubnet.apply(self.clamped_scores, .5)
         w = self.weight * subnet
