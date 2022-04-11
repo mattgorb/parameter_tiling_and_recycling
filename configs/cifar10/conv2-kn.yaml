@@ -1,5 +1,5 @@
 # Architecture
-arch: Conv6
+arch: Conv2
 
 # ===== Dataset ===== #
 data: /s/luffy/b/nobackup/mgorb/data
