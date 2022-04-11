@@ -209,7 +209,11 @@ class SubnetConvOrig(nn.Conv2d):
                     j = int((.10) * self.scores.numel())
                     k = int((.90) * self.scores.numel())
                     low_scores = (self.scores.abs() < sorted[j]).nonzero(as_tuple=False)
-                    high_scores = (self.scores.abs() > sorted[k]).nonzero(as_tuple=False)
+                    high_scores = (self.scores.abs() >= sorted[k]).nonzero(as_tuple=False)
+                    print(low_scores.size())
+                    print(high_scores.size())
+                    print(self.weight.size())
+                    sys.exit()
                     self.weight[low_scores[:, 0], low_scores[:, 1]] = self.weight[high_scores[:, 0], high_scores[:, 1]]
                     print('recycling {} out of {} weights'.format(j, self.weight.numel()))
 
