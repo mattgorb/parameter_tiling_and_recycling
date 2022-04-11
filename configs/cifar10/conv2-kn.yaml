@@ -24,7 +24,7 @@ freeze_weights: True
 
 rerand_freq: 5
 rerand_rate: 0.2
-rerand_type: iterand
+rerand_type: iterand_th
 
 weight_init: kaiming_normal
 score_init: None
