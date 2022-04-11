@@ -14,38 +14,8 @@ DenseConv = nn.Conv2d
 class GetSubnet(autograd.Function):
     @staticmethod
     def forward(ctx, scores, k):
-
         # Get the subnetwork by sorting the scores and using the top k%
-        '''out = scores.clone()
-        _, idx = scores.flatten().sort()
-        j = int((1 - k) * scores.numel())
-
-        # flat_out and out access the same memory.
-        flat_out = out.flatten()
-        flat_out[idx[:j]] = 0
-        flat_out[idx[j:]] = 1
-        return out
-        '''
-
-        #out = scores.clone()
-
-        '''if torch.sum((scores>torch.mean(scores)).float())>0.55:
-            out = scores.clone()
-            _, idx = scores.flatten().sort()
-            j = int((1 - .55) * scores.numel())
-            flat_out = out.flatten()
-            flat_out[idx[:j]] = 0
-            flat_out[idx[j:]] = 1
-            #flat_out and out access the same memory.
-            flat_out = out.flatten()
-            flat_out[idx[:j]] = 0
-            flat_out[idx[j:]] = 1
-            return out
-        else:'''
         return (scores>0).float()
-
-
-
 
     @staticmethod
     def backward(ctx, g):
@@ -87,13 +57,13 @@ class SubnetConv(nn.Conv2d):
                 self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
 
             elif self.args.rerand_type=='iterand_th':
-                scores_temp=self.scores[scores_lt0[:,0], scores_lt0[:,1]]
-                sorted, indices = torch.sort(scores_temp.flatten())
-                j = int((self.args.rerand_rate) * scores_temp.size(0))
-                cutoff=sorted[j].item()
-                inds = (self.scores < cutoff).nonzero(as_tuple=False)
-                print('rerandomized {} out of {} weights'.format(inds.size()[0],self.weight.numel()))
-                self.weight[inds[:,0], inds[:,1]]=weight_twin[inds[:,0], inds[:,1]]
+                with torch.no_grad():
+                    sorted, indices = torch.sort(self.scores.abs().flatten())
+                    j = int((.10) * self.scores.numel())
+                    low_scores = (self.scores.abs() < sorted[j]).nonzero(as_tuple=False)
+                    high_scores = (self.scores.abs() >= sorted[-j]).nonzero(as_tuple=False)
+                    self.weight[low_scores[:, 0], low_scores[:, 1]] = self.weight[high_scores[:, 0], high_scores[:, 1]]
+                    print('recycling {} out of {} weights'.format(j, self.weight.numel()))
 
     #@property
     #def clamped_scores(self):

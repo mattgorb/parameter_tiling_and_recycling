@@ -18,10 +18,13 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConv
+conv_type: SubnetConvOrig
 bn_type: NonAffineBatchNorm
 freeze_weights: True
-first_layer_type: SubnetConvOrig
+
+rerand_freq: 15
+rerand_rate: 0.2
+rerand_type: iterand_th
 
 weight_init: kaiming_normal
 score_init: None
