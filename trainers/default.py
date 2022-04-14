@@ -65,6 +65,12 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
             progress.display(i)
             progress.write_to_tensorboard(writer, prefix="train", global_step=t)
 
+
+        if args.rerand_iter_freq is not None:
+            if i%args.rerand_freq==0 and epoch>0:
+                rerandomize_model(model, args)
+
+
     return top1.avg, top5.avg
 
 
@@ -80,13 +86,13 @@ def validate(val_loader, model, criterion, args, writer, epoch):
 
     track_subnet=False
     for n, m in model.named_modules() :
-        if isinstance(m, SubnetConv) or isinstance(m, SubnetBinaryConv) or isinstance(m, SubnetConvOrig) or isinstance(m, SubnetBinaryConvOrig):
+        if isinstance(m, SubnetConvSSTL) :
             track_subnet=True
             break
     if track_subnet:
         module_meters={}
         for n, m in model.named_modules():
-            if isinstance(m, SubnetConv) or isinstance(m, SubnetBinaryConv) or isinstance(m, SubnetConvOrig) or isinstance(m, SubnetBinaryConvOrig):
+            if isinstance(m, SubnetConvSSTL) :
                 module_meters[n+'_pct_prn']=AverageMeter(n, ":6.2f", write_val=False)
 
         avg_meters.extend(module_meters.values())
@@ -104,7 +110,7 @@ def validate(val_loader, model, criterion, args, writer, epoch):
         total_not_pruned=0
         total_parameters=0
         for n, m in model.named_modules():
-            if isinstance(m, SubnetConv) or isinstance(m, SubnetBinaryConv) or isinstance(m, SubnetConvOrig) or isinstance(m, SubnetBinaryConvOrig):
+            if isinstance(m, SubnetConvSSTL):
                 module_meters[n+'_pct_prn'].update(m.get_sparsity().item())
                 total_parameters+=m.scores.size().numel()
                 total_not_pruned+=(m.scores.size().numel()*m.get_sparsity())

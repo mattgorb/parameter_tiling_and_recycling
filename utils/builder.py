@@ -60,15 +60,6 @@ class Builder(object):
             conv.args = args
             conv.weight = _init_weight(conv.args, conv.weight)
 
-
-        #print(conv.scores)
-        #conv=wn(conv, name='scores' ,dim=0)
-        #print(conv)
-        #print(conv.scores_g)
-        #print(conv.scores_v)
-        #sys.exit()
-
-
         return conv
 
     def conv3x3(self, in_planes, out_planes, stride=1, first_layer=False):

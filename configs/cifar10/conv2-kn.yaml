@@ -22,7 +22,7 @@ conv_type: SubnetConvOrig
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 
-rerand_freq: 3
+rerand_epoch_freq: 1
 rerand_rate: 0.1
 rerand_type: iterand_th
 

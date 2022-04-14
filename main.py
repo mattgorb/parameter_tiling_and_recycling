@@ -47,6 +47,9 @@ def main_worker(args):
     if args.gpu is not None:
         print("Use GPU: {} for training".format(args.gpu))
 
+    if args.rerand_iter_freq is not None and args.rerand_epoch_freq is not None:
+        print('Use only one of rerand_iter_freq and rerand_epoch_freq')
+
     # create model and optimizer
     model = get_model(args)
     model,device = set_gpu(args, model)
@@ -147,7 +150,7 @@ def main_worker(args):
 
         print('Current best: {}'.format(best_acc1))
 
-        if args.rerand_freq is not None:
+        if args.rerand_epoch_freq is not None:
             if epoch%args.rerand_freq==0 and epoch>0:
                 rerandomize_model(model, args)
 
