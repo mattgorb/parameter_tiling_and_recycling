@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import weight_norm as wn
 import math
-
+import numpy as np
 from args import args as parser_args
 from utils.initializations import _init_weight,_init_score
 
