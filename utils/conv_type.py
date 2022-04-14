@@ -115,7 +115,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 weight_twin = _init_weight(self.args, weight_twin)
                 ones = torch.ones(self.weight.size()).to(self.weight.device)
                 b = torch.bernoulli(ones * self.args.rerand_rate)
-                mask=GetSubnetEdgePopup.apply(self.clamped_scores, self.weight, self.prune_rate)
+                mask=GetSubnetEdgePopup.apply(self.clamped_scores,  self.prune_rate)
                 t1 = self.weight.data * mask
                 t2 = self.weight.data * (1 - mask) * (1 - b)
                 t3 = weight_twin.data * (1 - mask) * b
