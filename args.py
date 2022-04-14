@@ -220,9 +220,14 @@ def parse_arguments():
     parser.add_argument(
         "--score_init", default=None, help="Weight initialization modifications"
     )
+
     parser.add_argument(
-        "--rerand_freq", default=None, help="Weight initialization modifications"
+        "--rerand_iter_freq", default=None, help="Weight randomization frequency"
     )
+    parser.add_argument(
+        "--rerand_epoch_freq", default=None, help="Weight randomization frequency"
+    )
+
     parser.add_argument(
         "--weight_seed", default=0, help="Weight initialization modifications"
     )
