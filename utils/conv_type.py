@@ -103,7 +103,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
     def rerandomize(self):
         with torch.no_grad():
             if self.args.rerand_type == 'recycle':
-                j = int((self.args.rerand_rate) * self.scores.numel())
+                k = int((self.args.rerand_rate) * self.scores.numel())
                 _,high_scores=torch.topk(self.scores.abs(), k,largest=True)
                 _,low_scores=torch.topk(self.scores.abs(), k, largest=False)
                 self.weight[low_scores]=self.weight[high_scores]
