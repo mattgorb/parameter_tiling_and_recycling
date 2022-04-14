@@ -102,15 +102,15 @@ class SubnetConvEdgePopup(nn.Conv2d):
 
     def rerandomize(self):
         with torch.no_grad():
-            if args.rerand_type == 'recycle':
+            if self.args.rerand_type == 'recycle':
                 sorted, indices = torch.sort(self.scores.abs().flatten())
                 j = int((self.args.rerand_rate) * self.scores.numel())
                 low_scores = (self.scores.abs() <  sorted[j]).nonzero(as_tuple=True)
                 high_scores = (self.scores.abs() >= sorted[-j]).nonzero(as_tuple=True)
                 self.weight[low_scores]=self.weight[high_scores]
                 print('recycling {} out of {} weights'.format(j,self.weight.numel()))
-            elif args.rerand_type == 'iterand':
-                args.weight_seed += 1
+            elif self.args.rerand_type == 'iterand':
+                self.args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
                 weight_twin = _init_weight(self.args, weight_twin)
                 ones = torch.ones(self.weight.size()).to(self.weight.device)
