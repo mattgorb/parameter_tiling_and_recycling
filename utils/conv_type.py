@@ -102,14 +102,14 @@ class SubnetConvEdgePopup(nn.Conv2d):
 
     def rerandomize(self):
         with torch.no_grad():
-            if args.rerand == 'recycle':
+            if args.rerand_type == 'recycle':
                 sorted, indices = torch.sort(self.scores.abs().flatten())
                 j = int((.10) * self.scores.numel())
                 low_scores = (self.scores.abs() <  sorted[j]).nonzero(as_tuple=True)
                 high_scores = (self.scores.abs() >= sorted[-j]).nonzero(as_tuple=True)
                 self.weight[low_scores]=self.weight[high_scores]
                 print('recycling {} out of {} weights'.format(j,self.weight.numel()))
-            elif args.rerand == 'iterand':
+            elif args.rerand_type == 'iterand':
                 args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
                 nn.init.kaiming_normal_(weight_twin, mode="fan_in", nonlinearity="relu")
@@ -185,14 +185,14 @@ class SubnetConvBiprop(nn.Conv2d):
 
     def rerandomize(self):
         with torch.no_grad():
-            if args.rerand == 'recycle':
+            if args.rerand_type == 'recycle':
                 sorted, indices = torch.sort(self.scores.abs().flatten())
                 j = int((.10) * self.scores.numel())
                 low_scores = (self.scores.abs() <  sorted[j]).nonzero(as_tuple=True)
                 high_scores = (self.scores.abs() >= sorted[-j]).nonzero(as_tuple=True)
                 self.weight[low_scores]=self.weight[high_scores]
                 print('recycling {} out of {} weights'.format(j,self.weight.numel()))
-            elif args.rerand == 'iterand':
+            elif args.rerand_type == 'iterand':
                 args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
                 nn.init.kaiming_normal_(weight_twin, mode="fan_in", nonlinearity="relu")

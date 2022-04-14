@@ -18,10 +18,10 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetBinaryConvOrig
+conv_type: SubnetConvBiprop
 bn_type: NonAffineBatchNorm
 freeze_weights: True
-
+prune_rate: 0.5
 weight_init: kaiming_normal
 score_init: None
 weight_seed: 0

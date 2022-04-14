@@ -227,6 +227,9 @@ def parse_arguments():
     parser.add_argument(
         "--rerand_epoch_freq", default=None, help="Weight randomization frequency"
     )
+    parser.add_argument(
+        "--rerand_type", default=None, help="rerand type, iterand or recycle"
+    )
 
     parser.add_argument(
         "--weight_seed", default=0, help="Weight initialization modifications"
