@@ -32,7 +32,8 @@ import models
 from utils.initializations import set_seed
 
 def main():
-    print(args)
+
+    print('args: {}'.format(args))
 
     set_seed(args.seed)
 
