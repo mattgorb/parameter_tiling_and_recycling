@@ -104,7 +104,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
         with torch.no_grad():
             if args.rerand_type == 'recycle':
                 sorted, indices = torch.sort(self.scores.abs().flatten())
-                j = int((.10) * self.scores.numel())
+                j = int((self.args.rerand_rate) * self.scores.numel())
                 low_scores = (self.scores.abs() <  sorted[j]).nonzero(as_tuple=True)
                 high_scores = (self.scores.abs() >= sorted[-j]).nonzero(as_tuple=True)
                 self.weight[low_scores]=self.weight[high_scores]
@@ -112,9 +112,9 @@ class SubnetConvEdgePopup(nn.Conv2d):
             elif args.rerand_type == 'iterand':
                 args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
-                nn.init.kaiming_normal_(weight_twin, mode="fan_in", nonlinearity="relu")
+                weight_twin = _init_weight(self.args, weight_twin)
                 ones = torch.ones(self.weight.size()).to(self.weight.device)
-                b = torch.bernoulli(ones * .1)
+                b = torch.bernoulli(ones * self.args.rerand_rate)
                 mask=GetSubnet.apply(self.clamped_scores, self.weight, self.prune_rate)
                 t1 = self.weight.data * mask
                 t2 = self.weight.data * (1 - mask) * (1 - b)
