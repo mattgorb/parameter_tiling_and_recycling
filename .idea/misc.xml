@@ -4,6 +4,6 @@
     <option name="languageLevel" value="ES6" />
   </component>
   <component name="ProjectPlainTextFileTypeManager">
-    <file url="file://$PROJECT_DIR$/configs/cifar10/conv6-dense-sc.yaml" />
+    <file url="file://$PROJECT_DIR$/../towards-opt-randinit-subnets/configs/cifar10/conv6-dense-sc.yaml" />
   </component>
 </project>

@@ -8,7 +8,7 @@ name: baseline
 
 # ===== Learning Rate Policy ======== #
 optimizer: sgd
-lr: 0.01
+lr: 0.1
 lr_policy: cosine_lr
 
 # ===== Network training config ===== #

@@ -314,7 +314,7 @@ def get_model(args,):
         )'''
 
     # freezing the weights if we are only doing subnet training
-    if args.conv_type=='SubnetConv':
+    if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' or args.conv_type=='SubnetConvSSTL':
         freeze_model_weights(model)
 
     return model
@@ -367,7 +367,7 @@ def get_directories(args):
     config = pathlib.Path(args.config).stem
     if args.log_dir is None:
         run_base_dir = pathlib.Path(
-            f"/s/luffy/b/nobackup/mgorb/runs_opt/{config}/{args.name}/"
+            f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}"
         )
     else:
         run_base_dir = pathlib.Path(
