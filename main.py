@@ -152,7 +152,7 @@ def main_worker(args):
         print('Current best: {}'.format(best_acc1))
 
         if args.rerand_epoch_freq is not None:
-            if epoch%args.rerand_freq==0 and epoch>0:
+            if epoch%args.rerand_epoch_freq==0 and epoch>0:
                 rerandomize_model(model, args)
 
 
