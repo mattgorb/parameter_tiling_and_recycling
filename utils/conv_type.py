@@ -116,7 +116,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
             if self.args.rerand_type == 'recycle':
                 #sorted, indices = torch.sort(self.scores.abs().flatten())
                 k = int((self.args.rerand_rate) * self.scores.numel())
-                high_scores=torch.tensor([descalarization(k, a.size()) for k in torch.topk(a.flatten(), k).indices]).long()
+                high_scores=torch.tensor([descalarization(k, self.scores.abs().size()) for k in torch.topk(self.scores.abs().flatten(), k).indices]).long()
                 print(high_scores)
                 #_,high_scores=torch.topk(self.scores.abs(), k,largest=True)
                 #_,low_scores=torch.topk(self.scores.abs(), k, largest=False)
