@@ -100,12 +100,23 @@ class SubnetConvEdgePopup(nn.Conv2d):
     def clamped_scores(self):
         return self.scores.abs()
 
+    def descalarization(self,idx, shape):
+        res = []
+        N = np.prod(shape)
+        for n in shape:
+            N //= n
+            res.append(idx // N)
+            idx %= N
+        return tuple(res)
+
     def rerandomize(self):
         with torch.no_grad():
             if self.args.rerand_type == 'recycle':
                 k = int((self.args.rerand_rate) * self.scores.numel())
-                _,high_scores=torch.topk(self.scores.abs(), k,largest=True)
-                _,low_scores=torch.topk(self.scores.abs(), k, largest=False)
+                #_,high_scores=torch.topk(self.scores.abs(), k,largest=True)
+                #_,low_scores=torch.topk(self.scores.abs(), k, largest=False)
+                high_scores=torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k,  largest=True).indices])
+                low_scores = torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k, largest=False).indices])
                 self.weight[low_scores]=self.weight[high_scores]
                 print('recycling {} out of {} weights'.format(j,self.weight.numel()))
             elif self.args.rerand_type == 'iterand':
