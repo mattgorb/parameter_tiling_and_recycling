@@ -27,6 +27,6 @@ score_init: None
 weight_seed: 0
 score_seed: 0
 
-gpu: 4
+gpu: 0
 # ===== Hardware setup ===== #
 workers: 4
