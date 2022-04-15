@@ -140,21 +140,25 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 #print(high_scores)
                 _,high_scores=torch.topk(self.scores.abs().flatten(), k,largest=True)
                 high_scores=self.unravel_index(high_scores, self.scores.size())
-                print(high_scores)
-                print(high_scores[0].size())
-                #_,low_scores=torch.topk(self.scores.abs(), k, largest=False)
+                #print(high_scores)
+                #print(high_scores[0].size())
+                _,low_scores=torch.topk(self.scores.abs(), k, largest=False)
+                low_scores=self.unravel_index(low_scores, self.scores.size())
                 #high_scores=torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k,  largest=True).indices])
                 #low_scores = torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k, largest=False).indices])
 
 
-                low_scores = (self.scores.abs() <  sorted[k]).nonzero(as_tuple=True)
-                #high_scores = (self.scores.abs() >= sorted[-k]).nonzero(as_tuple=True)
-                print(low_scores)
-                print(low_scores[0].size())
-                sys.exit()
+
 
                 self.weight[low_scores]=self.weight[high_scores]
                 print('recycling {} out of {} weights'.format(k,self.weight.numel()))
+
+
+                #low_scores = (self.scores.abs() <  sorted[k]).nonzero(as_tuple=True)
+                #high_scores = (self.scores.abs() >= sorted[-k]).nonzero(as_tuple=True)
+                #print(low_scores)
+                #print(low_scores[0].size())
+                sys.exit()
             elif self.args.rerand_type == 'iterand':
                 self.args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
