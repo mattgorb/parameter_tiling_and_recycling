@@ -133,21 +133,21 @@ class SubnetConvEdgePopup(nn.Conv2d):
     def rerandomize(self):
         with torch.no_grad():
             if self.args.rerand_type == 'recycle':
-                #sorted, indices = torch.sort(self.scores.abs().flatten())
+                sorted, indices = torch.sort(self.scores.abs().flatten())
                 #low_scores = (self.scores.abs() <  sorted[k]).nonzero(as_tuple=True)
                 #high_scores = (self.scores.abs() >= sorted[-k]).nonzero(as_tuple=True)
                 k = int((self.args.rerand_rate) * self.scores.numel())
 
-                _,high_scores=torch.topk(self.scores.abs().flatten(), k,largest=True)
-                high_scores=self.unravel_index(high_scores, self.scores.size())
-                _,low_scores=torch.topk(self.scores.abs().flatten(), k, largest=False)
-                low_scores=self.unravel_index(low_scores, self.scores.size())
-
-                self.weight[low_scores]=self.weight[high_scores]
+                #_,high_scores=torch.topk(self.scores.abs().flatten(), k,largest=True)
+                #high_scores=self.unravel_index(high_scores, self.scores.size())
+                #_,low_scores=torch.topk(self.scores.abs().flatten(), k, largest=False)
+                #low_scores=self.unravel_index(low_scores, self.scores.size())
+                low_scores=indices[:k]
+                high_scores=indices[-k:]
+                #self.weight=self.weight.flatten()
+                self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
                 print('recycling {} out of {} weights'.format(k,self.weight.numel()))
-                print(torch.cuda.memory_allocated())
-                del high_scores
-                del low_scores
+
 
             elif self.args.rerand_type == 'iterand':
                 self.args.weight_seed += 1
