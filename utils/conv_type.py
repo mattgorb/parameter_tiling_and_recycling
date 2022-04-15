@@ -110,7 +110,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
             idx %= N
         return tuple(res)
 
-    def unravel_index(self,indices: torch.LongTensor,shape: Tuple[int, ...],) -> torch.LongTensor:
+    def unravel_index(self,indices,shape,) -> torch.LongTensor:
         r"""Converts flat indices into unraveled coordinates in a target shape.
         This is a `torch` implementation of `numpy.unravel_index`.
         Args:
