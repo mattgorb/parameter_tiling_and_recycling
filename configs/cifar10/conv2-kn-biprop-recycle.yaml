@@ -18,16 +18,22 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConvEdgePopup
-bn_type: NonAffineBatchNorm
+conv_type: SubnetConvBiprop
+bn_type: LearnedBatchNorm
 freeze_weights: True
 prune_rate: 0.5
+
+rerand_epoch_freq: 1
+rerand_rate: 0.1
+rerand_type: recycle
 
 weight_init: kaiming_normal
 score_init: None
 weight_seed: 0
 score_seed: 0
 
-gpu: 4
+
+
+gpu: 0
 # ===== Hardware setup ===== #
 workers: 4
