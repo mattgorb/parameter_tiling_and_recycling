@@ -110,6 +110,26 @@ class SubnetConvEdgePopup(nn.Conv2d):
             idx %= N
         return tuple(res)
 
+    def unravel_index(self,indices: torch.LongTensor,shape: Tuple[int, ...],) -> torch.LongTensor:
+        r"""Converts flat indices into unraveled coordinates in a target shape.
+        This is a `torch` implementation of `numpy.unravel_index`.
+        Args:
+            indices: A tensor of (flat) indices, (*, N).
+            shape: The targeted shape, (D,).
+        Returns:
+            The unraveled coordinates, (*, N, D).
+        """
+
+        coord = []
+
+        for dim in reversed(shape):
+            coord.append(indices % dim)
+            indices = indices // dim
+
+        coord = torch.stack(coord[::-1], dim=-1)
+
+        return coord
+
     def rerandomize(self):
         with torch.no_grad():
             if self.args.rerand_type == 'recycle':
@@ -118,19 +138,17 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 #high_scores=torch.tensor([self.descalarization(k, self.scores.abs().size()) for k in torch.topk(self.scores.abs().flatten(), k, largest=True).indices]).long()
                 #low_scores=torch.tensor([self.descalarization(k, self.scores.abs().size()) for k in torch.topk(self.scores.abs().flatten(), k, largest=False).indices]).long()
                 #print(high_scores)
-                #_,high_scores=torch.topk(self.scores.abs(), k,largest=True)
+                _,high_scores=torch.topk(self.scores.abs().flatten(), k,largest=True)
+                high_scores=self.unravel_index(high_scores, self.scores.size())
+                print(high_scores[0].size())
                 #_,low_scores=torch.topk(self.scores.abs(), k, largest=False)
                 #high_scores=torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k,  largest=True).indices])
                 #low_scores = torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k, largest=False).indices])
-                #low_scores = (self.scores.abs() <  sorted[k]).nonzero(as_tuple=True)
-                #high_scores = (self.scores.abs() >= sorted[-k]).nonzero(as_tuple=True)
-                print(indices)
-                indices_reshape=indices.reshape(self.scores.size())
-                print(indices_reshape)
-                print(self.scores.size())
-                print(indices_reshape.size())
 
-                print(indices_reshape[:k].size())
+
+                low_scores = (self.scores.abs() <  sorted[k]).nonzero(as_tuple=True)
+                #high_scores = (self.scores.abs() >= sorted[-k]).nonzero(as_tuple=True)
+                print(low_scores[0].size())
                 sys.exit()
 
                 self.weight[low_scores]=self.weight[high_scores]
