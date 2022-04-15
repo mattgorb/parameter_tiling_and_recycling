@@ -113,17 +113,23 @@ class SubnetConvEdgePopup(nn.Conv2d):
     def rerandomize(self):
         with torch.no_grad():
             if self.args.rerand_type == 'recycle':
-                #sorted, indices = torch.sort(self.scores.abs().flatten())
+                sorted, indices = torch.sort(self.scores.abs().flatten())
                 k = int((self.args.rerand_rate) * self.scores.numel())
-                high_scores=torch.tensor([self.descalarization(k, self.scores.abs().size()) for k in torch.topk(self.scores.abs().flatten(), k, largest=True).indices]).long()
-                low_scores=torch.tensor([self.descalarization(k, self.scores.abs().size()) for k in torch.topk(self.scores.abs().flatten(), k, largest=False).indices]).long()
+                #high_scores=torch.tensor([self.descalarization(k, self.scores.abs().size()) for k in torch.topk(self.scores.abs().flatten(), k, largest=True).indices]).long()
+                #low_scores=torch.tensor([self.descalarization(k, self.scores.abs().size()) for k in torch.topk(self.scores.abs().flatten(), k, largest=False).indices]).long()
                 #print(high_scores)
                 #_,high_scores=torch.topk(self.scores.abs(), k,largest=True)
                 #_,low_scores=torch.topk(self.scores.abs(), k, largest=False)
                 #high_scores=torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k,  largest=True).indices])
                 #low_scores = torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k, largest=False).indices])
-                #low_scores = (self.scores.abs() <  sorted[j]).nonzero(as_tuple=True)
-                #high_scores = (self.scores.abs() >= sorted[-j]).nonzero(as_tuple=True)
+                #low_scores = (self.scores.abs() <  sorted[k]).nonzero(as_tuple=True)
+                #high_scores = (self.scores.abs() >= sorted[-k]).nonzero(as_tuple=True)
+
+                indices_reshape=indices.reshape(self.scores.size())
+                print(indices_reshape)
+                print(indices_reshape[:k].size())
+                sys.exit()
+
                 self.weight[low_scores]=self.weight[high_scores]
                 print('recycling {} out of {} weights'.format(k,self.weight.numel()))
             elif self.args.rerand_type == 'iterand':
