@@ -158,7 +158,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 #high_scores = (self.scores.abs() >= sorted[-k]).nonzero(as_tuple=True)
                 #print(low_scores)
                 #print(low_scores[0].size())
-                sys.exit()
+                #sys.exit()
             elif self.args.rerand_type == 'iterand':
                 self.args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
