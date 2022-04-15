@@ -145,7 +145,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
 
                 self.weight[low_scores]=self.weight[high_scores]
                 print('recycling {} out of {} weights'.format(k,self.weight.numel()))
-
+                print(torch.cuda.memory_allocated())
                 del high_scores
                 del low_scores
 
