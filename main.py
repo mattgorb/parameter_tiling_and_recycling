@@ -151,9 +151,7 @@ def main_worker(args):
 
         print('Current best: {}'.format(best_acc1))
 
-        if args.rerand_epoch_freq is not None:
-            if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
-                rerandomize_model(model, args)
+
 
 
         # remember best acc@1 and save checkpoint
@@ -191,6 +189,10 @@ def main_worker(args):
         progress_overall.write_to_tensorboard(
             writer, prefix="diagnostics", global_step=epoch
         )
+
+        if args.rerand_epoch_freq is not None:
+            if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
+                rerandomize_model(model, args)
 
 
         writer.add_scalar("test/lr", cur_lr, epoch)
