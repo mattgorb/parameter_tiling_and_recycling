@@ -93,7 +93,7 @@ class Conv6(nn.Module):
             nn.ReLU(),
             builder.conv1x1(256, 256),
             nn.ReLU(),
-            builder.conv1x1(256, 10, first_layer=True),
+            builder.conv1x1(256, 10, ),
         )
 
     def forward(self, x):
