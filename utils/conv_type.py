@@ -127,6 +127,9 @@ class SubnetConvEdgePopup(nn.Conv2d):
 
                 indices_reshape=indices.reshape(self.scores.size())
                 print(indices_reshape)
+                print(self.scores.size())
+                print(indices_reshape.size())
+
                 print(indices_reshape[:k].size())
                 sys.exit()
 
