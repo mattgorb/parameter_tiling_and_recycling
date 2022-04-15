@@ -142,7 +142,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 high_scores=self.unravel_index(high_scores, self.scores.size())
                 #print(high_scores)
                 #print(high_scores[0].size())
-                _,low_scores=torch.topk(self.scores.abs(), k, largest=False)
+                _,low_scores=torch.topk(self.scores.abs().flatten(), k, largest=False)
                 low_scores=self.unravel_index(low_scores, self.scores.size())
                 #high_scores=torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k,  largest=True).indices])
                 #low_scores = torch.tensor([self.descalarization(k, self.scores.size()) for k in torch.topk(self.scores.flatten(), k, largest=False).indices])
