@@ -34,6 +34,6 @@ score_seed: 0
 
 
 
-gpu: 0
+gpu: 1
 # ===== Hardware setup ===== #
 workers: 4
