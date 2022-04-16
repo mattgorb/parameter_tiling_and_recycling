@@ -179,6 +179,7 @@ def parse_arguments():
         help="Whether or not to train only subnet (this freezes weights)",
     )
     parser.add_argument("--mode", default="fan_in", help="Weight initialization mode")
+
     parser.add_argument(
         "--nonlinearity", default="relu", help="Nonlinearity used by initialization"
     )
