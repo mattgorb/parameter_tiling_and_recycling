@@ -101,35 +101,6 @@ class SubnetConvEdgePopup(nn.Conv2d):
     def clamped_scores(self):
         return self.scores.abs()
 
-    def descalarization(self, idx, shape):
-        res = []
-        N = np.prod(shape)
-        for n in shape:
-            N //= n
-            res.append(idx // N)
-            idx %= N
-        return tuple(res)
-
-    def unravel_index(self,indices,shape,) -> torch.LongTensor:
-        r"""Converts flat indices into unraveled coordinates in a target shape.
-        This is a `torch` implementation of `numpy.unravel_index`.
-        Args:
-            indices: A tensor of (flat) indices, (*, N).
-            shape: The targeted shape, (D,).
-        Returns:
-            The unraveled coordinates, (*, N, D).
-        """
-
-        coord = []
-
-        for dim in reversed(shape):
-            coord.append(indices % dim)
-            indices = indices // dim
-
-        coord = torch.stack(coord[::-1], dim=-1)
-
-        return coord
-
     def rerandomize(self):
         with torch.no_grad():
             if self.args.rerand_type == 'recycle':

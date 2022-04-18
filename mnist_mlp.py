@@ -94,25 +94,27 @@ class SupermaskLinearEP(nn.Linear):
         self.weight.requires_grad = False
     def rerandomize(self):
         with torch.no_grad():
-            if args.rerand == 'recycle':
+            if self.args.rerand_type == 'recycle':
                 sorted, indices = torch.sort(self.scores.abs().flatten())
-                j = int((.10) * self.scores.numel())
-                low_scores = (self.scores.abs() <  sorted[j]).nonzero(as_tuple=True)
-                high_scores = (self.scores.abs() >= sorted[-j]).nonzero(as_tuple=True)
-                self.weight[low_scores]=self.weight[high_scores]
-                print('recycling {} out of {} weights'.format(j,self.weight.numel()))
-            elif args.rerand == 'iterand':
-                args.seed += 1
+                k = int((self.args.rerand_rate) * self.scores.numel())
+                low_scores=indices[:k]
+                high_scores=indices[-k:]
+                self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
+                print('recycling {} out of {} weights'.format(k,self.weight.numel()))
+
+            elif self.args.rerand_type == 'iterand':
+                self.args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
-                nn.init.kaiming_normal_(weight_twin, mode="fan_in", nonlinearity="relu")
+                weight_twin = _init_weight(self.args, weight_twin)
                 ones = torch.ones(self.weight.size()).to(self.weight.device)
-                b = torch.bernoulli(ones * .1)
-                mask=GetSubnetEP.apply(self.scores.abs(), args.sparsity)
+                b = torch.bernoulli(ones * self.args.rerand_rate)
+                mask=GetSubnetEdgePopup.apply(self.clamped_scores,  self.prune_rate)
                 t1 = self.weight.data * mask
                 t2 = self.weight.data * (1 - mask) * (1 - b)
                 t3 = weight_twin.data * (1 - mask) * b
                 self.weight.data = t1 + t2 +t3
                 print('rerandomizing {} out of {} weights'.format(torch.sum(b), self.weight.numel()))
+
     def getSparsity(self):
         return torch.mean(GetSubnetEP.apply(self.scores.abs(), args.sparsity))
 
