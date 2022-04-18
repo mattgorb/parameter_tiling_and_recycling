@@ -23,11 +23,11 @@ bn_type: NonAffineBatchNorm
 freeze_weights: True
 prune_rate: 0.5
 
-rerand_epoch_freq: 10
+rerand_epoch_freq: 2
 rerand_rate: 0.1
 rerand_type: recycle
 
-weight_init: kaiming_normal
+weight_init: signed_constant
 score_init: None
 weight_seed: 0
 score_seed: 0
