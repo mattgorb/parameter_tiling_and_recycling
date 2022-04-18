@@ -109,10 +109,6 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 low_scores=indices[:k]
                 high_scores=indices[-k:]
 
-                '''shuffle_high=torch.randperm(self.weight.flatten()[high_scores].size(0))
-                high_scores=self.weight.flatten()[shuffle_high]
-                self.weight.flatten()[low_scores] = high_scores'''
-
                 self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
                 print('recycling {} out of {} weights'.format(k,self.weight.numel()))
 
@@ -120,6 +116,8 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 self.args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
                 weight_twin = _init_weight(self.args, weight_twin)
+                print(weight_twin)
+
                 ones = torch.ones(self.weight.size()).to(self.weight.device)
                 b = torch.bernoulli(ones * self.args.rerand_rate)
                 mask=GetSubnetEdgePopup.apply(self.clamped_scores,  self.prune_rate)
