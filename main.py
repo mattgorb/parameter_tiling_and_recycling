@@ -35,10 +35,8 @@ def main():
 
     print('args: {}'.format(args))
 
-    args.conv_type='DenseConv'
+    '''args.conv_type='DenseConv'
     args.bn_type='NonAffineBatchNorm'
-
-
     for arch in models.__all__:
         args.arch=arch
         print(arch)
@@ -55,7 +53,8 @@ def main():
             model = get_model(args)
             pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             print(pytorch_total_params)
-    sys.exit()
+    sys.exit()'''
+
     set_seed(args.seed)
 
     # Simply call main_worker function
