@@ -23,7 +23,7 @@ bn_type: NonAffineBatchNorm
 freeze_weights: True
 prune_rate: 0.5
 
-rerand_epoch_freq: 1
+rerand_epoch_freq: 2
 rerand_rate: 0.1
 rerand_type: recycle
 
