@@ -144,6 +144,7 @@ class Conv8(nn.Module):
         return out.squeeze()
 
 
+
 class FC(nn.Module):
     def __init__(self):
         super(FC, self).__init__()
@@ -164,6 +165,32 @@ class FC(nn.Module):
 def scale(n):
     return int(n * args.width_mult)
 
+
+class Conv2Wide(nn.Module):
+    def __init__(self):
+        super(Conv2Wide, self).__init__()
+        builder = get_builder()
+        self.convs = nn.Sequential(
+            builder.conv3x3(3, scale(64), first_layer=True),
+            nn.ReLU(),
+            builder.conv3x3(scale(64), scale(64)),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+        )
+
+        self.linear = nn.Sequential(
+            builder.conv1x1(scale(64) * 16 * 16, scale(256)),
+            nn.ReLU(),
+            builder.conv1x1(scale(256), scale(256)),
+            nn.ReLU(),
+            builder.conv1x1(scale(256), 10),
+        )
+
+    def forward(self, x):
+        out = self.convs(x)
+        out = out.view(out.size(0), 64 * 16 * 16, 1, 1)
+        out = self.linear(out)
+        return out.squeeze()
 
 class Conv4Wide(nn.Module):
     def __init__(self):
@@ -197,6 +224,46 @@ class Conv4Wide(nn.Module):
         out = self.linear(out)
         return out.squeeze()
 
+class Conv8Wide(nn.Module):
+    def __init__(self):
+        super(Conv8Wide, self).__init__()
+        builder = get_builder()
+        self.convs = nn.Sequential(
+            builder.conv3x3(3, scale(64), first_layer=True),
+            nn.ReLU(),
+            builder.conv3x3(scale(64),scale( 64)),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            builder.conv3x3(scale(64), scale(128)),
+            nn.ReLU(),
+            builder.conv3x3(scale(128),scale( 128)),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            builder.conv3x3(scale(128),scale( 256)),
+            nn.ReLU(),
+            builder.conv3x3(scale(256), scale(256)),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            builder.conv3x3(scale(256),scale( 512)),
+            nn.ReLU(),
+            builder.conv3x3(scale(512), scale(512)),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2))
+        )
+
+        self.linear = nn.Sequential(
+            builder.conv1x1(scale(512 )* 2 * 2, scale(256)),
+            nn.ReLU(),
+            builder.conv1x1(scale(256), scale(256)),
+            nn.ReLU(),
+            builder.conv1x1(scale(256), scale(10)),
+        )
+
+    def forward(self, x):
+        out = self.convs(x)
+        out = out.view(out.size(0), 512 * 2 * 2, 1, 1)
+        out = self.linear(out)
+        return out.squeeze()
 
 
 class Conv6Wide(nn.Module):
