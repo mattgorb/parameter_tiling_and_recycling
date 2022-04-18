@@ -123,6 +123,25 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 t3 = weight_twin.data * (1 - mask) * b
                 self.weight.data = t1 + t2 +t3
                 print('rerandomizing {} out of {} weights'.format(torch.sum(b), self.weight.numel()))
+            elif self.args.rerand_type == 'iterand_recycle':
+                self.args.weight_seed += 1
+                weight_twin = torch.zeros_like(self.weight)
+                weight_twin = _init_weight(self.args, weight_twin)
+                ones = torch.ones(self.weight.size()).to(self.weight.device)
+                b = torch.bernoulli(ones * int(self.args.rerand_rate/2))
+                mask = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
+                t1 = self.weight.data * mask
+                t2 = self.weight.data * (1 - mask) * (1 - b)
+                t3 = weight_twin.data * (1 - mask) * b
+                self.weight.data = t1 + t2 + t3
+                print('rerandomizing {} out of {} weights'.format(torch.sum(b), self.weight.numel()))
+
+                sorted, indices = torch.sort(self.scores.abs().flatten())
+                k = int((self.args.rerand_rate/2) * self.scores.numel())
+                low_scores=indices[:k]
+                high_scores=indices[-k:]
+                self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
+                print('recycling {} out of {} weights'.format(k,self.weight.numel()))
 
     def forward(self, x):
         subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
