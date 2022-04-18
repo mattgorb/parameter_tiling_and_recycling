@@ -109,11 +109,11 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 low_scores=indices[:k]
                 high_scores=indices[-k:]
 
-                shuffle_high=torch.randperm(self.weight.flatten()[high_scores].size(0))
+                '''shuffle_high=torch.randperm(self.weight.flatten()[high_scores].size(0))
                 high_scores=self.weight.flatten()[shuffle_high]
-                self.weight.flatten()[low_scores] = high_scores
+                self.weight.flatten()[low_scores] = high_scores'''
 
-                #self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
+                self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
                 print('recycling {} out of {} weights'.format(k,self.weight.numel()))
 
             elif self.args.rerand_type == 'iterand':
