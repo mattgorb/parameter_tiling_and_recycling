@@ -16,10 +16,16 @@ def set_seed(seed):
 def _init_weight(args,weight):
     set_seed(args.weight_seed)
     if args.weight_init == "signed_constant":
-        fan = nn.init._calculate_correct_fan(weight, args.mode)
+        '''fan = nn.init._calculate_correct_fan(weight, args.mode)
         gain = nn.init.calculate_gain(args.nonlinearity)
         std = gain / math.sqrt(fan)
-        weight.data = weight.data.sign() * std
+        weight.data = weight.data.sign() * std'''
+        fan = nn.init._calculate_correct_fan(param, 'fan_in')
+        gain = nn.init.calculate_gain('relu')
+        std = gain / math.sqrt(fan)
+        nn.init.kaiming_normal_(param)  # use only its sign
+        param.data = param.data.sign() * std
+        param.data *= scale
 
     elif args.weight_init == "unsigned_constant":
 
