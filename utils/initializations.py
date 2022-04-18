@@ -20,12 +20,18 @@ def _init_weight(args,weight):
         gain = nn.init.calculate_gain(args.nonlinearity)
         std = gain / math.sqrt(fan)
         weight.data = weight.data.sign() * std'''
-        fan = nn.init._calculate_correct_fan(weight, 'fan_in')
+        '''fan = nn.init._calculate_correct_fan(weight, 'fan_in')
         gain = nn.init.calculate_gain('relu')
         std = gain / math.sqrt(fan)
         nn.init.kaiming_normal_(weight)  # use only its sign
         weight.data = weight.data.sign() * std
-        weight.data *= scale
+        weight.data *= scale'''
+        fan = nn.init._calculate_correct_fan(weight, args.mode)
+        #if args.scale_fan:
+        fan = fan * (1 - args.prune_rate)
+        gain = nn.init.calculate_gain(args.nonlinearity)
+        std = gain / math.sqrt(fan)
+        weight.data = weight.data.sign() * std
 
     elif args.weight_init == "unsigned_constant":
 
