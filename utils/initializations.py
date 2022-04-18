@@ -20,6 +20,8 @@ def _init_weight(args,weight):
         gain = nn.init.calculate_gain(args.nonlinearity)
         std = gain / math.sqrt(fan)
         weight.data = weight.data.sign() * std'''
+
+        #using signed constant from iterand code
         fan = nn.init._calculate_correct_fan(weight, 'fan_in')
         gain = nn.init.calculate_gain('relu')
         std = gain / math.sqrt(fan)
