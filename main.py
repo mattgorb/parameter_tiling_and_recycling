@@ -330,7 +330,7 @@ def get_model(args,):
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
-        set_model_prune_rate(model, prune_rate=args.prune_rate)
+        #set_model_prune_rate(model, prune_rate=args.prune_rate)
         print(
             f"=> Rough estimate model params {sum(int(p.numel() * (1-args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
         )
