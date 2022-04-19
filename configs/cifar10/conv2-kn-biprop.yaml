@@ -23,6 +23,7 @@ bn_type: NonAffineBatchNorm
 freeze_weights: True
 prune_rate: 0.5
 weight_init: kaiming_normal
+scale_fan: True
 score_init: None
 weight_seed: 0
 score_seed: 0
