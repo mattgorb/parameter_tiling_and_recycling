@@ -23,8 +23,8 @@ bn_type: NonAffineBatchNorm
 freeze_weights: True
 
 prune_rate: -1
-rerand_epoch_freq: 2
-rerand_rate: 0.1
+rerand_epoch_freq: 10
+rerand_rate: 0.2
 rerand_type: recycle
 
 weight_init: kaiming_normal
