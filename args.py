@@ -140,7 +140,7 @@ def parse_arguments():
         "--save_every", default=-1, type=int, help="Save every ___ epochs"
     )
     parser.add_argument(
-        "--prune-rate",
+        "--prune_rate",
         default=0.0,
         help="Amount of pruning to do during sparse training",
         type=float,
@@ -149,7 +149,7 @@ def parse_arguments():
         "--low-data", default=1, help="Amount of data to use", type=float
     )
     parser.add_argument(
-        "--width-mult",
+        "--width_mult",
         default=1.0,
         help="How much to vary the width of the network.",
         type=float,

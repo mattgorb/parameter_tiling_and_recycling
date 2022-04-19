@@ -227,6 +227,8 @@ class SubnetConvBiprop(nn.Conv2d):
                 t2 = self.weight.data * (1 - mask) * (1 - b)
                 t3 = weight_twin.data * (1 - mask) * b
                 self.weight.data = t1 + t2 +t3
+
+
                 print('rerandomizing {} out of {} weights'.format(torch.sum(b), self.weight.numel()))
 
     def forward(self, x):
