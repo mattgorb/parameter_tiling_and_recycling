@@ -229,6 +229,7 @@ def main_worker(args):
         base_config=args.config,
         name=args.name,
     )
+    print(f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}")
 
 
 def get_trainer(args):
