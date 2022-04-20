@@ -256,7 +256,7 @@ class Conv8Wide(nn.Module):
             nn.ReLU(),
             builder.conv1x1(scale(256), scale(256)),
             nn.ReLU(),
-            builder.conv1x1(scale(256), scale(10)),
+            builder.conv1x1(scale(256), 10),
         )
 
     def forward(self, x):
