@@ -334,7 +334,7 @@ def get_model(args,):
             f"=> Rough estimate model params {sum(int(p.numel() * (1-args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
         )
     print(args.conv_type)
-    sys.exit()
+    #sys.exit()
     # freezing the weights if we are only doing subnet training
     if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' or args.conv_type=='SubnetConvSSTL':
         freeze_model_weights(model)
