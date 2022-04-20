@@ -229,6 +229,8 @@ def main_worker(args):
         base_config=args.config,
         name=args.name,
     )
+
+    config = pathlib.Path(args.config).stem
     print(f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}")
 
 
