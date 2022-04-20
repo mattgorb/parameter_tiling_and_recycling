@@ -35,9 +35,9 @@ def main():
 
     print('args: {}'.format(args))
 
-    args.conv_type='DenseConv'
+    '''args.conv_type='DenseConv'
     args.bn_type='NonAffineBatchNorm'
-    '''for arch in models.__all__:
+    for arch in models.__all__:
         args.arch=arch
         print(arch)
         if 'Wide' in arch:
