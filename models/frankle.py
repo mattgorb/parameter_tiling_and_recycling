@@ -188,7 +188,7 @@ class Conv2Wide(nn.Module):
 
     def forward(self, x):
         out = self.convs(x)
-        out = out.view(out.size(0), 64 * 16 * 16, 1, 1)
+        out = out.view(out.size(0), scale(64) * 16 * 16, 1, 1)
         out = self.linear(out)
         return out.squeeze()
 
@@ -261,7 +261,7 @@ class Conv8Wide(nn.Module):
 
     def forward(self, x):
         out = self.convs(x)
-        out = out.view(out.size(0), 512 * 2 * 2, 1, 1)
+        out = out.view(out.size(0), scale(512) * 2 * 2, 1, 1)
         out = self.linear(out)
         return out.squeeze()
 
