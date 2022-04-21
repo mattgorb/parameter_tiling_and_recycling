@@ -18,6 +18,21 @@ axs[1].axhline(89.41, linestyle=':', )
 axs[1].title.set_text('Conv8')
 
 
+
+
+sns.lineplot(x=[.5,0.8,.6,.4,.2], y=[79.56,77.9,79.98,78.3,64.1] ,ax=axs[2], label='Biprop', legend=False)
+#sns.lineplot(x=[.5,0.8,.6,.4,.2], y=[65.3,58.9,65.72,65,56] ,ax=axs[2], label='Biprop+IteRand', legend=False)
+sns.lineplot(x=[.5,0.8,.6,.4,.2], y=[81.36,80.23,81.36,81.2,80.28] ,ax=axs[2], label='Biprop+Recycle', legend=False)
+axs[2].axhline(79.9, linestyle=':', )
+axs[2].title.set_text('Conv2')
+
+sns.lineplot(x=[.5,0.8,.6,.4,.2], y=[90.35,89.11,90.54,89.13,76.59] ,ax=axs[3], label='Biprop', legend=False)
+#sns.lineplot(x=[.5,0.8,.6,.4,.2], y=[77.61,76.72,78.9,75.14,49.84] ,ax=axs[3], label='Biprop+IteRand', legend=False)
+sns.lineplot(x=[.5,0.8,.6,.4,.2], y=[91,90.55,90.85,90.93,90.35] ,ax=axs[3], label='Biprop+Recycle', legend=False)
+axs[3].axhline(89.41, linestyle=':', )
+axs[3].title.set_text('Conv8')
+
+
 for ax in axs:
     ax.set(xlabel="Percentage of Weights Pruned")
     #ax.get_legend().remove()
@@ -30,7 +45,6 @@ handles, labels = axs[2].get_legend_handles_labels()
 fig.legend(handles, labels, loc='lower left', ncol=3,bbox_to_anchor=(.62, .02))
 plt.tight_layout(rect=[0,.08,1,1])
 print(labels)
-#plt.show()
 plt.savefig('figures/test.png')
 
 del fig
