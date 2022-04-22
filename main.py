@@ -406,8 +406,9 @@ def get_directories(args):
 
     log_base_dir = run_base_dir / "logs"
     ckpt_base_dir = run_base_dir / "checkpoints"
-
+    print("Base dir {}".format(run_base_dir))
     if not run_base_dir.exists():
+        print("Making directory {}".format(run_base_dir))
         os.makedirs(run_base_dir)
 
     (run_base_dir / "settings.txt").write_text(str(args))
