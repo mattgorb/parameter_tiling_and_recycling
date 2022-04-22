@@ -104,6 +104,11 @@ def set_gpu(args, model):
 
     return model, device
 
+def get_trainer(args):
+    print(f"=> Using trainer from trainers.{args.trainer}")
+    trainer = importlib.import_module(f"trainers.{args.trainer}")
+
+    return trainer.train, trainer.validate, trainer.modifier, trainer.validate_pretrained
 
 
 def pretrained(args, model):
