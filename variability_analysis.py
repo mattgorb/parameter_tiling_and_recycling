@@ -53,10 +53,10 @@ def main_worker(args):
 
     # create model and optimizer
     model1 = get_model(args)
-    model1,device1 = set_gpu(args, model1)
+    model1,device = set_gpu(args, model1)
 
     model2=get_model(args)
-    model2, device2 = set_gpu(args, model2)
+    model2, _ = set_gpu(args, model2)
 
     set_seed(args.seed)
 
