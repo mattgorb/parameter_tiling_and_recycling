@@ -110,6 +110,8 @@ def main_worker(args):
         vals.append(total_same)
         cols.append('total weights')
         vals.append(total_weights)
+        cols.append('percent shared total')
+        vals.append((float(total_same/total_weights)))
 
         print(cols)
         print(vals)
@@ -119,8 +121,9 @@ def main_worker(args):
             df = pd.DataFrame([vals], columns=cols)
             results_df=results_df.append(df)
 
-        print(results_df.head())
-
+        print(results_df)
+        results_df.to_csv('model_combos.csv')
+    results_df.to_csv('model_combos.csv')
 
 
 
