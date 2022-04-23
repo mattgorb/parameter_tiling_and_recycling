@@ -54,6 +54,7 @@ def main_worker(args):
     # create model and optimizer
     model = get_model(args)
     model,device = set_gpu(args, model)
+    model2, device2 = set_gpu(args, model)
 
     set_seed(args.seed)
 
@@ -66,13 +67,19 @@ def main_worker(args):
         criterion = LabelSmoothing(smoothing=args.label_smoothing)
 
     if args.pretrained:
-        pretrained(args, model)
+        pretrained(args.pretrained, model)
 
         acc1, acc5 = validate(
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
 
+        pretrained(args.pretrained2, model2)
 
+        acc1, acc5 = validate(
+            data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
+        )
+
+        #for n, m in model.named_modules():
 
     # Data loading code
     if args.evaluate:
@@ -111,11 +118,11 @@ def get_trainer(args):
     return trainer.train, trainer.validate, trainer.modifier, trainer.validate_pretrained
 
 
-def pretrained(args, model):
-    if os.path.isfile(args.pretrained):
-        print("=> loading pretrained weights from '{}'".format(args.pretrained))
+def pretrained(weight_file, model):
+    if os.path.isfile(weight_file):
+        print("=> loading pretrained weights from '{}'".format(weight_file))
         pretrained = torch.load(
-            args.pretrained,
+            weight_file,
             #map_location=torch.device("cuda:{}".format(args.multigpu[0])),
         )["state_dict"]
 
@@ -133,7 +140,7 @@ def pretrained(args, model):
         model.load_state_dict(model_state_dict)
 
     else:
-        print("=> no pretrained weights found at '{}'".format(args.pretrained))
+        print("=> no pretrained weights found at '{}'".format(weight_file))
         sys.exit()
     #for n, m in model.named_modules():
         #if isinstance(m, FixedSubnetConv):
