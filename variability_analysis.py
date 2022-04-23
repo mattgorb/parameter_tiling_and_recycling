@@ -123,8 +123,8 @@ def main_worker(args):
             results_df=results_df.append(df)
 
         print(results_df)
-        results_df.to_csv(f'model_combos_{args.config}.csv')
-    results_df.to_csv(f'model_combos_{args.config}.csv')
+        results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}.csv')
+    results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}.csv')
 
 
 
