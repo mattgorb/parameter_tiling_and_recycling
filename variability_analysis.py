@@ -53,7 +53,7 @@ def main_worker(args):
 
     set_seed(args.seed)
     data = get_dataset(args)
-    criterion = nn.CrossEntropyLoss().to(device)
+
 
 
     weight_files=['/s/luffy/b/nobackup/mgorb/runs/conv6-kn-biprop-var/baseline/prune_rate=0.5/checkpoints/model_best.pth']+\
@@ -71,6 +71,8 @@ def main_worker(args):
 
         model2=get_model(args)
         model2, _ = set_gpu(args, model2)
+
+        criterion = nn.CrossEntropyLoss().to(device)
 
         pretrained(weightfile1, model1)
         acc1, acc5 = validate(data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch )
