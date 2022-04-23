@@ -88,16 +88,16 @@ def main_worker(args):
         n1,mod1=m1
         n2,mod2=m2
 
-        #sys.exit()
-        print(n1)
-        print(mod1)
+
         if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
-            print(mod1.weight.flatten()[:5])
-            print(mod2.weight.flatten()[:5])
+            assert(mod1.weight==mod2.weight)
             mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
             mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
-            print(mask1.size())
-            print(torch.sum(torch.eq(mask1,mask2)))
+            print("{}, {}".format(n1,m1))
+            print(mask1.flatten().size())
+            equal=torch.sum(torch.eq(mask1,mask2))
+            print(equal)
+            print(f'% equal: {equal, mask1.flatten().size()}')
 
 
 
