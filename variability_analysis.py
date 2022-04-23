@@ -56,8 +56,8 @@ def main_worker(args):
 
     print(args.config)
 
-    weight_files=[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split(".")[0]}/baseline/prune_rate=0.5/checkpoints/model_best.pth']+\
-                 [f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split(".")[0]}/baseline/prune_rate=0.5/{i}/checkpoints/model_best.pth' for i in range(14)]
+    weight_files=[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate=0.5/checkpoints/model_best.pth']+\
+                 [f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate=0.5/{i}/checkpoints/model_best.pth' for i in range(14)]
 
     model_num=[i for i in range(len(weight_files))]
     combos=list(itertools.combinations(model_num, 2))
