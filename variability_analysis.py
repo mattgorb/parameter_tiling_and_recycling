@@ -81,9 +81,10 @@ def main_worker(args):
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
 
-    model.eval()
+    model1.eval()
+    model2.eval()
 
-    for n, m in model.named_modules():
+    for n, m in model1.named_modules():
         print(n)
         if isinstance(m, SubnetConvEdgePopup) or isinstance(m,SubnetConvBiprop):
             #m.set_subnet()
