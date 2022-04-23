@@ -54,7 +54,8 @@ def main_worker(args):
     set_seed(args.seed)
     data = get_dataset(args)
 
-
+    print(args.config)
+    sys.exit()
 
     weight_files=['/s/luffy/b/nobackup/mgorb/runs/conv6-kn-biprop-var/baseline/prune_rate=0.5/checkpoints/model_best.pth']+\
                  [f'/s/luffy/b/nobackup/mgorb/runs/conv6-kn-biprop-var/baseline/prune_rate=0.5/{i}/checkpoints/model_best.pth' for i in range(14)]
