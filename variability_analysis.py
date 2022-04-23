@@ -85,6 +85,8 @@ def main_worker(args):
         model1.eval()
         model2.eval()
 
+        total_jaccard=0
+        total_ones_jaccard=0
         total_weights=0
         total_same=0
 
@@ -103,35 +105,38 @@ def main_worker(args):
                 equal=torch.sum(torch.eq(mask1,mask2)).item()
                 print(equal)
 
-                print('onees equal')
-                equal1  = torch.sum((mask1==1) & (mask2==1)).item()
-                print(equal1)
-                print('not equal')
-                equal1 = torch.sum(torch.ne(mask1,mask2)).item()
-                print(equal1)
-                print('zeros equal')
-                equal1 = torch.sum((mask1==0) & (mask2==0)).item()
-                print(equal1)
-                print('equal')
-                print(mask1.flatten().numel())
-
+                equal_jaccard  = torch.sum((mask1==1) & (mask2==1)).item()
+                not_equal = torch.sum(torch.ne(mask1,mask2)).item()
 
                 print(f'% equal: {float(equal/mask1.flatten().numel())}')
 
-                cols.append(n1)
+                cols.append(n1+str('_pctsame'))
                 vals.append((float(equal/mask1.flatten().numel())))
+
+                cols.append(n1+str('_jaccard'))
+                vals.append((float(equal_jaccard/(equal_jaccard+not_equal))))
+
                 total_same+=equal
                 total_weights+=mask1.flatten().numel()
-        sys.exit()
-        cols.append('total same')
+
+                total_jaccard+=(equal_jaccard+not_equal)
+                total_ones_jaccard+=equal_jaccard
+
+
+        cols.append('total_same')
         vals.append(total_same)
-        cols.append('total weights')
+        cols.append('total_weights')
         vals.append(total_weights)
-        cols.append('percent shared total')
+        cols.append('total_ones_same')
+        vals.append(total_ones_jaccard)
+
+
+        cols.append('percent_same_total')
         vals.append((float(total_same/total_weights)))
 
-        print(cols)
-        print(vals)
+        cols.append('jaccard_total')
+        vals.append((float(total_ones_jaccard/(total_ones_jaccard+total_jaccard))))
+
         if results_df is None:
             results_df=pd.DataFrame([vals], columns = cols)
         else:
