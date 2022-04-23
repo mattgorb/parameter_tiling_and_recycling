@@ -11,7 +11,7 @@ import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
-
+from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop
 
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import (
@@ -79,12 +79,18 @@ def main_worker(args):
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
 
+
         for n, m in model.named_modules():
             print(n)
-            mask1=m.GetSubnetEdgePopup.apply(m.clamped_scores, m.prune_rate)
-            print(mask1)
-        #if isinstance(m, FixedSubnetConv):
-            #m.set_subnet()
+            if isinstance(m, SubnetConvEdgePopup) or isinstancee(m,SubnetConvBiprop):
+                #m.set_subnet()
+                print('heeree')
+                print(n)
+                print(m)
+                sys.exit()
+            #mask1=m.GetSubnetEdgePopup.apply(m.clamped_scores, m.prune_rate)
+            #print(mask1)
+
 
 
 
