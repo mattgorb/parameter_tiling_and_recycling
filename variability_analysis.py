@@ -84,15 +84,15 @@ def main_worker(args):
     model1.eval()
     model2.eval()
 
-    for n1,m1,n2,m2 in zip(model1.named_modules(), model2.named_modules()):
+    for m1,m2 in zip(model1.named_modules(), model2.named_modules()):
+        n1,mod1=m1
+        n2,mod2=m2
         print(n)
-        if isinstance(m1, SubnetConvEdgePopup) or isinstance(m1,SubnetConvBiprop):
-            #m.set_subnet()
-
-            mask1=GetSubnetEdgePopup.apply(m.clamped_scores, m.prune_rate)
-            mask2=GetSubnetEdgePopup.apply(m.clamped_scores, m.prune_rate)
+        if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
+            mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
+            mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
             print(mask1.size())
-            print(torch.eq(mask1,mask2))
+            print(torch.sum(torch.eq(mask1,mask2)))
 
 
 
