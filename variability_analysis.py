@@ -79,7 +79,8 @@ def main_worker(args):
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
 
-        #for n, m in model.named_modules():
+        for n, m in model.named_modules():
+            print(n)
 
     # Data loading code
     if args.evaluate:
