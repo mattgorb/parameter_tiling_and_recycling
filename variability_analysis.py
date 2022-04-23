@@ -87,6 +87,8 @@ def main_worker(args):
     for m1,m2 in zip(model1.named_modules(), model2.named_modules()):
         n1,mod1=m1
         n2,mod2=m2
+        print(mod1.weight)
+        print(mod2.weight)
         print(n1)
         if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
             mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
