@@ -103,8 +103,9 @@ def main_worker(args):
                 equal=torch.sum(torch.eq(mask1,mask2)).item()
                 print(equal)
 
-                equal1 = torch.sum(torch.where(torch.nonzero(mask1==1) & torch.nonzero(mask2==1)),1,0).item()
+                equal1  = (mask1==0) & (mask2==1)
                 print(equal1)
+                print(torch.sum(equal1))
                 print('hrs')
                 equal1 = torch.sum(torch.ne(mask1,mask2)).item()
                 print(equal1)
