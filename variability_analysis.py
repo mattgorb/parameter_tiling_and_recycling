@@ -94,14 +94,14 @@ def main_worker(args):
             #assert(mod1.weight==mod2.weight)
             mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
             mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
-            print("{}, {}".format(n1,m1))
-            print(mask1.flatten().numel())
+            #print("{}, {}".format(n1,m1))
+            #print(mask1.flatten().numel())
             equal=torch.sum(torch.eq(mask1,mask2))
-            print(equal)
             print(f'% equal: {float(equal.item()/mask1.flatten().numel())}')
-
-
-
+            equal=torch.sum(torch.eq(torch.nonzero(mask1==0),torch.nonzero(mask2==0)))
+            print(f'% zero equal: {float(equal.item()/mask1.flatten().numel())}')
+            equal=torch.sum(torch.eq(torch.nonzero(mask1==1),torch.nonzero(mask2==1)))
+            print(f'% one equal: {float(equal.item()/mask1.flatten().numel())}')
 
 
 
