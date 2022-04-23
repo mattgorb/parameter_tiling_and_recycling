@@ -111,6 +111,8 @@ def main_worker(args):
         cols.append('total weights')
         vals.append(total_weights)
 
+        print(cols)
+        print(vals)
         if results_df is None:
             results_df=pd.DataFrame(vals, columns = cols)
         else:
