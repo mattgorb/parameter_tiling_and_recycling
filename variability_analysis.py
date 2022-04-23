@@ -63,6 +63,7 @@ def main_worker(args):
     combos=list(itertools.combinations(model_num, 2))
 
     results_df=None
+    count=0
     for combo in combos:
         # create model and optimizer
         weightfile1=weight_files[combo[0]]
@@ -123,6 +124,9 @@ def main_worker(args):
             results_df=results_df.append(df)
 
         print(results_df)
+
+        count+=1
+        print(f"Finished {count} of {len(combos)} combinations ")
         results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}.csv')
     results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}.csv')
 
