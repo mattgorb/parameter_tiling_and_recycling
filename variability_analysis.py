@@ -102,7 +102,7 @@ def main_worker(args):
                 print(f'% equal: {float(equal/mask1.flatten().numel())}')
 
                 cols.append(n1)
-                vals.append(float(equal/mask1.flatten().numel()))
+                vals.append((float(equal/mask1.flatten().numel())))
                 total_same+=equal
                 total_weights+=mask1.flatten().numel()
 
