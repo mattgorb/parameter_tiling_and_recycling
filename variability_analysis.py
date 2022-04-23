@@ -98,10 +98,10 @@ def main_worker(args):
             #print(mask1.flatten().numel())
             equal=torch.sum(torch.eq(mask1,mask2))
             print(f'% equal: {float(equal.item()/mask1.flatten().numel())}')
-            print(mask1.flatten()[:5])
+            '''print(mask1.flatten()[:5])
             print(mask2.flatten()[:5])
-            print(torch.eq(mask1,mask2).flatten()[:5])
-            sys.exit()
+            print(torch.eq(mask1,mask2).flatten()[:5])'''
+            #sys.exit()
 
             '''equal=torch.sum(torch.eq(torch.nonzero(mask1==0),torch.nonzero(mask2==0)))
             print(f'% zero equal: {float(equal.item()/mask1.flatten().numel())}')
