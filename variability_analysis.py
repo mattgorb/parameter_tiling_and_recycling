@@ -57,8 +57,9 @@ def main_worker(args):
     print(args.config)
     sys.exit()
 
-    weight_files=['/s/luffy/b/nobackup/mgorb/runs/conv6-kn-biprop-var/baseline/prune_rate=0.5/checkpoints/model_best.pth']+\
-                 [f'/s/luffy/b/nobackup/mgorb/runs/conv6-kn-biprop-var/baseline/prune_rate=0.5/{i}/checkpoints/model_best.pth' for i in range(14)]
+    weight_files=[f'/s/luffy/b/nobackup/mgorb/runs/{args.config}/baseline/prune_rate=0.5/checkpoints/model_best.pth']+\
+                 [f'/s/luffy/b/nobackup/mgorb/runs/{args.config}/baseline/prune_rate=0.5/{i}/checkpoints/model_best.pth' for i in range(14)]
+
     model_num=[i for i in range(len(weight_files))]
     combos=list(itertools.combinations(model_num, 2))
 
@@ -123,8 +124,8 @@ def main_worker(args):
             results_df=results_df.append(df)
 
         print(results_df)
-        results_df.to_csv('model_combos.csv')
-    results_df.to_csv('model_combos.csv')
+        results_df.to_csv(f'model_combos_{args.config}.csv')
+    results_df.to_csv(f'model_combos_{args.config}.csv')
 
 
 
