@@ -90,6 +90,7 @@ def main_worker(args):
 
 
         if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
+            print(torch.all(mod1.weight.eq(mod2.weight)))
             assert(mod1.weight==mod2.weight)
             mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
             mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
