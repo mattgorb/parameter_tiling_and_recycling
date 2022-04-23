@@ -52,8 +52,10 @@ def main_worker(args):
         print('Use only one of rerand_iter_freq and rerand_epoch_freq')
 
     # create model and optimizer
-    model = get_model(args)
-    model,device = set_gpu(args, model)
+    model1 = get_model(args)
+    model1,device1 = set_gpu(args, model)
+
+    model2=get_model(args)
     model2, device2 = set_gpu(args, model)
 
     set_seed(args.seed)
@@ -67,7 +69,7 @@ def main_worker(args):
         criterion = LabelSmoothing(smoothing=args.label_smoothing)
 
     if args.pretrained:
-        pretrained(args.pretrained, model)
+        pretrained(args.pretrained, model1)
 
         acc1, acc5 = validate(
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
@@ -79,17 +81,15 @@ def main_worker(args):
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
 
+    model.eval()
 
-        for n, m in model.named_modules():
-            print(n)
-            if isinstance(m, SubnetConvEdgePopup) or isinstance(m,SubnetConvBiprop):
-                #m.set_subnet()
-                print('heeree')
-                print(n)
-                print(m)
-                sys.exit()
-            #mask1=m.GetSubnetEdgePopup.apply(m.clamped_scores, m.prune_rate)
-            #print(mask1)
+    for n, m in model.named_modules():
+        print(n)
+        if isinstance(m, SubnetConvEdgePopup) or isinstance(m,SubnetConvBiprop):
+            #m.set_subnet()
+
+            mask1=m.GetSubnetEdgePopup.apply(m.clamped_scores, m.prune_rate)
+            print(mask1)
 
 
 
