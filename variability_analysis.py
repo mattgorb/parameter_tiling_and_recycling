@@ -81,17 +81,11 @@ def main_worker(args):
 
         for n, m in model.named_modules():
             print(n)
+            mask1=m.GetSubnetEdgePopup.apply(m.clamped_scores, m.prune_rate)
+            print(mask1)
+        #if isinstance(m, FixedSubnetConv):
+            #m.set_subnet()
 
-    # Data loading code
-    if args.evaluate:
-        #acc1, acc5 = validate(
-            #data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
-        #)
-        checkpoint=torch.load(args.pretrained)
-        print("EPOCH: {}".format(checkpoint['epoch']))
-        print("ACC: {}".format(checkpoint['best_acc1']))
-        print('here')
-        return
 
 
 
