@@ -72,13 +72,13 @@ def main_worker(args):
         pretrained(args.pretrained, model1)
 
         acc1, acc5 = validate(
-            data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
+            data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch
         )
 
         pretrained(args.pretrained2, model2)
 
         acc1, acc5 = validate(
-            data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
+            data.val_loader, model2, criterion, args, writer=None, epoch=args.start_epoch
         )
 
     model1.eval()
