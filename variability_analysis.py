@@ -90,6 +90,7 @@ def main_worker(args):
 
         #sys.exit()
         print(n1)
+        print(mod1)
         if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
             print(mod1.weight.flatten()[:5])
             print(mod2.weight.flatten()[:5])
