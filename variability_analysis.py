@@ -22,7 +22,7 @@ from utils.net_utils import (
     rerandomize_model
 )
 from utils.schedulers import get_policy
-
+import itertools
 
 from args import args
 import importlib
@@ -51,63 +51,71 @@ def main_worker(args):
     if args.rerand_iter_freq is not None and args.rerand_epoch_freq is not None:
         print('Use only one of rerand_iter_freq and rerand_epoch_freq')
 
-    # create model and optimizer
-    model1 = get_model(args)
-    model1,device = set_gpu(args, model1)
-
-    model2=get_model(args)
-    model2, _ = set_gpu(args, model2)
-
     set_seed(args.seed)
-
     data = get_dataset(args)
+    criterion = nn.CrossEntropyLoss().to(device)
 
 
-    if args.label_smoothing is None:
-        criterion = nn.CrossEntropyLoss().to(device)
-    else:
-        criterion = LabelSmoothing(smoothing=args.label_smoothing)
+    weight_files=['/s/luffy/b/nobackup/mgorb/runs/conv6-kn-biprop-var/baseline/prune_rate=0.5/checkpoints/model_best.pth']+\
+                 [f'/s/luffy/b/nobackup/mgorb/runs/conv6-kn-biprop-var/baseline/prune_rate=0.5/{i}/checkpoints/model_best.pth' for i in range(14)]
+    model_num=[i for i in range(len(weight_files))]
+    combos=list(itertools.combinations(model_num, 2))
 
-    if args.pretrained:
-        pretrained(args.pretrained, model1)
+    results_df=None
+    for combo in combos:
+        # create model and optimizer
+        weightfile1=weight_files[combo[0]]
+        weightfile2=weight_files[combo[1]]
+        model1 = get_model(args)
+        model1,device = set_gpu(args, model1)
 
-        acc1, acc5 = validate(
-            data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch
-        )
+        model2=get_model(args)
+        model2, _ = set_gpu(args, model2)
 
-        pretrained(args.pretrained2, model2)
+        pretrained(weightfile1, model1)
+        acc1, acc5 = validate(data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch )
 
-        acc1, acc5 = validate(
-            data.val_loader, model2, criterion, args, writer=None, epoch=args.start_epoch
-        )
+        pretrained(weightfile2, model2)
+        acc1, acc5 = validate(data.val_loader, model2, criterion, args, writer=None, epoch=args.start_epoch)
 
-    model1.eval()
-    model2.eval()
+        model1.eval()
+        model2.eval()
 
-    for m1,m2 in zip(model1.named_modules(), model2.named_modules()):
-        n1,mod1=m1
-        n2,mod2=m2
+        total_weights=0
+        total_same=0
+
+        cols=['model_combo']
+        vals=[combo]
+        for m1,m2 in zip(model1.named_modules(), model2.named_modules()):
+            n1,mod1=m1
+            n2,mod2=m2
 
 
-        if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
-            assert(torch.all(mod1.weight.eq(mod2.weight)))
-            #assert(mod1.weight==mod2.weight)
-            mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
-            mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
-            #print("{}, {}".format(n1,m1))
-            #print(mask1.flatten().numel())
-            equal=torch.sum(torch.eq(mask1,mask2))
-            print(f'% equal: {float(equal.item()/mask1.flatten().numel())}')
-            '''print(mask1.flatten()[:5])
-            print(mask2.flatten()[:5])
-            print(torch.eq(mask1,mask2).flatten()[:5])'''
-            #sys.exit()
+            if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
+                assert(torch.all(mod1.weight.eq(mod2.weight)))
+                mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
+                mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
 
-            '''equal=torch.sum(torch.eq(torch.nonzero(mask1==0),torch.nonzero(mask2==0)))
-            print(f'% zero equal: {float(equal.item()/mask1.flatten().numel())}')
-            equal=torch.sum(torch.eq(torch.nonzero(mask1==1),torch.nonzero(mask2==1)))
-            print(f'% one equal: {float(equal.item()/mask1.flatten().numel())}')'''
+                equal=torch.sum(torch.eq(mask1,mask2)).item()
+                print(f'% equal: {float(equal/mask1.flatten().numel())}')
 
+                cols.append(n1)
+                vals.append(float(equal/mask1.flatten().numel()))
+                total_same+=equal
+                total_weights+=mask1.flatten().numel()
+
+        cols.append('total same')
+        vals.apppend(total_same)
+        cols.append('total weights')
+        vals.append(total_weights)
+
+        if results_df is None:
+            results_df=pd.DataFrame(vals, columns = cols)
+        else:
+            df = pd.DataFrame(vals, columns=cols)
+            results_df=results_df.append(df)
+
+        print(results_df.head())
 
 
 
