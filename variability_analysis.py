@@ -95,10 +95,10 @@ def main_worker(args):
             mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
             mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
             print("{}, {}".format(n1,m1))
-            print(mask1.flatten().size())
+            print(mask1.flatten().numel())
             equal=torch.sum(torch.eq(mask1,mask2))
             print(equal)
-            print(f'% equal: {equal/mask1.flatten().size()}')
+            print(f'% equal: {equal/mask1.flatten().numel()}')
 
 
 
