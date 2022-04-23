@@ -100,7 +100,7 @@ def main_worker(args):
             print(f'% equal: {float(equal.item()/mask1.flatten().numel())}')
             print(mask1.flatten()[:5])
             print(mask2.flatten()[:5])
-            print(equal.flatten()[:5])
+            print(torch.eq(mask1,mask2).flatten()[:5])
             sys.exit()
 
             '''equal=torch.sum(torch.eq(torch.nonzero(mask1==0),torch.nonzero(mask2==0)))
