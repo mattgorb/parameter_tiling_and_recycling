@@ -105,15 +105,16 @@ def main_worker(args):
 
                 equal1 = torch.sum(torch.eq(torch.nonzero(mask1==1), torch.nonzero(mask2==1))).item()
                 print(equal1)
+                print('hrs')
                 equal1 = torch.sum(torch.ne(mask1,mask2)).item()
                 print(equal1)
                 equal1 = torch.sum(torch.eq(torch.nonzero(mask1==0), torch.nonzero(mask2==0))).item()
                 print(equal1)
                 print(mask1.flatten().numel())
-                sys.exit()
+
 
                 print(f'% equal: {float(equal/mask1.flatten().numel())}')
-
+                sys.exit()
                 cols.append(n1)
                 vals.append((float(equal/mask1.flatten().numel())))
                 total_same+=equal
