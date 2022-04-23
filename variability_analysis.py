@@ -82,7 +82,7 @@ def main_worker(args):
 
         for n, m in model.named_modules():
             print(n)
-            if isinstance(m, SubnetConvEdgePopup) or isinstancee(m,SubnetConvBiprop):
+            if isinstance(m, SubnetConvEdgePopup) or isinstance(m,SubnetConvBiprop):
                 #m.set_subnet()
                 print('heeree')
                 print(n)
