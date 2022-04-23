@@ -114,9 +114,9 @@ def main_worker(args):
         print(cols)
         print(vals)
         if results_df is None:
-            results_df=pd.DataFrame(vals, columns = cols)
+            results_df=pd.DataFrame([vals], columns = cols)
         else:
-            df = pd.DataFrame(vals, columns=cols)
+            df = pd.DataFrame([vals], columns=cols)
             results_df=results_df.append(df)
 
         print(results_df.head())
