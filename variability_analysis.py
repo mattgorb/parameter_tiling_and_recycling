@@ -107,7 +107,7 @@ def main_worker(args):
                 total_weights+=mask1.flatten().numel()
 
         cols.append('total same')
-        vals.apppend(total_same)
+        vals.append(total_same)
         cols.append('total weights')
         vals.append(total_weights)
 
