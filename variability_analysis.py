@@ -102,9 +102,9 @@ def main_worker(args):
             if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
                 assert(torch.all(mod1.weight.eq(mod2.weight)))
                 if isinstance(mod1,SubnetConvBiprop):
-                    mask1=torch.where(GetQuantnet_binary.apply(mod1.clamped_scores, mod1.weight, mod1.prune_rate)>0,1,0)
-                    mask2=torch.where(GetQuantnet_binary.apply(mod2.clamped_scores, mod2.weight, mod2.prune_rate)>0,1,0)
-
+                    mask1=GetQuantnet_binary.apply(mod1.clamped_scores, mod1.weight, mod1.prune_rate)
+                    mask2=GetQuantnet_binary.apply(mod2.clamped_scores, mod2.weight, mod2.prune_rate)
+                    mask1=torch.where(mask1>0,1,0)
                 else:
                     mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
                     mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
