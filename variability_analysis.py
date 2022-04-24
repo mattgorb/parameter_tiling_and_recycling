@@ -123,7 +123,7 @@ def main_worker(args):
                 total_jaccard+=(equal_jaccard+not_equal)
                 total_ones_jaccard+=equal_jaccard
 
-        sys.exit()
+
         cols.append('total_same')
         vals.append(total_same)
         cols.append('total_weights')
