@@ -5,8 +5,8 @@ from scipy.spatial.distance import pdist,squareform
 import numpy as np
 from matplotlib.colors import ListedColormap
 
-jaccard=True
-prune_rate=None
+jaccard=False
+prune_rate=0.5
 if jaccard:
     col='jaccard_total'
     savefile=f'tables/heatmap_jaccard_{prune_rate}.pdf'
@@ -80,6 +80,6 @@ ax.set_xlabel('Score Parameter Seed Number', fontsize=18)
 ax.set_ylabel('Edge-Popup', fontsize=26)
 #ax.set(xlabel='Score Parameter Seed Number\ncommon xlabel', ylabel='Edge-Popup\nScore Parameter Seed Number', fontsize=18)
 #f.set_axis_labels(None, 'Values')
-
-plt.tight_layout()#rect=[0,.1,1,1]
+plt.tight_layout(rect=[0,-.08,1,1])
+#plt.tight_layout()#rect=[0,.1,1,1]
 plt.savefig(savefile)
