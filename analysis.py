@@ -56,99 +56,57 @@ def main_worker(args):
 
     print(args.config)
 
-    weight_files=[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/checkpoints/model_best.pth']+\
-                 [f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/{i}/checkpoints/model_best.pth' for i in range(4)]
-
-    model_num=[i for i in range(len(weight_files))]
-    combos=list(itertools.combinations(model_num, 2))
-
     results_df=None
     count=0
-    for combo in combos:
-        # create model and optimizer
-        weightfile1=weight_files[combo[0]]
-        weightfile2=weight_files[combo[1]]
-        model1 = get_model(args)
-        model1,device = set_gpu(args, model1)
 
-        model2=get_model(args)
-        model2, _ = set_gpu(args, model2)
+    # create model and optimizer
+    weightfile1=weight_files[combo[0]]
+    weightfile2=weight_files[combo[1]]
+    model1 = get_model(args)
+    model1,device = set_gpu(args, model1)
 
-        criterion = nn.CrossEntropyLoss().to(device)
+    model2=get_model(args)
+    model2, _ = set_gpu(args, model2)
 
-        pretrained(weightfile1, model1)
-        acc1, acc5 = validate(data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch )
+    criterion = nn.CrossEntropyLoss().to(device)
 
-        pretrained(weightfile2, model2)
-        acc1, acc5 = validate(data.val_loader, model2, criterion, args, writer=None, epoch=args.start_epoch)
+    pretrained(weightfile1, model1)
+    acc1, acc5 = validate(data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch )
 
-        model1.eval()
-        model2.eval()
+    pretrained(weightfile2, model2)
+    acc1, acc5 = validate(data.val_loader, model2, criterion, args, writer=None, epoch=args.start_epoch)
 
-        total_jaccard=0
-        total_ones_jaccard=0
-        total_weights=0
-        total_same=0
+    model1.eval()
+    model2.eval()
 
-        cols=['model_combo']
-        vals=[combo]
-        for m1,m2 in zip(model1.named_modules(), model2.named_modules()):
-            n1,mod1=m1
-            n2,mod2=m2
+    for m1,m2 in zip(model1.named_modules(), model2.named_modules()):
+        n1,mod1=m1
+        n2,mod2=m2
 
 
-            if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
-                assert(torch.all(mod1.weight.eq(mod2.weight)))
-                mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
-                mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
-                print(n1)
-                print(mod1.weight.size())
-                equal=torch.sum(torch.eq(mask1,mask2)).item()
-                print(equal)
-
-                equal_jaccard  = torch.sum((mask1==1) & (mask2==1)).item()
-                not_equal = torch.sum(torch.ne(mask1,mask2)).item()
-
-                print(f'% equal: {float(equal/mask1.flatten().numel())}')
-
-                cols.append(n1+str('_pctsame'))
-                vals.append((float(equal/mask1.flatten().numel())))
-
-                cols.append(n1+str('_jaccard'))
-                vals.append((float(equal_jaccard/(equal_jaccard+not_equal))))
-
-                total_same+=equal
-                total_weights+=mask1.flatten().numel()
-
-                total_jaccard+=(equal_jaccard+not_equal)
-                total_ones_jaccard+=equal_jaccard
-
-        sys.exit()
-        cols.append('total_same')
-        vals.append(total_same)
-        cols.append('total_weights')
-        vals.append(total_weights)
-        cols.append('total_ones_same')
-        vals.append(total_ones_jaccard)
+        if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
+            assert(torch.all(mod1.weight.eq(mod2.weight)))
+            mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
+            mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
 
 
-        cols.append('percent_same_total')
-        vals.append((float(total_same/total_weights)))
 
-        cols.append('jaccard_total')
-        vals.append((float(total_ones_jaccard/(total_ones_jaccard+total_jaccard))))
+    cols.append('percent_same_total')
+    vals.append((float(total_same/total_weights)))
 
-        if results_df is None:
-            results_df=pd.DataFrame([vals], columns = cols)
-        else:
-            df = pd.DataFrame([vals], columns=cols)
-            results_df=results_df.append(df)
+    cols.append('jaccard_total')
+    vals.append((float(total_ones_jaccard/(total_ones_jaccard+total_jaccard))))
 
-        print(results_df)
+    if results_df is None:
+        results_df=pd.DataFrame([vals], columns = cols)
+    else:
+        df = pd.DataFrame([vals], columns=cols)
+        results_df=results_df.append(df)
 
-        count+=1
-        print(f"Finished {count} of {len(combos)} combinations ")
-        results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}_{args.prune_rate}.csv')
+    print(results_df)
+
+    count+=1
+    print(f"Finished {count} of {len(combos)} combinations ")
     results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}_{args.prune_rate}.csv')
 
 
