@@ -3,8 +3,8 @@ import seaborn as sns
 import pandas as pd
 from seaborn import lineplot,scatterplot
 
-jaccard=False
-prune_rate=0.5
+jaccard=True
+prune_rate=0.25
 if jaccard:
     #col='jaccard_total'
     savefile=f'tables/masks_graph_jaccard_{prune_rate}.pdf'

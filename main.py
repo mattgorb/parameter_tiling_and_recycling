@@ -42,14 +42,16 @@ def main():
         print(arch)
         if 'Wide' in arch:
 
-            for wm in [.25,.5,1,2]:
+            for wm in [0.1,.25,.5,1,2]:
                 args.width_mult=wm
                 print('width mult')
                 print(wm)
                 model = get_model(args)
                 pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+                print('params:')
                 print(pytorch_total_params)
         else:
+            continue
             model = get_model(args)
             pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             print(pytorch_total_params)

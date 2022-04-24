@@ -5,7 +5,7 @@ from scipy.spatial.distance import pdist,squareform
 import numpy as np
 from matplotlib.colors import ListedColormap
 
-jaccard=False
+jaccard=True
 prune_rate=0.5
 if jaccard:
     col='jaccard_total'
@@ -66,7 +66,7 @@ if not jaccard:
     #cbar.set_label("% Matching Masks",size=16)
     cbar.set_ticklabels([f'{round(min_val1*100,3)}%' ,f'{round(max_val1*100,3)}%'])
 else:
-    cbar.set_ticklabels([f'{round(min_val1 , 4)}%', f'{round(max_val1 , 4)}%'])
+    cbar.set_ticklabels([f'{round(min_val1 , 4)}', f'{round(max_val1 , 4)}'])
 cbar = ax.collections[1].colorbar
 cbar.ax.tick_params(labelsize=18)
 cbar.set_ticks([min_val2,  max_val2])
@@ -74,7 +74,7 @@ if not jaccard:
     #cbar.set_label("% Matching Masks, test", size=16)
     cbar.set_ticklabels([f'{round(min_val2*100,3)}%',f'{round(max_val2*100,3)}%'])
 else:
-    cbar.set_ticklabels([f'{round(min_val2,4)}%',f'{round(max_val2,4)}%'])
+    cbar.set_ticklabels([f'{round(min_val2,4)}',f'{round(max_val2,4)}'])
 ax.set_title('Biprop', fontsize=26)
 ax.set_xlabel('Score Parameter Seed Number', fontsize=18)
 ax.set_ylabel('Edge-Popup', fontsize=26)

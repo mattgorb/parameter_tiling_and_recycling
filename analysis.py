@@ -60,35 +60,24 @@ def main_worker(args):
     count=0
 
     # create model and optimizer
-    weightfile1=weight_files[combo[0]]
-    weightfile2=weight_files[combo[1]]
-    model1 = get_model(args)
-    model1,device = set_gpu(args, model1)
+    weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-sc-epu/baseline/prune_rate=0.5/0/checkpoints/model_best.pth'
 
-    model2=get_model(args)
-    model2, _ = set_gpu(args, model2)
+    model = get_model(args)
+    model,device = set_gpu(args, model1)
+
+
 
     criterion = nn.CrossEntropyLoss().to(device)
 
     pretrained(weightfile1, model1)
     acc1, acc5 = validate(data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch )
 
-    pretrained(weightfile2, model2)
-    acc1, acc5 = validate(data.val_loader, model2, criterion, args, writer=None, epoch=args.start_epoch)
+    model.eval()
 
-    model1.eval()
-    model2.eval()
+    for name,mod in model.named_modules():
 
-    for m1,m2 in zip(model1.named_modules(), model2.named_modules()):
-        n1,mod1=m1
-        n2,mod2=m2
-
-
-        if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
-            assert(torch.all(mod1.weight.eq(mod2.weight)))
-            mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
-            mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
-
+        if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop):
+            print('herr')
 
 
     cols.append('percent_same_total')
