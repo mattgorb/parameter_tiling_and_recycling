@@ -101,7 +101,8 @@ def main_worker(args):
                 assert(torch.all(mod1.weight.eq(mod2.weight)))
                 mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
                 mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
-
+                print(n1)
+                print(mod1.weight.size())
                 equal=torch.sum(torch.eq(mask1,mask2)).item()
                 print(equal)
 
@@ -122,7 +123,7 @@ def main_worker(args):
                 total_jaccard+=(equal_jaccard+not_equal)
                 total_ones_jaccard+=equal_jaccard
 
-
+        sys.exit()
         cols.append('total_same')
         vals.append(total_same)
         cols.append('total_weights')
@@ -147,8 +148,8 @@ def main_worker(args):
 
         count+=1
         print(f"Finished {count} of {len(combos)} combinations ")
-        results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}.csv')
-    results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}.csv')
+        results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}_{args.prune_rate}.csv')
+    results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}_{args.prune_rate}.csv')
 
 
 
