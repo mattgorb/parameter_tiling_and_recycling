@@ -106,14 +106,12 @@ def main_worker(args):
                     mask2=GetQuantnet_binary.apply(mod2.clamped_scores, mod2.weight, mod2.prune_rate)
                     y = torch.ones_like(mask1)
                     mask1=torch.where(mask1>0,y,mask1)
+                    mask2=torch.where(mask2>0,y,mask2)
                 else:
                     mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
                     mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
                     sys.exit()
                 print(n1)
-
-                print(mask1)
-                sys.exit()
                 equal=torch.sum(torch.eq(mask1,mask2)).item()
                 print(equal)
 
