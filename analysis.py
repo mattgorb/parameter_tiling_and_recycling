@@ -74,7 +74,7 @@ def main_worker(args):
 
     criterion = nn.CrossEntropyLoss().to(device)
 
-    pretrained(args.pretrained, model)
+    #pretrained(args.pretrained, model)
     acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
 
     model.eval()
@@ -107,14 +107,13 @@ def main_worker(args):
             print(torch.norm(weights_with_mask).item())
 
         if isinstance(mod, nn.Conv2d):
-            '''print(name)
-            weight_flat = mod.weight.flatten()
+            print(name)
+            '''weight_flat = mod.weight.flatten()
             half=int(weight_flat.numel()*0.5)
             vals, idx = weight_flat.abs().sort(descending=True)
-            print(vals[-10:])
-            print(vals[:10])
             top=vals[:half]
             print(torch.norm(top).item())'''
+            print(torch.norm(mod.weight))
 
             print()
 
