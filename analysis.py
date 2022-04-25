@@ -113,7 +113,7 @@ def main_worker(args):
             vals, idx = weight_flat.abs().sort(descending=True)
             top=vals[:half]
             print(torch.norm(top).item())'''
-            print(torch.norm(mod.weight))
+            print(torch.norm(mod.weight).item())
 
             print()
 
