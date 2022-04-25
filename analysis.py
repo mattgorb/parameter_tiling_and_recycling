@@ -70,7 +70,7 @@ def main_worker(args):
 
     #--config configs/cifar10/conv8/conv8-dense-kn.yaml
     #dense=True
-    #weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-dense-kn/baseline/prune_rate=0.0/2/checkpoints/model_best.pth'
+    weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-dense-kn/baseline/prune_rate=0.0/2/checkpoints/model_best.pth'
     model = get_model(args)
     model,device = set_gpu(args, model)
 
@@ -103,7 +103,8 @@ def main_worker(args):
             #print(torch.nonzero(weights_with_mask<0).size())
 
         if isinstance(mod, nn.Conv2d):
-            print()
+            print(name)
+            print(torch.nonzero(mod.weight>0).size()[0]/mod.weight.numel())
         #else:
             #print('dense')
 
