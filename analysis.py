@@ -99,12 +99,14 @@ def main_worker(args):
             print(torch.norm(weights_with_mask).item())
 
         if isinstance(mod, nn.Conv2d):
-            '''print(name)
+            print(name)
             weight_flat = mod.weight.flatten()
             half=int(weight_flat.numel()*0.5)
             vals, idx = weight_flat.abs().sort(descending=True)
+            print(vals[-10:])
+            print(vals[:10])
             top=vals[:half]
-            print(torch.norm(top).item())'''
+            print(torch.norm(top).item())
 
             print()
 
