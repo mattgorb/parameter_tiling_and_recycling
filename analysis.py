@@ -103,7 +103,7 @@ def main_worker(args):
             #print(torch.nonzero(weights_with_mask<0).size())
 
         if isinstance(mod, nn.Conv2d):
-            print('here')
+
             print(name)
             print(torch.nonzero(mod.weight>0).size()[0]/mod.weight.numel())
         #else:
