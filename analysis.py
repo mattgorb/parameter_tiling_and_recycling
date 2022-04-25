@@ -82,6 +82,8 @@ def main_worker(args):
     for name,mod in model.named_modules():
 
         if isinstance(mod, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop):
+            print(torch.norm(mod.weight))
+            continue
             if isinstance(mod, SubnetConvBiprop):
                 mask1 = GetQuantnet_binary.apply(mod.clamped_scores, mod.weight, mod.prune_rate)
                 #y = torch.ones_like(mask1)
