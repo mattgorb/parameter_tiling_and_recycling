@@ -101,7 +101,16 @@ def main_worker(args):
         if isinstance(mod, nn.Conv2d):
 
             print(name)
-            print(torch.norm(mod.weight).item())
+            weight_flat = mod.weight.flatten()
+            half=int(weight_flat.numel()*0.5)
+
+
+            vals, idx = weight_flat.sort(descending=True)
+            print(vals)
+            print(vals[:half].size())
+            sys.exit()
+
+            #print(torch.norm(mod.weight.flatten()).item())
             print()
         #else:
             #print('dense')
