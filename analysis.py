@@ -106,9 +106,8 @@ def main_worker(args):
 
 
             vals, idx = weight_flat.sort(descending=True)
-            print(vals)
-            print(vals[:half].size())
-            sys.exit()
+            top=vals[:half]
+            print(torch.norm(top))
 
             #print(torch.norm(mod.weight.flatten()).item())
             print()
