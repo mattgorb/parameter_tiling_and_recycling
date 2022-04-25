@@ -98,10 +98,10 @@ def main_worker(args):
             #print(mod.weight.size())
 
             mask1_ind=torch.nonzero(mask1.flatten())
-            print(mask1)
-            weights_with_mask=mod.weight.flatten()[mask1_ind]
-            print(weights_with_mask.size())
-            sys.exit()
+            #print(mask1)
+            weights_with_mask=(mod.weight*mask1).flatten()[mask1_ind]
+            #print(weights_with_mask.size())
+            #sys.exit()
             print(name)
             #print(torch.nonzero(weights_with_mask>0).size()[0]/weights_with_mask.numel())
             print(torch.norm(weights_with_mask).item())
