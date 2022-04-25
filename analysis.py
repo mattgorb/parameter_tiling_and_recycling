@@ -100,8 +100,8 @@ def main_worker(args):
 
         if isinstance(mod, nn.Conv2d):
 
-            #print(name)
-            #print(torch.nonzero(mod.weight>0).size()[0]/mod.weight.numel())
+            print(name)
+            print(torch.norm(weights_with_mask).item())
             print()
         #else:
             #print('dense')
