@@ -89,9 +89,10 @@ def main_worker(args):
             mask1=torch.nonzero(mask1.flatten())
             #print(mask1.size())
             weights_with_mask=mod.weight.flatten()[mask1]
+            print(name)
             print(torch.norm(weights_with_mask))
-        else:
-            print('dense')
+        #else:
+            #print('dense')
 
 
 
