@@ -61,13 +61,15 @@ def main_worker(args):
 
     # create model and optimizer
     #--config configs/cifar10/conv8/conv8-sc-epu.yaml
-    weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-sc-epu/baseline/prune_rate=0.5/0/checkpoints/model_best.pth'
+    #weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-sc-epu/baseline/prune_rate=0.5/0/checkpoints/model_best.pth'
     # --config configs/cifar10/conv8/conv8-sc-epu-iterand.yaml
     weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-sc-epu-iterand/baseline/prune_rate=0.5/0/checkpoints/model_best.pth'
     #--config configs/cifar10/conv8/conv8-sc-epu-recycle.yaml
-    weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-sc-epu-recycle/baseline/prune_rate=0.5/0/checkpoints/model_best.pth'
+    #weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-sc-epu-recycle/baseline/prune_rate=0.5/0/checkpoints/model_best.pth'
+
     #--config configs/cifar10/conv8/conv8-dense-kn.yaml
-    weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-dense-kn/baseline/prune_rate=0.0/2/checkpoints/model_best.pth'
+    #dense=True
+    #weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-dense-kn/baseline/prune_rate=0.0/2/checkpoints/model_best.pth'
     model = get_model(args)
     model,device = set_gpu(args, model)
 
