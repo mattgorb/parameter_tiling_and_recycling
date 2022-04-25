@@ -13,7 +13,7 @@ import torch.utils.data
 import torch.utils.data.distributed
 from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop, GetSubnetEdgePopup, GetQuantnet_binary
 
-import torch.nn as nn
+
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import (
     freeze_model_weights,
@@ -99,8 +99,8 @@ def main_worker(args):
 
             weights_with_mask=mod.weight.flatten()[mask1]
             print(name)
-            print(torch.count_nonzero(weights_with_mask>0))
-            print(torch.count_nonzero(weights_with_mask<0))
+            print(torch.nonzero(weights_with_mask>0).size())
+            print(torch.nonzero(weights_with_mask<0).size())
 
         if isinstance(mod, nn.Conv2d):
             print()
