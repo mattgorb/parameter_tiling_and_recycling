@@ -87,7 +87,7 @@ def main_worker(args):
             vals, idx = weight_flat.abs().sort(descending=False)
             top = vals[:half]
             print(torch.norm(top).item())'''
-            continue
+            #scontinue
             if isinstance(mod, SubnetConvBiprop):
                 mask1 = GetQuantnet_binary.apply(mod.clamped_scores, mod.weight, mod.prune_rate)
                 #y = torch.ones_like(mask1)
