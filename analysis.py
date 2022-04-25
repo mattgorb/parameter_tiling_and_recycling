@@ -95,11 +95,12 @@ def main_worker(args):
             #print(mod.weight.size())
 
             mask1=torch.nonzero(mask1.flatten())
-            print(mask1.size())
-            print(mask1)
-            sys.exit()
+
             weights_with_mask=mod.weight.flatten()[mask1]
             print(name)
+            print(weights_with_mask.size())
+            print(weights_with_mask[:5])
+            sys.exit()
             print(torch.norm(weights_with_mask))
         #else:
             #print('dense')
