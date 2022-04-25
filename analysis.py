@@ -101,7 +101,7 @@ def main_worker(args):
         if isinstance(mod, nn.Conv2d):
 
             print(name)
-            print(torch.norm(weights_with_mask).item())
+            print(torch.norm(mod.weight).item())
             print()
         #else:
             #print('dense')
