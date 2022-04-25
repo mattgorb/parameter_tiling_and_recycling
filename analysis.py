@@ -76,9 +76,18 @@ def main_worker(args):
 
     for name,mod in model.named_modules():
 
-        if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop):
-            print('herr')
-
+        if isinstance(mod, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop):
+            if isinstance(mod, SubnetConvBiprop):
+                mask1 = GetQuantnet_binary.apply(mod.clamped_scores, mod.weight, mod.prune_rate)
+                #y = torch.ones_like(mask1)
+                #mask1 = torch.where(mask1 > 0, y, mask1)
+                #mask2 = torch.where(mask2 > 0, y, mask2)
+            else:
+                mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
+        print(mod.weight.size())
+        weights_with_mask=mod.weight[mask1]
+        print(weights_with_mask.size())
+        sys.exit()
 
     cols.append('percent_same_total')
     vals.append((float(total_same/total_weights)))

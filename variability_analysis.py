@@ -102,6 +102,8 @@ def main_worker(args):
             if isinstance(mod1, SubnetConvEdgePopup) or isinstance(mod1,SubnetConvBiprop):
                 assert(torch.all(mod1.weight.eq(mod2.weight)))
                 if isinstance(mod1,SubnetConvBiprop):
+                    '''this part is unnecessary for biprop.  simply passing its scores
+                    through edgepopup yields the same results.  '''
                     mask1=GetQuantnet_binary.apply(mod1.clamped_scores, mod1.weight, mod1.prune_rate)
                     mask2=GetQuantnet_binary.apply(mod2.clamped_scores, mod2.weight, mod2.prune_rate)
                     y = torch.ones_like(mask1)
@@ -110,7 +112,6 @@ def main_worker(args):
                 else:
                     mask1=GetSubnetEdgePopup.apply(mod1.clamped_scores, mod1.prune_rate)
                     mask2=GetSubnetEdgePopup.apply(mod2.clamped_scores, mod2.prune_rate)
-                    sys.exit()
                 print(n1)
                 equal=torch.sum(torch.eq(mask1,mask2)).item()
                 print(equal)
