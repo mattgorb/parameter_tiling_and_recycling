@@ -85,6 +85,7 @@ def main_worker(args):
             else:
                 mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
             print(mod.weight.size())
+            mask1=torch.nonzero(mask1)
             weights_with_mask=mod.weight[mask1]
             print(weights_with_mask.size())
             sys.exit()
