@@ -84,16 +84,11 @@ def main_worker(args):
                 #mask2 = torch.where(mask2 > 0, y, mask2)
             else:
                 mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
-        print(mod.weight.size())
-        weights_with_mask=mod.weight[mask1]
-        print(weights_with_mask.size())
-        sys.exit()
+            print(mod.weight.size())
+            weights_with_mask=mod.weight[mask1]
+            print(weights_with_mask.size())
+            sys.exit()
 
-    cols.append('percent_same_total')
-    vals.append((float(total_same/total_weights)))
-
-    cols.append('jaccard_total')
-    vals.append((float(total_ones_jaccard/(total_ones_jaccard+total_jaccard))))
 
     if results_df is None:
         results_df=pd.DataFrame([vals], columns = cols)
