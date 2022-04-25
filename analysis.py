@@ -96,7 +96,7 @@ def main_worker(args):
             weights_with_mask=mod.weight.flatten()[mask1]
             print(name)
             #print(torch.nonzero(weights_with_mask>0).size()[0]/weights_with_mask.numel())
-            print(torch.norm(weights_with_mask))
+            print(torch.norm(weights_with_mask).item())
 
         if isinstance(mod, nn.Conv2d):
 
