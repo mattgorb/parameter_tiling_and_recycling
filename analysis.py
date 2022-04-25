@@ -105,10 +105,10 @@ def main_worker(args):
             half=int(weight_flat.numel()*0.5)
 
 
-            vals, idx = weight_flat.sort(descending=True)
+            vals, idx = weight_flat.abs().sort(descending=True)
             top=vals[:half]
             print(torch.norm(top))
-            print(torch.norm(vals))
+            #print(torch.norm(vals))
 
             #print(torch.norm(mod.weight.flatten()).item())
             print()
