@@ -89,8 +89,9 @@ def main_worker(args):
             mask1=torch.nonzero(mask1.flatten())
             print(mask1.size())
             weights_with_mask=mod.weight.flatten()[mask1]
-            print(weights_with_mask.size())
-            sys.exit()
+            torch.norm(weights_with_mask)
+        else:
+            print('dense')
 
 
     if results_df is None:
