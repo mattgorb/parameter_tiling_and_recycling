@@ -69,7 +69,7 @@ def main_worker(args):
 
     criterion = nn.CrossEntropyLoss().to(device)
 
-    pretrained(weightfile1, model1)
+    pretrained(weightfile, model)
     acc1, acc5 = validate(data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch )
 
     model.eval()
