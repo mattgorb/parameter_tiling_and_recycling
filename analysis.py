@@ -82,7 +82,11 @@ def main_worker(args):
     for name,mod in model.named_modules():
 
         if isinstance(mod, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop):
-            print(torch.norm(mod.weight))
+            weight_flat = mod.weight.flatten()
+            half = int(weight_flat.numel() * 0.5)
+            vals, idx = weight_flat.abs().sort(descending=True)
+            top = vals[:half]
+            print(torch.norm(top).item())
             continue
             if isinstance(mod, SubnetConvBiprop):
                 mask1 = GetQuantnet_binary.apply(mod.clamped_scores, mod.weight, mod.prune_rate)
