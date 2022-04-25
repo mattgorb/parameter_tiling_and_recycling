@@ -84,27 +84,14 @@ def main_worker(args):
                 #mask2 = torch.where(mask2 > 0, y, mask2)
             else:
                 mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
-            print(mod.weight.size())
+            #print(mod.weight.size())
 
             mask1=torch.nonzero(mask1.flatten())
-            print(mask1.size())
+            #print(mask1.size())
             weights_with_mask=mod.weight.flatten()[mask1]
-            torch.norm(weights_with_mask)
+            print(torch.norm(weights_with_mask))
         else:
             print('dense')
-
-
-    if results_df is None:
-        results_df=pd.DataFrame([vals], columns = cols)
-    else:
-        df = pd.DataFrame([vals], columns=cols)
-        results_df=results_df.append(df)
-
-    print(results_df)
-
-    count+=1
-    print(f"Finished {count} of {len(combos)} combinations ")
-    results_df.to_csv(f'model_combos_{args.config.split("/")[-1].split(".")[0]}_{args.prune_rate}.csv')
 
 
 
