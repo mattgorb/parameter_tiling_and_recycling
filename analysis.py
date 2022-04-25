@@ -63,14 +63,14 @@ def main_worker(args):
     weightfile='/s/luffy/b/nobackup/mgorb/runs/conv8-sc-epu/baseline/prune_rate=0.5/0/checkpoints/model_best.pth'
 
     model = get_model(args)
-    model,device = set_gpu(args, model1)
+    model,device = set_gpu(args, model)
 
 
 
     criterion = nn.CrossEntropyLoss().to(device)
 
     pretrained(weightfile, model)
-    acc1, acc5 = validate(data.val_loader, model1, criterion, args, writer=None, epoch=args.start_epoch )
+    acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
 
     model.eval()
 
