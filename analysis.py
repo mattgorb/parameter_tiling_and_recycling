@@ -57,8 +57,6 @@ def main_worker(args):
 
     print(args.config)
 
-    results_df=None
-    count=0
 
     # create model and optimizer
     #--config configs/cifar10/conv8/conv8-sc-epu.yaml
@@ -106,6 +104,7 @@ def main_worker(args):
 
             print(name)
             print(torch.nonzero(mod.weight>0).size()[0]/mod.weight.numel())
+            print()
         #else:
             #print('dense')
 
