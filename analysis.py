@@ -82,12 +82,6 @@ def main_worker(args):
     for name,mod in model.named_modules():
 
         if isinstance(mod, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop):
-            '''weight_flat = mod.weight.flatten()
-            half = int(weight_flat.numel() * 0.5)
-            vals, idx = weight_flat.abs().sort(descending=False)
-            top = vals[:half]
-            print(torch.norm(mod.weight.flatten()).item())
-            continue'''
             if isinstance(mod, SubnetConvBiprop):
                 mask1 = GetQuantnet_binary.apply(mod.clamped_scores, mod.weight, mod.prune_rate)
                 #y = torch.ones_like(mask1)
@@ -99,10 +93,8 @@ def main_worker(args):
             #print(mod.weight.size())
 
             mask1_ind=torch.nonzero(mask1.flatten())
-            #ssprint(mask1)
-            weights_with_mask=(mod.weight).flatten()[mask1_ind]
-            #print(weights_with_mask.size())
-            #sys.exit()
+            weights_with_mask=mod.weight.flatten()[mask1_ind]
+
             print(name)
             #print(torch.nonzero(weights_with_mask>0).size()[0]/weights_with_mask.numel())
             print(torch.norm(weights_with_mask).item())
@@ -114,7 +106,7 @@ def main_worker(args):
             vals, idx = weight_flat.abs().sort(descending=True)
             top=vals[:half]
             print(torch.norm(top).item())'''
-            #print(torch.norm(mod.weight).item())
+            print(torch.norm(mod.weight).item())
 
             print()
 
