@@ -10,7 +10,7 @@ name: baseline
 optimizer: sgd
 lr: 0.1
 lr_policy: cosine_lr
-warmup_length: 5
+
 # ===== Network training config ===== #
 epochs: 250
 weight_decay: 0.0005
@@ -19,22 +19,18 @@ batch_size: 128
 
 # ===== Sparsity =========== #
 conv_type: SubnetConvBiprop
-bn_type: LearnedBatchNorm
+bn_type: NonAffineBatchNorm
 freeze_weights: True
-prune_rate: -1
-
-rerand_epoch_freq: 1
-rerand_rate: 0.1
-rerand_type: iterand
 
 weight_init: kaiming_normal
 scale_fan: True
 score_init: None
 weight_seed: 0
 score_seed: 0
-
-
-
-gpu: 5
+prune_rate: -1
+rerand_epoch_freq: 1
+rerand_rate: 0.1
+rerand_type: iterand
+gpu: 0
 # ===== Hardware setup ===== #
 workers: 4
