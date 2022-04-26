@@ -95,6 +95,7 @@ def main_worker(args):
                 #mask2 = torch.where(mask2 > 0, y, mask2)
             else:
                 mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
+                sys.exit()
             #print(mod.weight.size())
 
             mask1_ind=torch.nonzero(mask1.flatten())
