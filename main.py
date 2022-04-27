@@ -340,10 +340,7 @@ def get_model(args,):
     if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' or args.conv_type=='SubnetConvSSTL':
         freeze_model_weights(model)
 
-    for n, m in model.named_parameters():
-        print(n)
-        print(m.size())
-    sys.exit()
+
 
     return model
 

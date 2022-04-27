@@ -28,7 +28,7 @@ score_init: None
 weight_seed: 0
 score_seed: 0
 prune_rate: -1
-rerand_epoch_freq: 10
+rerand_epoch_freq: 20
 rerand_rate: 0.2
 rerand_type: recycle
 gpu: 0
