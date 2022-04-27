@@ -10,7 +10,7 @@ name: baseline
 optimizer: sgd
 lr: 0.1
 lr_policy: cosine_lr
-warmup_length: 5
+
 # ===== Network training config ===== #
 epochs: 250
 weight_decay: 0.0005
@@ -19,7 +19,7 @@ batch_size: 128
 
 # ===== Sparsity =========== #
 conv_type: SubnetConvEdgePopup
-bn_type: LearnedBatchNorm
+bn_type: NonAffineBatchNorm
 freeze_weights: True
 prune_rate: -1
 
