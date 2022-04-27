@@ -342,7 +342,7 @@ def get_model(args,):
 
     for n, m in model.named_parameters():
         print(n)
-        print(m)
+        print(m.size())
     sys.exit()
 
     return model
