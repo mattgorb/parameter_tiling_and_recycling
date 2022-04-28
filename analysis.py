@@ -119,7 +119,7 @@ def set_gpu(args, model):
         model = model.to(device)
 
         #elif args.multigpu:
-        #model = torch.nn.DataParallel(model, device_ids=[4, 5, 6, 7])
+    model = torch.nn.DataParallel(model, device_ids=[4, 5, 6, 7])
 
 
     cudnn.benchmark = True
