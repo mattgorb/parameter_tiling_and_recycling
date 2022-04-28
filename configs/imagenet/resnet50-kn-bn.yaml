@@ -20,17 +20,17 @@ batch_size: 100
 label_smoothing: 0.1
 
 # ===== Sparsity =========== #
-conv_type: SubnetConv
+conv_type: SubnetConvBiprop
 bn_type: LearnedBatchNorm
 freeze_weights: True
 prune_rate: -1 # Override
 init: kaiming_normal
 mode: fan_in
 nonlinearity: relu
-scale_fan: True
+#scale_fan: True
 
 #multigpu: Falsse
-gpu: 4,5,6,7
+gpu: 1,2,3,4,5,6,7
 
 
 # ===== Hardware setup ===== #
