@@ -6,6 +6,7 @@ import math
 
 import torch
 import torch.nn as nn
+from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop, GetSubnetEdgePopup, GetQuantnet_binary
 
 
 def save_checkpoint(state, is_best, filename="checkpoint.pth", save=False):
