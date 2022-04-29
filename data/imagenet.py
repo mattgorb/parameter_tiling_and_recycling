@@ -5,6 +5,8 @@ from torchvision import datasets, transforms
 
 import torch.multiprocessing
 
+from torch.utils.data.distributed import DistributedSampler
+
 #torch.multiprocessing.set_sharing_strategy("file_system")
 
 class ImageNet:
@@ -38,8 +40,13 @@ class ImageNet:
             ),
         )
 
+        if args.multigpu:
+            sampler = DistributedSampler(dataset)
+        else:
+            sampler=None
+
         self.train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=args.batch_size, shuffle=True, **kwargs
+            train_dataset, batch_size=args.batch_size, shuffle=True, sampler=sampler,'**kwargs
         )
 
         self.val_loader = torch.utils.data.DataLoader(
@@ -55,6 +62,6 @@ class ImageNet:
                 ),
             ),
             batch_size=args.batch_size,
-            shuffle=False,
+            shuffle=False,sampler=sampler,
             **kwargs
         )
