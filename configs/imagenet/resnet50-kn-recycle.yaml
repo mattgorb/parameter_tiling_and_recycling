@@ -1,0 +1,42 @@
+# Architecture
+arch: ResNet50
+name: baseline
+
+# ===== Dataset ===== #
+data: /s/luffy/b/nobackup/mgorb/
+set: ImageNet
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.256
+lr_policy: cosine_lr
+warmup_length: 5
+
+# ===== Network training config ===== #
+epochs: 100
+weight_decay: 0.000030517578125
+momentum: 0.875
+batch_size: 256
+
+#label_smoothing: 0.1
+
+# ===== Sparsity =========== #
+conv_type: SubnetConvBiprop
+bn_type: NonAffineBatchNorm
+freeze_weights: True
+prune_rate: -1 # Override
+init: kaiming_normal
+mode: fan_in
+nonlinearity: relu
+#scale_fan: True
+
+rerand_epoch_freq: 1
+rerand_rate: 0.2
+rerand_type: recycle
+
+#multigpu: Falsse
+#gpu: 1,2,3,4,5,6,7
+
+
+# ===== Hardware setup ===== #
+workers: 40

@@ -30,8 +30,9 @@ def get_lr(optimizer):
 def rerandomize_model(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
-            print(f"==> Rerandomizing weights of {n} with {args.rerand_rate} and {args.rerand_type}")
-            m.rerandomize()
+            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop):
+                print(f"==> Rerandomizing weights of {n} with {args.rerand_rate} and {args.rerand_type}")
+                m.rerandomize()
 
 
 
