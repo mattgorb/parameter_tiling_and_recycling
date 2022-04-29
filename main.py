@@ -257,7 +257,7 @@ def set_gpu(args, model):
 
         os.environ['MASTER_ADDR'] = 'localhost'
         os.environ['MASTER_PORT'] = '12355'
-        torch.distributed.init_process_group(backend='nccl', world_size=8)
+        torch.distributed.init_process_group(backend='nccl', rank=3, world_size=8)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
 
         #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
