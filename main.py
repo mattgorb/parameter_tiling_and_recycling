@@ -22,7 +22,7 @@ from utils.net_utils import (
     rerandomize_model
 )
 from utils.schedulers import get_policy
-
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 from args import args
 import importlib
@@ -249,7 +249,7 @@ def set_gpu(args, model):
         device=torch.device('cuda:{}'.format(args.gpu))
         model = model.to(device)
     if args.multigpu:
-        model = torch.nn.DataParallel(model, device_ids=[3,4, 5, 6, 7])
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[3,4, 5, 6, 7])
     cudnn.benchmark = True
     return model, device
 
