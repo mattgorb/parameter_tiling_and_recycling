@@ -251,6 +251,8 @@ def set_gpu(args, model):
         model = model.to(device)
     if args.multigpu:
         print('set distributed data parallel')
+        os.environ['MASTER_ADDR'] = 'localhost'
+        os.environ['MASTER_PORT'] = '12355'
         torch.distributed.init_process_group(backend='nccl', rank=0, world_size=8)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
         #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
@@ -465,3 +467,4 @@ def write_result_to_csv(**kwargs):
 if __name__ == "__main__":
     main()
 
+    torch.distributed.destroy_process_group()
