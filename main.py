@@ -247,12 +247,13 @@ def set_gpu(args, model):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
     if args.gpu is not None:
         device=torch.device('cuda:{}'.format(args.gpu))
-        if args.multigpu is None:
-            model = model.to(device)
+        #if args.multigpu is None:
+        model = model.to(device)
     if args.multigpu:
         print('set distributed data parallel')
         #model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[1,2,3,4, 5, 6, 7])
         model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
+    model = model.to(device)
     cudnn.benchmark = True
     return model, device
 
