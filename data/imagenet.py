@@ -40,10 +40,10 @@ class ImageNet:
             ),
         )
 
-        if args.multigpu:
-            sampler = DistributedSampler(dataset)
-        else:
-            sampler=None
+        #if args.multigpu:
+            #sampler = DistributedSampler(dataset)
+        #else:
+        sampler=None
 
         self.train_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=args.batch_size, shuffle=True, sampler=sampler,**kwargs
