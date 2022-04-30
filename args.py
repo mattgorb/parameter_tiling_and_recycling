@@ -118,6 +118,9 @@ def parse_arguments():
         type=str,
         help="use pre-trained model",
     )
+    parser.add_argument("--local_rank", type=int, default=0)
+    # This needs to be explicitly passed in
+    parser.add_argument("--local_world_size", type=int, default=1)
 
     parser.add_argument(
         "--multigpu",
