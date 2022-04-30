@@ -75,7 +75,7 @@ def main_worker(args,ngpus_per_node):
 
     # create model and optimizer
     model = get_model(args)
-    model,device = set_gpu(args, model)
+    model,device = set_gpu(args, model,ngpus_per_node)
 
     set_seed(args.seed)
 
@@ -265,7 +265,7 @@ def get_trainer(args):
     return trainer.train, trainer.validate, trainer.modifier, trainer.validate_pretrained
 
 
-def set_gpu(args, model):
+def set_gpu(args, model,ngpus_per_node):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
     if args.gpu is not None:
         device=torch.device('cuda:{}'.format(args.gpu))
@@ -503,6 +503,6 @@ if __name__ == "__main__":
     #master_addr = '127.0.0.1'
     #master_port = find_free_port()
     ngpus_per_node = torch.cuda.device_count()
-    mp.spawn(main(), nprocs=ngpus_per_node, arg=(args,ngpus_per_node,))
+    mp.spawn(main(), nprocs=ngpus_per_node, arg=(ngpus_per_node,))
 
 
