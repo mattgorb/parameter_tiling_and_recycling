@@ -37,8 +37,8 @@ def main_worker(gpu, args,ngpus_per_node):
     #args.gpu = None
     train, validate, modifier,validate_pretrained = get_trainer(args)
     args.gpu=gpu
-    print(gpu)
-    sys.exit()
+    print(f' GPU {gpu}')
+    #sys.exit()
     if args.gpu is not None:
         print("Use GPU: {} for training".format(args.gpu))
 
