@@ -31,7 +31,7 @@ import data
 import models
 from utils.initializations import set_seed
 
-def main():
+def main(ngpus_per_node):
 
     print('args: {}'.format(args))
 
@@ -60,10 +60,10 @@ def main():
     set_seed(args.seed)
 
     # Simply call main_worker function
-    main_worker(args)
+    main_worker(args,ngpus_per_node)
 
 
-def main_worker(args):
+def main_worker(args,ngpus_per_node):
     #args.gpu = None
     train, validate, modifier,validate_pretrained = get_trainer(args)
 
@@ -275,9 +275,10 @@ def set_gpu(args, model):
         print('set distributed data parallel')
         #os.environ['MASTER_ADDR'] = 'localhost'
         #os.environ['MASTER_PORT'] = '12355'
-        torch.distributed.init_process_group(backend="nccl")#, #init_method="env://",
-                                             #world_size=1,
-                                             #rank=0)
+        args.rank = args.rank * ngpus_per_node + gpu
+        torch.distributed.init_process_group(backend="nccl", #init_method="env://",
+                                             world_size=8,
+                                             rank=args.rank)
         torch.cuda.set_device(0)
         args.workers = 4
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
@@ -497,10 +498,11 @@ def write_result_to_csv(**kwargs):
 
 if __name__ == "__main__":
     #main()
-    world_size = 4
+    #world_size = 4
     import torch.multiprocessing as mp
     #master_addr = '127.0.0.1'
     #master_port = find_free_port()
-    mp.spawn(main(), nprocs=world_size)
+    ngpus_per_node = torch.cuda.device_count()
+    mp.spawn(main(), nprocs=ngpus_per_node, arg=(ngpus_per_node,))
 
 
