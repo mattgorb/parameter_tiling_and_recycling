@@ -246,7 +246,7 @@ def set_gpu(args, model,ngpus_per_node):
         print('set distributed data parallel')
         #os.environ['MASTER_ADDR'] = 'localhost'
         #os.environ['MASTER_PORT'] = '12355'
-        args.rank = args.rank * ngpus_per_node + gpu
+        args.rank = args.rank * ngpus_per_node + args.gpu
         torch.distributed.init_process_group(backend="nccl", #init_method="env://",
                                              world_size=args.world_size,
                                              rank=args.rank)
