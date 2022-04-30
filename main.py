@@ -285,6 +285,8 @@ def set_gpu(args, model):
         args.workers = 4
         #sys.exit()
         #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
+        print(torch.distributed.get_world_size())
+        print(torch.distributed.get_rank())
 
     print(device)
     #model = model.to(device)
