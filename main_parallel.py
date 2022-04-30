@@ -31,42 +31,14 @@ import data
 import models
 from utils.initializations import set_seed
 
-def main():
-
-    print('args: {}'.format(args))
-
-    '''args.conv_type='DenseConv'
-    args.bn_type='NonAffineBatchNorm'
-    for arch in models.__all__:
-        args.arch=arch
-        print(arch)
-        if 'Wide' in arch:
-
-            for wm in [0.1,.25,.5,1,2]:
-                args.width_mult=wm
-                print('width mult')
-                print(wm)
-                model = get_model(args)
-                pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-                print('params:')
-                print(pytorch_total_params)
-        else:
-            continue
-            model = get_model(args)
-            pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-            print(pytorch_total_params)
-    sys.exit()'''
-
-    set_seed(args.seed)
-
-    # Simply call main_worker function
-    main_worker(args,)
 
 
-def main_worker(args,):
+def main_worker(gpu,args,ngpus_per_node):
     #args.gpu = None
     train, validate, modifier,validate_pretrained = get_trainer(args)
 
+    print(gpu)
+    sys.exit()
     if args.gpu is not None:
         print("Use GPU: {} for training".format(args.gpu))
 
@@ -118,48 +90,53 @@ def main_worker(args,):
 
         return
 
-    # Set up directories
-    run_base_dir, ckpt_base_dir, log_base_dir = get_directories(args)
-    args.ckpt_base_dir = ckpt_base_dir
+    if  args.rank == 0:
+        # Set up directories
+        run_base_dir, ckpt_base_dir, log_base_dir = get_directories(args)
+        args.ckpt_base_dir = ckpt_base_dir
 
-
-    writer = SummaryWriter(log_dir=log_base_dir)
-
+    if  args.rank == 0:
+        writer = SummaryWriter(log_dir=log_base_dir)
+    else:
+        writer = None
 
     epoch_time = AverageMeter("epoch_time", ":.4f", write_avg=False)
     validation_time = AverageMeter("validation_time", ":.4f", write_avg=False)
     train_time = AverageMeter("train_time", ":.4f", write_avg=False)
 
-
-    progress_overall = ProgressMeter(
-        1, [epoch_time, validation_time, train_time], prefix="Overall Timing"
-    )
+    if  args.rank == 0:
+        progress_overall = ProgressMeter(
+            1, [epoch_time, validation_time, train_time], prefix="Overall Timing"
+        )
 
     end_epoch = time.time()
     args.start_epoch = args.start_epoch or 0
     acc1 = None
 
     # Save the initial state
-
-    save_checkpoint(
-        {
-            "epoch": 0,
-            "arch": args.arch,
-            "state_dict": model.state_dict(),
-            "best_acc1": best_acc1,
-            "best_acc5": best_acc5,
-            "best_train_acc1": best_train_acc1,
-            "best_train_acc5": best_train_acc5,
-            "optimizer": optimizer.state_dict(),
-            "curr_acc1": acc1 if acc1 else "Not evaluated",
-        },
-        False,
-        filename=ckpt_base_dir / f"initial.state",
-        save=False,
-    )
+    if  args.rank == 0:
+        save_checkpoint(
+            {
+                "epoch": 0,
+                "arch": args.arch,
+                "state_dict": model.state_dict(),
+                "best_acc1": best_acc1,
+                "best_acc5": best_acc5,
+                "best_train_acc1": best_train_acc1,
+                "best_train_acc5": best_train_acc5,
+                "optimizer": optimizer.state_dict(),
+                "curr_acc1": acc1 if acc1 else "Not evaluated",
+            },
+            False,
+            filename=ckpt_base_dir / f"initial.state",
+            save=False,
+        )
 
     # Start training
     for epoch in range(args.start_epoch, args.epochs):
+        if args.multigpu:
+            data.train_sampler.set_epoch(epoch)
+            data.val_sampler.set_epoch(epoch)
 
         lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
@@ -177,7 +154,11 @@ def main_worker(args,):
         start_validation = time.time()
 
 
-        acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+        if  args.rank == 0:
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+        else:
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch)
+
 
         validation_time.update((time.time() - start_validation) / 60)
 
@@ -194,55 +175,55 @@ def main_worker(args,):
         best_train_acc5 = max(train_acc5, best_train_acc5)
 
         save = ((epoch % args.save_every) == 0) and args.save_every > 0
+        if args.rank == 0:
+            if is_best or save or epoch == args.epochs - 1:
+                if is_best:
+                    print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
 
-        if is_best or save or epoch == args.epochs - 1:
-            if is_best:
-                print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
-
-            save_checkpoint(
-                {
-                    "epoch": epoch + 1,
-                    "arch": args.arch,
-                    "state_dict": model.state_dict(),
-                    "best_acc1": best_acc1,
-                    "best_acc5": best_acc5,
-                    "best_train_acc1": best_train_acc1,
-                    "best_train_acc5": best_train_acc5,
-                    "optimizer": optimizer.state_dict(),
-                    "curr_acc1": acc1,
-                    "curr_acc5": acc5,
-                },
-                is_best,
-                filename=ckpt_base_dir / f"epoch_{epoch}.state",
-                save=save,
-            )
+                save_checkpoint(
+                    {
+                        "epoch": epoch + 1,
+                        "arch": args.arch,
+                        "state_dict": model.state_dict(),
+                        "best_acc1": best_acc1,
+                        "best_acc5": best_acc5,
+                        "best_train_acc1": best_train_acc1,
+                        "best_train_acc5": best_train_acc5,
+                        "optimizer": optimizer.state_dict(),
+                        "curr_acc1": acc1,
+                        "curr_acc5": acc5,
+                    },
+                    is_best,
+                    filename=ckpt_base_dir / f"epoch_{epoch}.state",
+                    save=save,
+                )
 
             epoch_time.update((time.time() - end_epoch) / 60)
             progress_overall.display(epoch)
             progress_overall.write_to_tensorboard(
                 writer, prefix="diagnostics", global_step=epoch
             )
+        if args.rank == 0:
+            if args.rerand_epoch_freq is not None:
+                if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
+                    rerandomize_model(model, args)
 
-        if args.rerand_epoch_freq is not None:
-            if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
-                rerandomize_model(model, args)
-
-
-        writer.add_scalar("test/lr", cur_lr, epoch)
+        if args.rank == 0:
+            writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
 
-
-    write_result_to_csv(
-        best_acc1=best_acc1,
-        best_acc5=best_acc5,
-        best_train_acc1=best_train_acc1,
-        best_train_acc5=best_train_acc5,
-        prune_rate=args.prune_rate,
-        curr_acc1=acc1,
-        curr_acc5=acc5,
-        base_config=args.config,
-        name=args.name,
-    )
+    if  args.rank == 0:
+        write_result_to_csv(
+            best_acc1=best_acc1,
+            best_acc5=best_acc5,
+            best_train_acc1=best_train_acc1,
+            best_train_acc5=best_train_acc5,
+            prune_rate=args.prune_rate,
+            curr_acc1=acc1,
+            curr_acc5=acc5,
+            base_config=args.config,
+            name=args.name,
+        )
 
     config = pathlib.Path(args.config).stem
     print(f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}")
@@ -261,7 +242,23 @@ def set_gpu(args, model,ngpus_per_node):
         device=torch.device('cuda:{}'.format(args.gpu))
         #if args.multigpu is None:
         model = model.to(device)
-
+    if args.multigpu:
+        print('set distributed data parallel')
+        #os.environ['MASTER_ADDR'] = 'localhost'
+        #os.environ['MASTER_PORT'] = '12355'
+        args.rank = args.rank * ngpus_per_node + gpu
+        torch.distributed.init_process_group(backend="nccl", #init_method="env://",
+                                             world_size=8,
+                                             rank=args.rank)
+        torch.cuda.set_device(0)
+        args.workers = 4
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
+        args.batch_size = int(args.batch_size/4 )
+        args.workers = 4
+        #sys.exit()
+        #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
+        print(torch.distributed.get_world_size())
+        print(torch.distributed.get_rank())
 
     print(device)
     #model = model.to(device)
@@ -471,6 +468,12 @@ def write_result_to_csv(**kwargs):
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    #world_size = 4
+    import torch.multiprocessing as mp
+    #master_addr = '127.0.0.1'
+    #master_port = find_free_port()
+    ngpus_per_node = torch.cuda.device_count()
+    mp.spawn(main(), nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
 
 
