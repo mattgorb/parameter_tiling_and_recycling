@@ -33,7 +33,7 @@ from utils.initializations import set_seed
 
 
 
-def main_worker(gpu,args,ngpus_per_node):
+def main_worker(args,ngpus_per_node):
     #args.gpu = None
     train, validate, modifier,validate_pretrained = get_trainer(args)
 
@@ -474,6 +474,6 @@ if __name__ == "__main__":
 
     args.world_size = ngpus_per_node * args.world_size
     ngpus_per_node = torch.cuda.device_count()
-    mp.spawn(main(), nprocs=ngpus_per_node, args=(gpu,args,ngpus_per_node,))
+    mp.spawn(main(), nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
 
 
