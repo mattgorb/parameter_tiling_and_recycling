@@ -265,6 +265,7 @@ def set_gpu(args, model):
         args.batch_size = int(args.batch_size / 8)
         args.workers = int((args.workers + 8 - 1) / 8)
         #sys.exit()
+        print('here')
         #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
 
     print(device)
