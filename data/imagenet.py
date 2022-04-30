@@ -52,14 +52,14 @@ class ImageNet:
         )
 
         if args.multigpu:
-            self.train_sampler = DistributedSampler(train_dataset,num_replicas=1, rank=0,)
-            self.val_sampler = DistributedSampler(val_dataset,num_replicas=1, rank=0,)
+            self.train_sampler = DistributedSampler(train_dataset,num_replicas=4, rank=0,)
+            self.val_sampler = DistributedSampler(val_dataset,num_replicas=4, rank=0,)
         else:
             self.train_sampler=None
             self.val_sampler=None
 
         self.train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=args.batch_size, shuffle=True, sampler=self.train_sampler,**kwargs
+            train_dataset, batch_size=args.batch_size, shuffle=False, sampler=self.train_sampler,**kwargs
         )
 
         self.val_loader = torch.utils.data.DataLoader(
