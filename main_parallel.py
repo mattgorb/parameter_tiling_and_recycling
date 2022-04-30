@@ -241,6 +241,7 @@ def set_gpu(args, model,ngpus_per_node):
         device=torch.device('cuda:{}'.format(args.gpu))
     if args.multigpu:
         print('set distributed data parallel')
+        print(args.gpu)
         args.rank = args.rank * ngpus_per_node + args.gpu
         torch.distributed.init_process_group(backend="nccl",
                                              world_size=args.world_size,
