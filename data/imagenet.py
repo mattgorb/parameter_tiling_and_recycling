@@ -52,8 +52,8 @@ class ImageNet:
         )
 
         if args.multigpu:
-            self.train_sampler = DistributedSampler(train_dataset,num_replicas=8, rank=0,)
-            self.val_sampler = DistributedSampler(val_dataset,num_replicas=8, rank=0,)
+            self.train_sampler = DistributedSampler(train_dataset)#,num_replicas=8, rank=0,)
+            self.val_sampler = DistributedSampler(val_dataset)#,num_replicas=8, rank=0,)
         else:
             self.train_sampler=None
             self.val_sampler=None
