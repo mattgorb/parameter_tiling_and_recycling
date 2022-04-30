@@ -239,28 +239,22 @@ def set_gpu(args, model,ngpus_per_node):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
     if args.gpu is not None:
         device=torch.device('cuda:{}'.format(args.gpu))
-        #if args.multigpu is None:
-        model = model.to(device)
     if args.multigpu:
         print('set distributed data parallel')
-        #os.environ['MASTER_ADDR'] = 'localhost'
-        #os.environ['MASTER_PORT'] = '12355'
         args.rank = args.rank * ngpus_per_node + args.gpu
-        torch.distributed.init_process_group(backend="nccl", #init_method="env://",
+        torch.distributed.init_process_group(backend="nccl",
                                              world_size=args.world_size,
                                              rank=args.rank)
 
         args.batch_size = int(args.batch_size / ngpus_per_node)
         args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],)
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
 
-        #sys.exit()
-        #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
         print(torch.distributed.get_world_size())
         print(torch.distributed.get_rank())
 
     print(device)
-    #model = model.to(device)
+    model = model.to(device)
     cudnn.benchmark = True
     return model, device
 

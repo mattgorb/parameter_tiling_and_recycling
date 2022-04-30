@@ -39,4 +39,4 @@ rerand_type: recycle
 
 
 # ===== Hardware setup ===== #
-workers: 1
+workers: 4
