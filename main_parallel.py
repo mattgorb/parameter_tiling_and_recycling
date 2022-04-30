@@ -248,7 +248,7 @@ def set_gpu(args, model,ngpus_per_node):
         #os.environ['MASTER_PORT'] = '12355'
         args.rank = args.rank * ngpus_per_node + gpu
         torch.distributed.init_process_group(backend="nccl", #init_method="env://",
-                                             world_size=8,
+                                             world_size=args.world_size,
                                              rank=args.rank)
         torch.cuda.set_device(0)
         args.workers = 4
@@ -471,9 +471,9 @@ if __name__ == "__main__":
     #main()
     #world_size = 4
     import torch.multiprocessing as mp
-    #master_addr = '127.0.0.1'
-    #master_port = find_free_port()
+
+    args.world_size = ngpus_per_node * args.world_size
     ngpus_per_node = torch.cuda.device_count()
-    mp.spawn(main(), nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
+    mp.spawn(main(), nprocs=ngpus_per_node, args=(gpu,args,ngpus_per_node,))
 
 
