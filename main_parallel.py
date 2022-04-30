@@ -245,7 +245,8 @@ def set_gpu(args, model,ngpus_per_node):
         torch.distributed.init_process_group(backend="nccl",
                                              world_size=args.world_size,
                                              rank=args.rank)
-        model = model.to(device)
+        torch.cuda.set_device(args.gpu)
+        model.cuda(args.gpu)
         args.batch_size = int(args.batch_size / ngpus_per_node)
         args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
