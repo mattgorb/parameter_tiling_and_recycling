@@ -503,6 +503,6 @@ if __name__ == "__main__":
     #master_addr = '127.0.0.1'
     #master_port = find_free_port()
     ngpus_per_node = torch.cuda.device_count()
-    mp.spawn(main(), nprocs=ngpus_per_node, arg=(ngpus_per_node,))
+    mp.spawn(main(), nprocs=ngpus_per_node, arg=(args,ngpus_per_node,))
 
 
