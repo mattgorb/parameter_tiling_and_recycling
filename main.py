@@ -262,6 +262,7 @@ def set_gpu(args, model):
                                              rank=0)
         torch.cuda.set_device(0)
         args.workers = 1
+        print('here2')
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
         args.batch_size = int(args.batch_size / 8)
         args.workers = 1
