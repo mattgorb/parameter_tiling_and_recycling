@@ -280,7 +280,7 @@ def set_gpu(args, model):
                                              #rank=0)
         torch.cuda.set_device(0)
         args.workers = 4
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[0,1],output_device=args.gpu)
         args.batch_size = int(args.batch_size / 4)
         args.workers = 4
         #sys.exit()
