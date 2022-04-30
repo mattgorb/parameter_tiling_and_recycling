@@ -121,8 +121,8 @@ def set_gpu(args, model):
         device=torch.device('cuda:{}'.format(args.gpu))
         model = model.to(device)
 
-        #elif args.multigpu:
-    model = torch.nn.DataParallel(model, device_ids=[4, 5, 6, 7])
+    elif args.multigpu:
+        model = torch.nn.DataParallel(model, device_ids=[4, 5, 6, 7])
 
 
     cudnn.benchmark = True
