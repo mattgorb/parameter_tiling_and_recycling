@@ -471,9 +471,9 @@ if __name__ == "__main__":
     #main()
     #world_size = 4
     import torch.multiprocessing as mp
-
-    args.world_size = ngpus_per_node * args.world_size
     ngpus_per_node = torch.cuda.device_count()
+    args.world_size = ngpus_per_node * args.world_size
+
     mp.spawn(main(), nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
 
 
