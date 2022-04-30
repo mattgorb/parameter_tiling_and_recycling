@@ -474,6 +474,6 @@ if __name__ == "__main__":
     ngpus_per_node = torch.cuda.device_count()
     args.world_size = ngpus_per_node * args.world_size
 
-    mp.spawn(main(), nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
+    mp.spawn(main_worker(), nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
 
 
