@@ -255,8 +255,8 @@ def set_gpu(args, model):
         model = model.to(device)
     if args.multigpu:
         print('set distributed data parallel')
-        os.environ['MASTER_ADDR'] = 'localhost'
-        os.environ['MASTER_PORT'] = '12355'
+        #os.environ['MASTER_ADDR'] = 'localhost'
+        #os.environ['MASTER_PORT'] = '12355'
         torch.distributed.init_process_group(backend="gloo", init_method="env://",
                                              world_size=8,
                                              rank=0)
