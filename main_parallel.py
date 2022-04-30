@@ -90,12 +90,12 @@ def main_worker(gpu, args,ngpus_per_node):
 
         return
 
-    if  args.rank == 0:
+    if args.rank % ngpus_per_node == 0:
         # Set up directories
         run_base_dir, ckpt_base_dir, log_base_dir = get_directories(args)
         args.ckpt_base_dir = ckpt_base_dir
 
-    if  args.rank == 0:
+    if args.rank % ngpus_per_node == 0:
         writer = SummaryWriter(log_dir=log_base_dir)
     else:
         writer = None
@@ -104,7 +104,7 @@ def main_worker(gpu, args,ngpus_per_node):
     validation_time = AverageMeter("validation_time", ":.4f", write_avg=False)
     train_time = AverageMeter("train_time", ":.4f", write_avg=False)
 
-    if  args.rank == 0:
+    if args.rank % ngpus_per_node == 0:
         progress_overall = ProgressMeter(
             1, [epoch_time, validation_time, train_time], prefix="Overall Timing"
         )
@@ -114,7 +114,7 @@ def main_worker(gpu, args,ngpus_per_node):
     acc1 = None
 
     # Save the initial state
-    if  args.rank == 0:
+    if args.rank % ngpus_per_node == 0:
         save_checkpoint(
             {
                 "epoch": 0,
@@ -153,8 +153,7 @@ def main_worker(gpu, args,ngpus_per_node):
         # evaluate on validation set
         start_validation = time.time()
 
-
-        if  args.rank == 0:
+        if args.rank % ngpus_per_node == 0:
             acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
         else:
             acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch)
@@ -175,7 +174,7 @@ def main_worker(gpu, args,ngpus_per_node):
         best_train_acc5 = max(train_acc5, best_train_acc5)
 
         save = ((epoch % args.save_every) == 0) and args.save_every > 0
-        if args.rank == 0:
+        if args.rank % ngpus_per_node == 0:
             if is_best or save or epoch == args.epochs - 1:
                 if is_best:
                     print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
@@ -203,16 +202,16 @@ def main_worker(gpu, args,ngpus_per_node):
             progress_overall.write_to_tensorboard(
                 writer, prefix="diagnostics", global_step=epoch
             )
-        if args.rank == 0:
+        if args.rank % ngpus_per_node == 0:
             if args.rerand_epoch_freq is not None:
                 if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
                     rerandomize_model(model, args)
 
-        if args.rank == 0:
+        if args.rank % ngpus_per_node == 0:
             writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
 
-    if  args.rank == 0:
+    if args.rank % ngpus_per_node == 0:
         write_result_to_csv(
             best_acc1=best_acc1,
             best_acc5=best_acc5,
@@ -250,11 +249,11 @@ def set_gpu(args, model,ngpus_per_node):
         torch.distributed.init_process_group(backend="nccl", #init_method="env://",
                                              world_size=args.world_size,
                                              rank=args.rank)
-        torch.cuda.set_device(0)
-        args.workers = 4
+
+        args.batch_size = int(args.batch_size / ngpus_per_node)
+        args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
-        args.batch_size = int(args.batch_size/4 )
-        args.workers = 4
+
         #sys.exit()
         #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
         print(torch.distributed.get_world_size())
