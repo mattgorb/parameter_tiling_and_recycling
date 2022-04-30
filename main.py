@@ -257,13 +257,14 @@ def set_gpu(args, model):
         print('set distributed data parallel')
         os.environ['MASTER_ADDR'] = 'localhost'
         os.environ['MASTER_PORT'] = '12355'
-        torch.distributed.init_process_group(backend="nccl", init_method="env://",
+        torch.distributed.init_process_group(backend="mpi", init_method="env://",
                                              world_size=8,
                                              rank=0)
         torch.cuda.set_device(0)
+        args.workers = 1
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
         args.batch_size = int(args.batch_size / 8)
-        args.workers = int((args.workers + 8 - 1) / 8)
+        args.workers = 1
         #sys.exit()
         print('here')
         #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
