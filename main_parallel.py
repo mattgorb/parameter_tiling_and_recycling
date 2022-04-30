@@ -33,10 +33,10 @@ from utils.initializations import set_seed
 
 
 
-def main_worker(args,ngpus_per_node):
+def main_worker(gpu, args,ngpus_per_node):
     #args.gpu = None
     train, validate, modifier,validate_pretrained = get_trainer(args)
-
+    args.gpu=gpu
     print(gpu)
     sys.exit()
     if args.gpu is not None:
