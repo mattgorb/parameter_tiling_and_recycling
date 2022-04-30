@@ -39,29 +39,32 @@ class ImageNet:
                 ]
             ),
         )
+        val_dataset=datasets.ImageFolder(
+            valdir,
+            transforms.Compose(
+                [
+                    transforms.Resize(256),
+                    transforms.CenterCrop(224),
+                    transforms.ToTensor(),
+                    normalize,
+                ]
+            ),
+        )
 
-        #if args.multigpu:
-            #sampler = DistributedSampler(dataset)
-        #else:
-        sampler=None
+        if args.multigpu:
+            self.train_sampler = DistributedSampler(train_dataset,num_replicas=8, rank=0,)
+            self.val_sampler = DistributedSampler(val_dataset,num_replicas=8, rank=0,)
+        else:
+            self.train_sampler=None
+            self.val_sampler=None
 
         self.train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=args.batch_size, shuffle=True, sampler=sampler,**kwargs
+            train_dataset, batch_size=args.batch_size, shuffle=True, sampler=self.train_sampler,**kwargs
         )
 
         self.val_loader = torch.utils.data.DataLoader(
-            datasets.ImageFolder(
-                valdir,
-                transforms.Compose(
-                    [
-                        transforms.Resize(256),
-                        transforms.CenterCrop(224),
-                        transforms.ToTensor(),
-                        normalize,
-                    ]
-                ),
-            ),
+            val_dataset,
             batch_size=args.batch_size,
-            shuffle=False,sampler=sampler,
+            shuffle=False,sampler=self.val_sampler,
             **kwargs
         )

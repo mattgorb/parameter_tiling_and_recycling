@@ -154,8 +154,9 @@ def main_worker(args):
 
     # Start training
     for epoch in range(args.start_epoch, args.epochs):
-        #if args.multigpu:
-            #data.train_loader.set_epoch(epoch)
+        if args.multigpu:
+            data.train_sampler.set_epoch(epoch)
+            data.val_sampler.set_epoch(epoch)
 
         lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
@@ -255,12 +256,15 @@ def set_gpu(args, model):
     if args.multigpu:
         print('set distributed data parallel')
 
-        '''os.environ['MASTER_ADDR'] = 'localhost'
-        os.environ['MASTER_PORT'] = '12355'
-        torch.distributed.init_process_group(backend='nccl', rank=3, world_size=8)
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)'''
+        torch.distributed.init_process_group(backend="nccl", init_method="env://",
+                                             world_size=8,
+                                             rank=0)
 
-        model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu],output_device=args.gpu)
+        args.batch_size = int(args.batch_size / 8)
+        args.workers = int((args.workers + 8 - 1) / 8)
+        sys.exit()
+        #model = torch.nn.DataParallel(model)#, device_ids=[1, 2, 3, 4, 5, 6, 7])
 
     print(device)
     #model = model.to(device)
