@@ -227,7 +227,7 @@ def main_worker(gpu, args,ngpus_per_node):
 
 def get_trainer(args):
     print(f"=> Using trainer from trainers.{args.trainer}")
-    trainer = importlib.import_module(f"trainers.{args.trainer}")
+    trainer = importlib.import_module(f"trainers.default_parallel")
 
     return trainer.train, trainer.validate, trainer.modifier, trainer.validate_pretrained
 
