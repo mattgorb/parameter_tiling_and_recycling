@@ -134,9 +134,9 @@ def main_worker(gpu, args,ngpus_per_node):
 
     # Start training
     for epoch in range(args.start_epoch, args.epochs):
-        if args.multigpu:
-            data.train_sampler.set_epoch(epoch)
-            data.val_sampler.set_epoch(epoch)
+
+        data.train_sampler.set_epoch(epoch)
+        data.val_sampler.set_epoch(epoch)
 
         lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
@@ -153,18 +153,15 @@ def main_worker(gpu, args,ngpus_per_node):
         # evaluate on validation set
         start_validation = time.time()
 
-        if args.rank % ngpus_per_node == 0:
-            acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
-        else:
-            acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch)
+        #if args.rank % ngpus_per_node == 0:
+        acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+        #else:
+            #acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch)
 
 
         validation_time.update((time.time() - start_validation) / 60)
 
         print('Current best: {}'.format(best_acc1))
-
-
-
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1

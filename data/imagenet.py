@@ -59,12 +59,12 @@ class ImageNet:
             self.val_sampler=None
 
         self.train_loader = torch.utils.data.DataLoader(
-            train_dataset, pin_memory=True,batch_size=args.batch_size, shuffle=False, sampler=self.train_sampler,**kwargs
+            train_dataset, batch_size=args.batch_size, shuffle=False, sampler=self.train_sampler,**kwargs
         )
 
         self.val_loader = torch.utils.data.DataLoader(
             val_dataset,
-            batch_size=args.batch_size,pin_memory=True,
+            batch_size=args.batch_size,
             shuffle=False,sampler=self.val_sampler,
             **kwargs
         )
