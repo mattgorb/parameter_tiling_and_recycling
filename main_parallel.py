@@ -150,8 +150,10 @@ def main_worker(gpu, args,ngpus_per_node):
         # evaluate on validation set
         start_validation = time.time()
 
-        acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
-
+        if args.rank % ngpus_per_node == 0:
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+        else:
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch)
 
         validation_time.update((time.time() - start_validation) / 60)
 
@@ -188,11 +190,14 @@ def main_worker(gpu, args,ngpus_per_node):
                     save=save,
                 )
 
-            epoch_time.update((time.time() - end_epoch) / 60)
+
             progress_overall.display(epoch)
             progress_overall.write_to_tensorboard(
                 writer, prefix="diagnostics", global_step=epoch
             )
+
+        epoch_time.update((time.time() - end_epoch) / 60)
+
         if args.rank % ngpus_per_node == 0:
             if args.rerand_epoch_freq is not None:
                 if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
@@ -202,6 +207,7 @@ def main_worker(gpu, args,ngpus_per_node):
             writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
         torch.cuda.empty_cache()
+
     if args.rank % ngpus_per_node == 0:
         write_result_to_csv(
             best_acc1=best_acc1,
