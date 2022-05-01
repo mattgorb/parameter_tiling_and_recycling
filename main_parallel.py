@@ -201,7 +201,7 @@ def main_worker(gpu, args,ngpus_per_node):
         if args.rank % ngpus_per_node == 0:
             writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
-
+        torch.cuda.empty_cache()
     if args.rank % ngpus_per_node == 0:
         write_result_to_csv(
             best_acc1=best_acc1,

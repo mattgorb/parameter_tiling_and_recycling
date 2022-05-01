@@ -157,7 +157,7 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = self.fc(x)
-        x = x.view(x.size(0), -1)
+        x = x.contiguous().view(x.size(0), -1)
 
         return x
 
