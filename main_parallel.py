@@ -38,7 +38,6 @@ def main_worker(gpu, args,ngpus_per_node):
     train, validate, modifier,validate_pretrained = get_trainer(args)
     args.gpu=gpu
     print(f' GPU {gpu}')
-    #sys.exit()
     if args.gpu is not None:
         print("Use GPU: {} for training".format(args.gpu))
 
@@ -81,9 +80,7 @@ def main_worker(gpu, args,ngpus_per_node):
 
     # Data loading code
     if args.evaluate:
-        #acc1, acc5 = validate(
-            #data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
-        #)
+
         checkpoint=torch.load(args.pretrained)
         print("EPOCH: {}".format(checkpoint['epoch']))
         print("ACC: {}".format(checkpoint['best_acc1']))
@@ -153,10 +150,7 @@ def main_worker(gpu, args,ngpus_per_node):
         # evaluate on validation set
         start_validation = time.time()
 
-        #if args.rank % ngpus_per_node == 0:
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
-        #else:
-            #acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch)
 
 
         validation_time.update((time.time() - start_validation) / 60)
@@ -457,8 +451,6 @@ def write_result_to_csv(**kwargs):
 
 
 if __name__ == "__main__":
-    #main()
-    #world_size = 4
     import torch.multiprocessing as mp
     ngpus_per_node = torch.cuda.device_count()
     args.world_size = ngpus_per_node * args.world_size
