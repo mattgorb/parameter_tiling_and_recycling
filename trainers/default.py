@@ -11,6 +11,11 @@ __all__ = ["train", "validate", "modifier","validate_pretrained"]
 
 
 def train(train_loader, model, criterion, optimizer, epoch, args, writer):
+    if args.multigpu:
+        from utils.eval_utils import accuracy_parallel as accuracy
+    else:
+        from utils.eval_utils import accuracy
+
     batch_time = AverageMeter("Time", ":6.3f")
     data_time = AverageMeter("Data", ":6.3f")
     losses = AverageMeter("Loss", ":.3f")
@@ -75,6 +80,11 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
 
 def validate(val_loader, model, criterion, args, writer, epoch):
+    if args.multigpu:
+        from utils.eval_utils import accuracy_parallel as accuracy
+    else:
+        from utils.eval_utils import accuracy
+
     # switch to evaluate mode
     model.eval()
 
