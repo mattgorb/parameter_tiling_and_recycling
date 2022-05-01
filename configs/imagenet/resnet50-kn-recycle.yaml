@@ -30,7 +30,7 @@ mode: fan_in
 nonlinearity: relu
 #scale_fan: True
 
-rerand_epoch_freq: 1
+rerand_epoch_freq: 2
 rerand_rate: 0.2
 rerand_type: recycle
 
