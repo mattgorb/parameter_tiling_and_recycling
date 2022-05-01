@@ -120,7 +120,7 @@ def parse_arguments():
     )
     parser.add_argument("--local_rank", type=int, default=0)
     parser.add_argument("--rank", type=int, default=0)
-    parser.add_argument("--world_size", type=int, default=0)
+    parser.add_argument("--world_size", type=int, default=1)
     # This needs to be explicitly passed in
     parser.add_argument("--local_world_size", type=int, default=1)
 
