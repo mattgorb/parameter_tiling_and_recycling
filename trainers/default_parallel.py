@@ -61,7 +61,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         batch_time.update(time.time() - end)
         end = time.time()
 
-        if args.rank % ngpus_per_node == 0:
+        if args.rank:
             if i % args.print_freq == 0:
                 t = (num_batches * epoch + i) * batch_size
                 progress.display(i)
