@@ -159,6 +159,10 @@ def main_worker(gpu, args,ngpus_per_node):
 
         print('Current best: {}'.format(best_acc1))
 
+
+        continue
+
+
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
         best_acc1 = max(acc1, best_acc1)
