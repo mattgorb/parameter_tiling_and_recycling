@@ -170,7 +170,7 @@ def main_worker(gpu, args,ngpus_per_node):
         #best_train_acc5 = max(train_acc5, best_train_acc5)
 
         save = ((epoch % args.save_every) == 0) and args.save_every > 0
-        if args.rank % ngpus_per_node == 0:
+        if args.rank == ngpus_per_node :
             print('Current best: {}'.format(best_acc1))
             print(acc1)
             if is_best or save or epoch == args.epochs - 1:
