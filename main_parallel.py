@@ -160,6 +160,7 @@ def main_worker(gpu, args,ngpus_per_node):
         validation_time.update((time.time() - start_validation) / 60)
 
 
+        sys.exit()
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
@@ -210,7 +211,7 @@ def main_worker(gpu, args,ngpus_per_node):
         end_epoch = time.time()
         torch.cuda.empty_cache()
 
-        sys.exit()
+
 
     if args.rank % ngpus_per_node == 0:
         write_result_to_csv(
