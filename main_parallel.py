@@ -159,7 +159,7 @@ def main_worker(gpu, args,ngpus_per_node):
 
         validation_time.update((time.time() - start_validation) / 60)
 
-        if args.rank % ngpus_per_node == 1:
+        if args.rank == ngpus_per_node :
             print('Current best: {}'.format(best_acc1))
             print(acc1)
 
