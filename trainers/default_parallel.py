@@ -149,8 +149,8 @@ def validate(val_loader, model, criterion, args, writer, epoch):
             if args.rank % args.ngpus_per_node == 0:
                 if i % args.print_freq == 0:
                     progress.display(i)
-
-        progress.display(len(val_loader))
+        if args.rank % args.ngpus_per_node == 0:
+            progress.display(len(val_loader))
 
         if writer is not None:
             progress.write_to_tensorboard(writer, prefix="test", global_step=epoch)
