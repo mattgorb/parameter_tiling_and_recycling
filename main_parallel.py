@@ -464,6 +464,7 @@ def write_result_to_csv(**kwargs):
 if __name__ == "__main__":
     import torch.multiprocessing as mp
     ngpus_per_node = torch.cuda.device_count()
+    args.ngpus_per_node=ngpus_per_node
     args.world_size = ngpus_per_node * args.world_size
 
     mp.spawn(main_worker, nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
