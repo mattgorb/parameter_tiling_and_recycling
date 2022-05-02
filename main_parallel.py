@@ -161,10 +161,6 @@ def main_worker(gpu, args,ngpus_per_node):
 
 
 
-
-        sys.exit()
-
-
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
         best_acc1 = max(acc1, best_acc1)
@@ -213,6 +209,8 @@ def main_worker(gpu, args,ngpus_per_node):
             writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
         torch.cuda.empty_cache()
+
+        sys.exit()
 
     if args.rank % ngpus_per_node == 0:
         write_result_to_csv(
