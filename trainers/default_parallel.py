@@ -146,10 +146,12 @@ def validate(val_loader, model, criterion, args, writer, epoch,ngpus_per_node):
             #batch_time.update(time.time() - end)
             end = time.time()
 
-            print(args.rank)
+
             if args.rank % ngpus_per_node == 0:
                 if i % args.print_freq == 0:
                     progress.display(i)
+        print(args.rank)
+        print(ngpus_per_node)
         if args.rank % ngpus_per_node == 0:
             progress.display(len(val_loader))
             print("Acc@1: {}, Acc@5: {}".format(top1.avg, top5.avg))
