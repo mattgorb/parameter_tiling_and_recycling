@@ -159,13 +159,8 @@ def main_worker(gpu, args,ngpus_per_node):
 
         validation_time.update((time.time() - start_validation) / 60)
 
-        print(args.rank)
-        print(ngpus_per_node)
-        if args.rank == ngpus_per_node :
-            print('Current best: {}'.format(best_acc1))
-            print(acc1)
 
-        sys.exit()
+        #sys.exit()
 
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
@@ -176,6 +171,8 @@ def main_worker(gpu, args,ngpus_per_node):
 
         save = ((epoch % args.save_every) == 0) and args.save_every > 0
         if args.rank % ngpus_per_node == 0:
+            print('Current best: {}'.format(best_acc1))
+            print(acc1)
             if is_best or save or epoch == args.epochs - 1:
                 if is_best:
                     print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
