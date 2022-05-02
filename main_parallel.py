@@ -142,16 +142,15 @@ def main_worker(gpu, args,ngpus_per_node):
 
         # train for one epoch
         start_train = time.time()
-        #train_acc1, train_acc5 = train(
-            #data.train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_per_node
-        #)
-        #train_time.update((time.time() - start_train) / 60)
+        train_acc1, train_acc5 = train(
+            data.train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_per_node
+        )
+        train_time.update((time.time() - start_train) / 60)
 
         # evaluate on validation set
         start_validation = time.time()
 
         if args.rank % ngpus_per_node == 0:
-            print('here')
             acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch,ngpus_per_node)
 
         else:
@@ -159,22 +158,17 @@ def main_worker(gpu, args,ngpus_per_node):
 
         validation_time.update((time.time() - start_validation) / 60)
 
-
-        #sys.exit()
-        print(args.rank)
-        print(acc1)
-
         # remember best acc@1 and save checkpoint
         is_best = acc1 > best_acc1
         best_acc1 = max(acc1, best_acc1)
         best_acc5 = max(acc5, best_acc5)
-        #best_train_acc1 = max(train_acc1, best_train_acc1)
-        #best_train_acc5 = max(train_acc5, best_train_acc5)
+        best_train_acc1 = max(train_acc1, best_train_acc1)
+        best_train_acc5 = max(train_acc5, best_train_acc5)
 
         save = ((epoch % args.save_every) == 0) and args.save_every > 0
         if args.rank % ngpus_per_node == 0:
             print('Current best: {}'.format(best_acc1))
-            print(acc1)
+            print(f'new best: {is_best}')
             if is_best or save or epoch == args.epochs - 1:
                 if is_best:
                     print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
