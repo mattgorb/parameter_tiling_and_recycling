@@ -153,12 +153,14 @@ def main_worker(gpu, args,ngpus_per_node):
         if args.rank % ngpus_per_node == 0:
             print('here')
             acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch,ngpus_per_node)
-            print('Current best: {}'.format(best_acc1))
+
         else:
             acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch,ngpus_per_node)
 
         validation_time.update((time.time() - start_validation) / 60)
 
+        print('Current best: {}'.format(best_acc1))
+        print(acc1)
 
         sys.exit()
 
