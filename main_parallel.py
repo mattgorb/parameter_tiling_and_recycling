@@ -161,7 +161,7 @@ def main_worker(gpu, args,ngpus_per_node):
         print('Current best: {}'.format(best_acc1))
 
 
-        continue
+        sys.exit()
 
 
         # remember best acc@1 and save checkpoint

@@ -61,7 +61,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         batch_time.update(time.time() - end)
         end = time.time()
 
-        if args.rank  == 0:
+        if args.rank % ngpus_per_node == 0:
             if i % args.print_freq == 0:
                 t = (num_batches * epoch + i) * batch_size
                 progress.display(i)
@@ -146,8 +146,9 @@ def validate(val_loader, model, criterion, args, writer, epoch):
             #batch_time.update(time.time() - end)
             end = time.time()
 
-            if i % args.print_freq == 0:
-                progress.display(i)
+            if args.rank % ngpus_per_node == 0:
+                if i % args.print_freq == 0:
+                    progress.display(i)
 
         progress.display(len(val_loader))
 
