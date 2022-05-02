@@ -166,8 +166,8 @@ def main_worker(gpu, args,ngpus_per_node):
         is_best = acc1 > best_acc1
         best_acc1 = max(acc1, best_acc1)
         best_acc5 = max(acc5, best_acc5)
-        best_train_acc1 = max(train_acc1, best_train_acc1)
-        best_train_acc5 = max(train_acc5, best_train_acc5)
+        #best_train_acc1 = max(train_acc1, best_train_acc1)
+        #best_train_acc5 = max(train_acc5, best_train_acc5)
 
         save = ((epoch % args.save_every) == 0) and args.save_every > 0
         if args.rank % ngpus_per_node == 0:
