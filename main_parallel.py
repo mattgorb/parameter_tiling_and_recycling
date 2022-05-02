@@ -142,10 +142,10 @@ def main_worker(gpu, args,ngpus_per_node):
 
         # train for one epoch
         start_train = time.time()
-        train_acc1, train_acc5 = train(
-            data.train_loader, model, criterion, optimizer, epoch, args, writer=writer
-        )
-        train_time.update((time.time() - start_train) / 60)
+        #train_acc1, train_acc5 = train(
+            #data.train_loader, model, criterion, optimizer, epoch, args, writer=writer
+        #)
+        #train_time.update((time.time() - start_train) / 60)
 
         # evaluate on validation set
         start_validation = time.time()
