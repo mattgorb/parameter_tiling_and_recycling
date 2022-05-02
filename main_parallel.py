@@ -35,7 +35,7 @@ from utils.initializations import set_seed
 
 def main_worker(gpu, args,ngpus_per_node):
     #args.gpu = None
-    train, validate, modifier,validate_pretrained = get_trainer(args)
+    train, validate, modifier,validate_pretrained = get_trainer(args,)
     args.gpu=gpu
     print(f' GPU {gpu}')
     if args.gpu is not None:
@@ -143,7 +143,7 @@ def main_worker(gpu, args,ngpus_per_node):
         # train for one epoch
         start_train = time.time()
         #train_acc1, train_acc5 = train(
-            #data.train_loader, model, criterion, optimizer, epoch, args, writer=writer
+            #data.train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_per_node
         #)
         #train_time.update((time.time() - start_train) / 60)
 
@@ -152,10 +152,10 @@ def main_worker(gpu, args,ngpus_per_node):
 
         if args.rank % ngpus_per_node == 0:
             print('here')
-            acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch,ngpus_per_node)
             print('Current best: {}'.format(best_acc1))
         else:
-            acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch)
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, None, epoch,ngpus_per_node)
 
         validation_time.update((time.time() - start_validation) / 60)
 
@@ -230,7 +230,7 @@ def main_worker(gpu, args,ngpus_per_node):
     print(f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}")
 
 
-def get_trainer(args):
+def get_trainer(args,):
     print(f"=> Using trainer from trainers.{args.trainer}")
     trainer = importlib.import_module(f"trainers.default_parallel")
 

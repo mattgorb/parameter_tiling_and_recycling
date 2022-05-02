@@ -10,7 +10,7 @@ from utils.conv_type import SubnetConvSSTL,SubnetConvBiprop,SubnetConvEdgePopup
 __all__ = ["train", "validate", "modifier","validate_pretrained"]
 
 
-def train(train_loader, model, criterion, optimizer, epoch, args, writer):
+def train(train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_per_node):
 
     batch_time = AverageMeter("Time", ":6.3f")
     data_time = AverageMeter("Data", ":6.3f")
@@ -61,7 +61,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         batch_time.update(time.time() - end)
         end = time.time()
 
-        if args.rank % args.ngpus_per_node == 0:
+        if args.rank % ngpus_per_node == 0:
             if i % args.print_freq == 0:
                 t = (num_batches * epoch + i) * batch_size
                 progress.display(i)
@@ -76,7 +76,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     return top1.avg, top5.avg
 
 
-def validate(val_loader, model, criterion, args, writer, epoch):
+def validate(val_loader, model, criterion, args, writer, epoch,ngpus_per_node):
 
     # switch to evaluate mode
     model.eval()
@@ -146,15 +146,15 @@ def validate(val_loader, model, criterion, args, writer, epoch):
             #batch_time.update(time.time() - end)
             end = time.time()
 
-            if args.rank % args.ngpus_per_node == 0:
+            if args.rank % ngpus_per_node == 0:
                 if i % args.print_freq == 0:
                     progress.display(i)
-        if args.rank % args.ngpus_per_node == 0:
+        if args.rank % ngpus_per_node == 0:
             progress.display(len(val_loader))
-
+            print("Acc@1: {}, Acc@5: {}".format(top1.avg, top5.avg))
         if writer is not None:
             progress.write_to_tensorboard(writer, prefix="test", global_step=epoch)
-        print("Acc@1: {}, Acc@5: {}".format(top1.avg, top5.avg))
+
     return top1.avg, top5.avg
 
 
