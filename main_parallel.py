@@ -168,7 +168,7 @@ def main_worker(gpu, args,ngpus_per_node):
         save = ((epoch % args.save_every) == 0) and args.save_every > 0
         if args.rank % ngpus_per_node == 0:
             print('Current best: {}'.format(best_acc1))
-            print(f'new best: {is_best}')
+            print(f'Epoch Accuracy: {acc1}')
             if is_best or save or epoch == args.epochs - 1:
                 if is_best:
                     print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
