@@ -105,9 +105,9 @@ def main_worker(args):
 
             #print(mod.weight.flatten().size())
             nonzeros=mod.weight.flatten()[torch.nonzero(mod.weight.flatten())]
-            print(nonzeros.size())
-            print(nonzeros)
-            sys.exit()
+            #print(nonzeros.size())
+            #print(nonzeros)
+            #sys.exit()
 
             '''weight_flat = mod.weight.flatten()
             half=int(weight_flat.numel()*0.5)
