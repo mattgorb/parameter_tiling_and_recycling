@@ -104,7 +104,7 @@ def main_worker(args):
 
 
             #print(mod.weight.flatten().size())
-            nonzeros=mod.weight.flatten()#[torch.nonzero(mod.weight.flatten())]
+            nonzeros=[torch.nonzero(mod.weight.flatten())]
             #print(nonzeros.size())
             #print(nonzeros)
             #sys.exit()
@@ -113,8 +113,8 @@ def main_worker(args):
             half=int(weight_flat.numel()*0.5)
             vals, idx = weight_flat.abs().sort(descending=False)
             top=vals[:half]'''
-            print('here')
             print(torch.norm(nonzeros).item())
+            print(torch.norm(mod.weight.flatten()))
 
 
             print()
