@@ -285,7 +285,7 @@ class SubnetConvLTH(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.mask = nn.Parameter(torch.Tensor(self.weight.size()))
+        self.mask = nn.Parameter(torch.Tensor(self.weight.size()), requires_grad=False)
         #nn.init.kaiming_uniform_(self.mask, a=math.sqrt(5))
 
     def init(self,args):
