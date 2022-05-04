@@ -295,7 +295,7 @@ class SubnetConvLTH(nn.Conv2d):
         self.weight=_init_weight(self.args, self.weight)
         self.prune_rate=args.prune_rate
 
-        if self.weight_orig is None:
+        if not args.pretrained:
             l1_unstructured(self, 'weight', amount=self.prune_rate)
 
 
