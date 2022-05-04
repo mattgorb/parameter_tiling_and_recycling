@@ -297,6 +297,9 @@ class SubnetConvLTH(nn.Conv2d):
 
         l1_unstructured(self, 'weight', amount=self.prune_rate)
 
+        print(self.weight)
+        sys.exit()
+
     def forward(self, x):
         #subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
         #w = self.weight * self.mask
