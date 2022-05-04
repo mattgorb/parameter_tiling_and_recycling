@@ -205,9 +205,9 @@ def main_worker(args,):
                     if isinstance(m, SubnetConvLTH):
                         torch.nn.utils.prune.remove(m, "weight")
 
-                    print(m.weight)
-                    sys.exit()
-
+                        print(m.weight)
+                        sys.exit()
+                    print(n)
                 save_checkpoint(
                     {
                         "epoch": epoch + 1,
