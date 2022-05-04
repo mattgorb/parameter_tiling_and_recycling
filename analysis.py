@@ -110,7 +110,7 @@ def main_worker(args):
             #sys.exit()
 
             print(nonzeros.size())
-            print(model.weight.flatten().size())
+            print(mod.weight.flatten().size())
             '''weight_flat = mod.weight.flatten()
             half=int(weight_flat.numel()*0.5)
             vals, idx = weight_flat.abs().sort(descending=False)
