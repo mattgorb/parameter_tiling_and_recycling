@@ -11,6 +11,9 @@ def accuracy(output, target, topk=(1,)):
         pred = pred.t()
         correct = pred.eq(target.view(1, -1).expand_as(pred))
 
+        print(output.size())
+        print(target.size())
+        print(correct.size())
         res = []
         for k in topk:
             correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
@@ -28,6 +31,7 @@ def accuracy_parallel(output, target, topk=(1,)):
         correct = pred.eq(target.contiguous().view(1, -1).expand_as(pred))
 
         res = []
+
         for k in topk:
             correct_k = correct[:k].contiguous().view(-1).float().sum(0, keepdim=True)
             res.append(correct_k.mul_(100.0 / batch_size))
