@@ -300,7 +300,7 @@ class SubnetConvLTH(nn.Conv2d):
         high_scores = indices[-k:]
         self.mask.flatten()[low_scores] = 0
         self.mask.flatten()[high_scores]=1'''
-        l1_unstructured(self, 'weight', amount=self.prune_rate)
+        #l1_unstructured(self, 'weight', amount=self.prune_rate)
 
     def forward(self, x):
         #subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
