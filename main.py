@@ -203,11 +203,7 @@ def main_worker(args,):
                 model_saved=model
                 for n,m in model_saved.named_modules():
                     if isinstance(m, SubnetConvLTH):
-                        print(m)
                         torch.nn.utils.prune.remove(m, "weight")
-                        print(n)
-                        print(m.weight)
-                sys.exit()
 
                 save_checkpoint(
                     {
