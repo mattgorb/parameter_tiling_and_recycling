@@ -145,13 +145,14 @@ def pretrained(weight_file, model):
             #map_location=torch.device("cuda:{}".format(args.multigpu[0])),
         )["state_dict"]
 
+        print(pretrained.items())
+        sys.exit()
 
         model_state_dict = model.state_dict()
         for k, v in pretrained.items():
             if k not in model_state_dict or v.size() != model_state_dict[k].size():
                 print("IGNORE:", k)
-            print(k)
-            print(v[0])
+
         pretrained = {
             k: v
             for k, v in pretrained.items()
