@@ -293,8 +293,8 @@ class SubnetConvLTH(nn.Conv2d):
     def init(self,args):
         self.args=args
         self.weight=_init_weight(self.args, self.weight)
-        '''self.prune_rate=args.prune_rate
-        sorted, indices = torch.sort(self.weight.abs().flatten())
+        self.prune_rate=args.prune_rate
+        '''sorted, indices = torch.sort(self.weight.abs().flatten())
         k = int(self.prune_rate* self.weight.numel())
         low_scores = indices[:k]
         high_scores = indices[-k:]
