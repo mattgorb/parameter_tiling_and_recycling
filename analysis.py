@@ -76,6 +76,7 @@ def main_worker(args):
     pretrained(args.pretrained, model)
     acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
     print(f"accuracy: {acc1}")
+    sys.exit()
     model.eval()
 
     for name,mod in model.named_modules():
@@ -144,9 +145,6 @@ def pretrained(weight_file, model):
             weight_file,
             #map_location=torch.device("cuda:{}".format(args.multigpu[0])),
         )["state_dict"]
-
-        print(pretrained.items())
-        sys.exit()
 
         model_state_dict = model.state_dict()
         for k, v in pretrained.items():
