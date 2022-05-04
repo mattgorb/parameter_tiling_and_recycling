@@ -9,7 +9,7 @@ from args import args as parser_args
 from utils.initializations import _init_weight,_init_score
 import numpy as np
 
-#from torch.nn.utils.prune  import l1_unstructured
+from torch.nn.utils.prune  import l1_unstructured
 
 DenseConv = nn.Conv2d
 
@@ -295,7 +295,7 @@ class SubnetConvLTH(nn.Conv2d):
         self.weight=_init_weight(self.args, self.weight)
         self.prune_rate=args.prune_rate
 
-        #l1_unstructured(self, 'weight', amount=self.prune_rate)
+        l1_unstructured(self, 'weight', amount=self.prune_rate)
 
     def forward(self, x):
         #subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)

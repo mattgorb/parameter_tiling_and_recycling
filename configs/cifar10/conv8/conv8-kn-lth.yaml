@@ -19,7 +19,7 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: DenseConv
+conv_type: SubnetConvLTH
 bn_type: NonAffineBatchNorm
 
 weight_init: kaiming_normal
@@ -27,6 +27,7 @@ score_init: None
 weight_seed: 0
 score_seed: 0
 gpu: 6
+prune_rate: -1
 
 # ===== Hardware setup ===== #
 workers: 4
