@@ -26,7 +26,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 from args import args
 import importlib
-
+import copy
 import data
 import models
 from utils.initializations import set_seed
@@ -200,7 +200,7 @@ def main_worker(args,):
                 print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
 
             if args.conv_type=='SubnetConvLTH':
-                model_saved=model
+                model_saved=copy.deepcopy(model)
                 for n,m in model_saved.named_modules():
                     if isinstance(m, SubnetConvLTH):
                         torch.nn.utils.prune.remove(m, "weight")
