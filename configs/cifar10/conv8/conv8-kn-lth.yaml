@@ -19,7 +19,8 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConvLTH
+#conv_type: SubnetConvLTH
+conv_type: SubnetConvEdgePopup
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 
