@@ -306,7 +306,7 @@ class SubnetConvLTH(nn.Conv2d):
         #subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
         #w = self.weight * self.mask
         x = F.conv2d(
-            x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
+            x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
         return x
 
