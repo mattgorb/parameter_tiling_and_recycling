@@ -323,7 +323,7 @@ def pretrained(args, model):
         print("=> loading pretrained weights from '{}'".format(args.pretrained))
         pretrained = torch.load(
             args.pretrained,
-            #map_location=torch.device("cuda:{}".format(args.multigpu[0])),
+            map_location=torch.device("cuda:{}".format(args.gpu)),
         )["state_dict"]
 
 
