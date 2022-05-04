@@ -9,7 +9,7 @@ from args import args as parser_args
 from utils.initializations import _init_weight,_init_score
 import numpy as np
 
-from torch.nn.utils.prune  import l1_unstructured
+#from torch.nn.utils.prune  import l1_unstructured
 
 DenseConv = nn.Conv2d
 
