@@ -199,23 +199,50 @@ def main_worker(args,):
             if is_best:
                 print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
 
-            save_checkpoint(
-                {
-                    "epoch": epoch + 1,
-                    "arch": args.arch,
-                    "state_dict": model.state_dict(),
-                    "best_acc1": best_acc1,
-                    "best_acc5": best_acc5,
-                    "best_train_acc1": best_train_acc1,
-                    "best_train_acc5": best_train_acc5,
-                    "optimizer": optimizer.state_dict(),
-                    "curr_acc1": acc1,
-                    "curr_acc5": acc5,
-                },
-                is_best,
-                filename=ckpt_base_dir / f"epoch_{epoch}.state",
-                save=save,
-            )
+            if args.conv_type=='SubnetConvLTH':
+                model_saved=model
+                for n,m in model_saved.named_parameters():
+                    if isinstance(m, SubnetConvLTH):
+                        torch.nn.utils.prune.remove(m, "weight")
+
+                    print(m.weight)
+                    sys.exit()
+
+                save_checkpoint(
+                    {
+                        "epoch": epoch + 1,
+                        "arch": args.arch,
+                        "state_dict": model_saved.state_dict(),
+                        "best_acc1": best_acc1,
+                        "best_acc5": best_acc5,
+                        "best_train_acc1": best_train_acc1,
+                        "best_train_acc5": best_train_acc5,
+                        "optimizer": optimizer.state_dict(),
+                        "curr_acc1": acc1,
+                        "curr_acc5": acc5,
+                    },
+                    is_best,
+                    filename=ckpt_base_dir / f"epoch_{epoch}.state",
+                    save=save,
+                )
+            else:
+                save_checkpoint(
+                    {
+                        "epoch": epoch + 1,
+                        "arch": args.arch,
+                        "state_dict": model.state_dict(),
+                        "best_acc1": best_acc1,
+                        "best_acc5": best_acc5,
+                        "best_train_acc1": best_train_acc1,
+                        "best_train_acc5": best_train_acc5,
+                        "optimizer": optimizer.state_dict(),
+                        "curr_acc1": acc1,
+                        "curr_acc5": acc5,
+                    },
+                    is_best,
+                    filename=ckpt_base_dir / f"epoch_{epoch}.state",
+                    save=save,
+                )
 
             epoch_time.update((time.time() - end_epoch) / 60)
             progress_overall.display(epoch)

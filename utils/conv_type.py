@@ -287,9 +287,6 @@ class SubnetConvLTH(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.mask = nn.Parameter(torch.Tensor(self.weight.size()), requires_grad=False)
-        #nn.init.kaiming_uniform_(self.mask, a=math.sqrt(5))
-
     def init(self,args):
         self.args=args
         self.weight=_init_weight(self.args, self.weight)
@@ -298,11 +295,8 @@ class SubnetConvLTH(nn.Conv2d):
         if not args.pretrained:
             l1_unstructured(self, 'weight', amount=self.prune_rate)
 
-
-
     def forward(self, x):
-        #subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
-        #w = self.weight * self.mask
+
         x = F.conv2d(
             x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
