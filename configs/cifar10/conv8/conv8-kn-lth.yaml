@@ -7,7 +7,6 @@ data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/data
 set: CIFAR10
 name: baseline
 
-
 # ===== Learning Rate Policy ======== #
 optimizer: sgd
 lr: 0.01
@@ -20,17 +19,14 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-#conv_type: SubnetConvLTH
 conv_type: DenseConv
 bn_type: NonAffineBatchNorm
 
 weight_init: kaiming_normal
-scale_fan: True
 score_init: None
 weight_seed: 0
 score_seed: 0
-prune_rate: -1
+gpu: 6
 
-gpu: 0
 # ===== Hardware setup ===== #
 workers: 4
