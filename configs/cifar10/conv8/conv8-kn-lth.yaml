@@ -20,7 +20,7 @@ batch_size: 128
 
 # ===== Sparsity =========== #
 #conv_type: SubnetConvLTH
-conv_type: SubnetConvEdgePopup
+conv_type: DenseConv
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 
