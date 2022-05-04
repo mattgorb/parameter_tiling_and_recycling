@@ -23,7 +23,6 @@ batch_size: 128
 #conv_type: SubnetConvLTH
 conv_type: DenseConv
 bn_type: NonAffineBatchNorm
-freeze_weights: True
 
 weight_init: kaiming_normal
 scale_fan: True
