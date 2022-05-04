@@ -102,8 +102,8 @@ def main_worker(args):
             print(name)
 
 
-            print(mod.weight.size())
-            print(mod.weight[torch.nonzero(mod.weight)].size())
+            print(mod.weight.flatten().size())
+            print(mod.weight.flatten()[torch.nonzero(mod.weight.flatten())].size())
             sys.exit()
 
             weight_flat = mod.weight.flatten()
