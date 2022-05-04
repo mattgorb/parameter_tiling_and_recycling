@@ -76,7 +76,7 @@ def main_worker(args):
     pretrained(args.pretrained, model)
     acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
     print(f"accuracy: {acc1}")
-    sys.exit()
+
     model.eval()
 
     for name,mod in model.named_modules():
