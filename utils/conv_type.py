@@ -305,7 +305,5 @@ class SubnetConvLTH(nn.Conv2d):
         x = F.conv2d(
             x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
-
-        print(self.weight)
         return x
 
