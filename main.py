@@ -202,12 +202,11 @@ def main_worker(args,):
             if args.conv_type=='SubnetConvLTH':
                 model_saved=model
                 for n,m in model_saved.named_parameters():
-                    if isinstance(m, SubnetConvLTH):
-                        torch.nn.utils.prune.remove(m, "weight")
-
-                        print(m.weight)
-                        sys.exit()
+                    torch.nn.utils.prune.remove(m, "weight")
                     print(n)
+                    print(m.weight)
+                sys.exit()
+
                 save_checkpoint(
                     {
                         "epoch": epoch + 1,
