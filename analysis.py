@@ -2,7 +2,6 @@ import os
 import pathlib
 import random
 import time
-import pandas as pd
 from torch.utils.tensorboard import SummaryWriter
 import torch
 import torch.nn as nn
@@ -100,12 +99,18 @@ def main_worker(args):
 
         if isinstance(mod, nn.Conv2d):
             print(name)
+
+
+            print(mod.weight.size())
+            print(mod.weight[torch.nonzero(mod.weight)].size())
+            sys.exit()
+
             weight_flat = mod.weight.flatten()
             half=int(weight_flat.numel()*0.5)
             vals, idx = weight_flat.abs().sort(descending=False)
             top=vals[:half]
             print(torch.norm(top).item())
-            #print(torch.norm(mod.weight).item())
+
 
             print()
 
