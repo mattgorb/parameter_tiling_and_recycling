@@ -75,7 +75,7 @@ def main_worker(args,):
 
     # create model and optimizer
     model = get_model(args)
-    model,device = set_gpu(args, model,ngpus_per_node)
+    model,device = set_gpu(args, model,)
 
     set_seed(args.seed)
 
@@ -255,7 +255,7 @@ def get_trainer(args):
     return trainer.train, trainer.validate, trainer.modifier, trainer.validate_pretrained
 
 
-def set_gpu(args, model,ngpus_per_node):
+def set_gpu(args, model,):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
     if args.gpu is not None:
         device=torch.device('cuda:{}'.format(args.gpu))
