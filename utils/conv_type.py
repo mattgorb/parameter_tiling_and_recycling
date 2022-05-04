@@ -291,17 +291,18 @@ class SubnetConvLTH(nn.Conv2d):
     def init(self,args):
         self.args=args
         self.weight=_init_weight(self.args, self.weight)
-        self.prune_rate=args.prune_rate
+        '''self.prune_rate=args.prune_rate
         sorted, indices = torch.sort(self.weight.abs().flatten())
         k = int(self.prune_rate* self.weight.numel())
         low_scores = indices[:k]
         high_scores = indices[-k:]
         self.mask.flatten()[low_scores] = 0
-        self.mask.flatten()[high_scores]=1
+        self.mask.flatten()[high_scores]=1'''
+        torch.nn.utils.prune.l1_unstructured(self, 'weight', amount=self.prune_rate)
 
     def forward(self, x):
         #subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
-        w = self.weight * self.mask
+        #w = self.weight * self.mask
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
