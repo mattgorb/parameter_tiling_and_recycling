@@ -103,7 +103,7 @@ def main_worker(args):
 
 
             #print(mod.weight.flatten().size())
-            nonzeros=mod.weight.flatten()[torch.nonzero(mod.weight.flatten())].size()
+            nonzeros=mod.weight.flatten()[torch.nonzero(mod.weight.flatten())]
             #sys.exit()
 
             '''weight_flat = mod.weight.flatten()
