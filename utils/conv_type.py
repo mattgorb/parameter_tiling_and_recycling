@@ -286,21 +286,22 @@ class SubnetConvLTH(nn.Conv2d):
         super().__init__(*args, **kwargs)
 
         self.mask = nn.Parameter(torch.Tensor(self.weight.size()))
-        #nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
     def init(self,args):
         self.args=args
         self.weight=_init_weight(self.args, self.weight)
-
         self.prune_rate=args.prune_rate
-
-    @property
-    def clamped_scores(self):
-        return self.scores.abs()
+        sorted, indices = torch.sort(self.weight.abs().flatten())
+        k = int(self.prune_rate* self.weight.numel())
+        low_scores = indices[:k]
+        high_scores = indices[-k:]
+        self.mask.flatten()[low_scores] = 0
+        self.mask.flatten()[high_scores]=1
 
     def forward(self, x):
-        subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
-        w = self.weight * subnet
+        #subnet = GetSubnetEdgePopup.apply(self.clamped_scores, self.prune_rate)
+        w = self.weight * self.mask
         x = F.conv2d(
             x, w, self.bias, self.stride, self.padding, self.dilation, self.groups
         )
