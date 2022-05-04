@@ -11,7 +11,7 @@ import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
-
+from utils.conv_type import SubnetConvLTH
 
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import (
