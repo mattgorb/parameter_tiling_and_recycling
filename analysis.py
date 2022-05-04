@@ -151,7 +151,7 @@ def pretrained(weight_file, model):
             if k not in model_state_dict or v.size() != model_state_dict[k].size():
                 print("IGNORE:", k)
             print(k)
-            print()
+            print(v[0])
         pretrained = {
             k: v
             for k, v in pretrained.items()
