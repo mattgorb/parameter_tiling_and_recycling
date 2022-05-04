@@ -297,7 +297,7 @@ class SubnetConvLTH(nn.Conv2d):
 
         l1_unstructured(self, 'weight', amount=self.prune_rate)
 
-        print(self.weight)
+        print(self)
         sys.exit()
 
     def forward(self, x):
