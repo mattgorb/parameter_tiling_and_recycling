@@ -95,7 +95,7 @@ def main_worker(args):
 
             mask1_ind=torch.nonzero(mask1.flatten())
 
-            weights_with_mask=mod.weight.flatten()[mask1_ind]
+            weights_with_mask=mod.weight.flatten()[~mask1_ind]
 
             #print(name)
             #print(weights_with_mask.size())
