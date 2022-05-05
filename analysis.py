@@ -96,6 +96,7 @@ def main_worker(args):
 
             weights_with_mask=mod.weight.flatten()[mask1_ind]
             print(weights_with_mask)
+            print(mask1)
             print(mask1_ind)
             sys.exit()
             print(name)
