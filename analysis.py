@@ -106,7 +106,7 @@ def main_worker(args):
             weights_with_mask=mod.weight.flatten()[~mask1_ind]'''
             #print(torch.norm(weights_with_mask).item())
             #sys.exit()
-        if isinstance(mod, nn.Conv2d) and not (isinstance(mod, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop)):
+        if isinstance(mod, nn.Conv2d) :
             #print(name)
 
 
