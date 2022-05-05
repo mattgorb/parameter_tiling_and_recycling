@@ -154,7 +154,7 @@ def pretrained(weight_file, model):
         print("=> loading pretrained weights from '{}'".format(weight_file))
         pretrained = torch.load(
             weight_file,
-            #map_location=torch.device("cuda:{}".format(args.multigpu[0])),
+            map_location=torch.device("cuda:{}".format(args.gpu)),
         )["state_dict"]
 
         model_state_dict = model.state_dict()
