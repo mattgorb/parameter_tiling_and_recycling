@@ -116,8 +116,7 @@ def main_worker(args,):
         #acc1, acc5 = validate(
             #data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         #)
-        print(model)
-        sys.exit()
+
         checkpoint=torch.load(args.pretrained)
         print()
         print("EPOCH: {}".format(checkpoint['epoch']))
