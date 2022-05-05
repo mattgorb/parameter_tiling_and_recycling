@@ -8,7 +8,7 @@ set: ImageNet
 
 # ===== Learning Rate Policy ======== #
 optimizer: sgd
-lr: 0.256
+lr: 0.1
 lr_policy: cosine_lr
 warmup_length: 5
 
@@ -30,7 +30,7 @@ mode: fan_in
 nonlinearity: relu
 #scale_fan: True
 
-rerand_epoch_freq: 2
+rerand_epoch_freq: 10
 rerand_rate: 0.2
 rerand_type: recycle
 
