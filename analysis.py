@@ -92,12 +92,12 @@ def main_worker(args):
                 mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
 
             #print(mod.weight.size())
-            print(name)
+            '''print(name)
             print(torch.norm(mod.weight).item())
-            mask1_ind=torch.nonzero(mask1.flatten())
+            mask1_ind=torch.nonzero(mask1.flatten())'''
             weights_with_mask=mod.weight.flatten()[mask1_ind]
-            print(torch.norm(weights_with_mask).item())
-            weights_with_mask=mod.weight.flatten()[~mask1_ind]
+            '''print(torch.norm(weights_with_mask).item())
+            weights_with_mask=mod.weight.flatten()[~mask1_ind]'''
             print(torch.norm(weights_with_mask).item())
             #sys.exit()
         if isinstance(mod, nn.Conv2d):
