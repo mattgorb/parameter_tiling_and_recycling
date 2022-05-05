@@ -96,6 +96,7 @@ def main_worker(args,):
         acc1, acc5 = validate(
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
+        print(f'acc: {acc1}')
 
 
     # optionally resume from a checkpoint
