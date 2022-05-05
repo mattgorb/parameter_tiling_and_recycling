@@ -112,10 +112,11 @@ def main_worker(args):
 
             #print(torch.squeeze(nonzeros).size())
             #print(mod.weight.flatten().size())
-            '''weight_flat = mod.weight.flatten()
+            weight_flat = mod.weight.flatten()
             half=int(weight_flat.numel()*0.5)
             vals, idx = weight_flat.abs().sort(descending=False)
-            top=vals[:half]'''
+            top=vals[:half]
+            print(torch.norm(top))
             #print(torch.norm(torch.squeeze(nonzeros)).item())
 
 
