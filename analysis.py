@@ -73,9 +73,10 @@ def main_worker(args):
 
     criterion = nn.CrossEntropyLoss().to(device)
 
-    pretrained(args.pretrained, model)
-    acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
-    print(f"accuracy: {acc1}")
+    if args.pretrained:
+        pretrained(args.pretrained, model)
+        acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
+        print(f"accuracy: {acc1}")
 
     model.eval()
 
