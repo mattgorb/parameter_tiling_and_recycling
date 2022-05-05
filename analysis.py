@@ -98,7 +98,7 @@ def main_worker(args):
 
             #print(name)
             #print(weights_with_mask.size())
-            print(torch.norm(weights_with_mask).item())
+            #print(torch.norm(weights_with_mask).item())
             #sys.exit()
         if isinstance(mod, nn.Conv2d):
             #print(name)
