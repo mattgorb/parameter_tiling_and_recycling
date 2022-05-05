@@ -76,11 +76,11 @@ def main_worker(args):
     if args.pretrained:
         pretrained(args.pretrained, model)
 
-        if args.conv_type=='SubnetConvLTH':
+        '''if args.conv_type=='SubnetConvLTH':
             for n,m in model.named_modules():
                 if isinstance(m,SubnetConvLTH):
                     l1_unstructured(m, 'weight', amount=args.prune_rate)
-                print(n)
+                print(n)'''
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
         print(f"accuracy: {acc1}")
 
