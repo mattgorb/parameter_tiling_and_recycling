@@ -11,7 +11,7 @@ import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
 from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop, GetSubnetEdgePopup, GetQuantnet_binary,SubnetConvLTH
-
+from torch.nn.utils.prune  import l1_unstructured
 
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import (
