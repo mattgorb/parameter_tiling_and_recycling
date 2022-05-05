@@ -80,9 +80,10 @@ def main_worker(args):
             for n,m in model.named_modules():
                 if n=='SubnetConvLTH':
                     l1_unstructured(m, 'weight', amount=args.prune_rate)
-
+                print(n)
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
         print(f"accuracy: {acc1}")
+        sys.exit()
 
     model.eval()
 
