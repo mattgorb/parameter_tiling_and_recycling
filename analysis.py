@@ -119,7 +119,7 @@ def main_worker(args):
             #print(torch.norm(torch.squeeze(nonzeros)).item())
 
 
-            #print(torch.norm(mod.weight.flatten()).item())
+            print(torch.norm(mod.weight.flatten()).item())
 
 
             #print()
