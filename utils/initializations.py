@@ -38,7 +38,8 @@ def _init_weight(args,weight):
         weight.data = torch.ones_like(weight.data) * std
 
     elif args.weight_init == "kaiming_normal":
-
+        print('here')
+        sys.exit()
         if args.scale_fan:
             fan = nn.init._calculate_correct_fan(weight, args.mode)
             fan = fan * (1 - args.prune_rate)
