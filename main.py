@@ -97,7 +97,7 @@ def main_worker(args,):
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
         print(f'acc: {acc1}')
-
+    sys.exit()
 
     # optionally resume from a checkpoint
     best_acc1 = 0.0
