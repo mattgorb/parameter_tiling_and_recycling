@@ -89,12 +89,14 @@ def main_worker(args):
                 #mask2 = torch.where(mask2 > 0, y, mask2)
             else:
                 mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
-                sys.exit()
+
             #print(mod.weight.size())
 
             mask1_ind=torch.nonzero(mask1.flatten())
+            print(mod.weight.flatten().size())
             weights_with_mask=mod.weight.flatten()[mask1_ind]
-
+            print(weights_with_mask.size())
+            sys.exit()
             print(name)
             print(weights_with_mask.size())
             print(torch.norm(weights_with_mask).item())
@@ -104,7 +106,7 @@ def main_worker(args):
 
 
             #print(mod.weight.flatten().size())
-            nonzeros=mod.weight.flatten()[torch.nonzero(mod.weight.flatten())]
+            #nonzeros=mod.weight.flatten()[torch.nonzero(mod.weight.flatten())]
             #print(nonzeros.size())
             #print(nonzeros)
             #sys.exit()
@@ -115,7 +117,7 @@ def main_worker(args):
             half=int(weight_flat.numel()*0.5)
             vals, idx = weight_flat.abs().sort(descending=False)
             top=vals[:half]'''
-            print(torch.norm(torch.squeeze(nonzeros)).item())
+            #print(torch.norm(torch.squeeze(nonzeros)).item())
             #print(torch.norm(mod.weight.flatten()).item())
 
 
