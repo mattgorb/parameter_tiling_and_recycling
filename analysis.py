@@ -117,7 +117,7 @@ def main_worker(args):
             vals, idx = weight_flat.abs().sort(descending=False)
             top=vals[:half]'''
             #print(torch.norm(torch.squeeze(nonzeros)).item())
-            #print(torch.norm(mod.weight.flatten()).item())
+            print(torch.norm(mod.weight.flatten()).item())
 
 
             #print()
