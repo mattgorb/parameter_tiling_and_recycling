@@ -78,7 +78,7 @@ def main_worker(args):
 
         if args.conv_type=='SubnetConvLTH':
             for n,m in model.named_modules():
-                if n=='SubnetConvLTH':
+                if isinstancee(m,SubnetConvLTH):
                     l1_unstructured(m, 'weight', amount=args.prune_rate)
                 print(n)
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
