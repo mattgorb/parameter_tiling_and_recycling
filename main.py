@@ -259,19 +259,6 @@ def main_worker(args,):
         writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
 
-
-        for name,mod in model.named_modules():
-
-            if isinstance(mod, SubnetConvEdgePopup) or isinstance(mod,SubnetConvBiprop):
-                mask1 = GetSubnetEdgePopup.apply(mod.clamped_scores, mod.prune_rate)
-
-                mask1_ind=torch.nonzero(mask1.flatten())
-                print(name)
-                weights_with_mask=mod.weight.flatten()[mask1_ind]
-                print(torch.norm(weights_with_mask).item())
-                weights_with_mask=mod.weight.flatten()[~mask1_ind]
-                print(torch.norm(weights_with_mask).item())
-
     write_result_to_csv(
         best_acc1=best_acc1,
         best_acc5=best_acc5,
