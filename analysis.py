@@ -83,7 +83,6 @@ def main_worker(args):
                 print(n)
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
         print(f"accuracy: {acc1}")
-        sys.exit()
 
     model.eval()
 
