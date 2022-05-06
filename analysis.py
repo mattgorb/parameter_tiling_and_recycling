@@ -112,7 +112,7 @@ def main_worker(args):
             weights_with_mask=mod.weight.flatten()[mask1_ind]
             '''print(torch.norm(weights_with_mask).item())
             weights_with_mask=mod.weight.flatten()[~mask1_ind]'''
-            #print(torch.norm(weights_with_mask).item())
+            print(torch.norm(weights_with_mask).item())
             #sys.exit()
         if isinstance(mod, nn.Conv2d) :
             #print(name)
@@ -134,7 +134,7 @@ def main_worker(args):
             #print(torch.norm(torch.squeeze(nonzeros)).item())
 
 
-            print(torch.norm(mod.weight.flatten()).item())
+            #print(torch.norm(mod.weight.flatten()).item())
 
 
             #print()
