@@ -79,12 +79,12 @@ def main_worker(args):
         if args.conv_type=='SubnetConvLTH':
             for n,m in model.named_modules():
                 if isinstance(m,SubnetConvLTH):
-                    l1_unstructured(m, 'weight', amount=args.prune_rate)
-                    '''weight_flat = mod.weight.flatten()
+                    #l1_unstructured(m, 'weight', amount=args.prune_rate)
+                    weight_flat = mod.weight.flatten()
                     half = int(weight_flat.numel() * 0.5)
                     vals, idx = weight_flat.abs().sort(descending=True)
                     top = vals[:half]
-                    mod.weight.flatten()[top]=0'''
+                    mod.weight.flatten()[top]=0
 
 
                 print(n)
