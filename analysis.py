@@ -76,11 +76,18 @@ def main_worker(args):
     if args.pretrained:
         pretrained(args.pretrained, model)
 
-        '''if args.conv_type=='SubnetConvLTH':
+        if args.conv_type=='SubnetConvLTH':
             for n,m in model.named_modules():
                 if isinstance(m,SubnetConvLTH):
                     l1_unstructured(m, 'weight', amount=args.prune_rate)
-                print(n)'''
+                    '''weight_flat = mod.weight.flatten()
+                    half = int(weight_flat.numel() * 0.5)
+                    vals, idx = weight_flat.abs().sort(descending=True)
+                    top = vals[:half]
+                    mod.weight.flatten()[top]=0'''
+
+
+                print(n)
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
         print(f"accuracy: {acc1}")
 
@@ -104,7 +111,7 @@ def main_worker(args):
             weights_with_mask=mod.weight.flatten()[mask1_ind]
             '''print(torch.norm(weights_with_mask).item())
             weights_with_mask=mod.weight.flatten()[~mask1_ind]'''
-            print(torch.norm(weights_with_mask).item())
+            #print(torch.norm(weights_with_mask).item())
             #sys.exit()
         if isinstance(mod, nn.Conv2d) :
             #print(name)
@@ -126,7 +133,7 @@ def main_worker(args):
             #print(torch.norm(torch.squeeze(nonzeros)).item())
 
 
-            #print(torch.norm(mod.weight.flatten()).item())
+            print(torch.norm(mod.weight.flatten()).item())
 
 
             #print()
