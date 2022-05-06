@@ -75,19 +75,20 @@ def main_worker(args):
 
     if args.pretrained:
         pretrained(args.pretrained, model)
-        model.eval()
+
         if args.conv_type=='SubnetConvLTH':
-            for n,mod in model.named_modules():
-                if isinstance(mod,SubnetConvLTH):
-                    #l1_unstructured(mod, 'weight', amount=args.prune_rate)
-                    weight_flat = mod.weight.flatten()
-                    half = int(weight_flat.numel() * 0.5)
-                    vals, idx = weight_flat.abs().sort(descending=True)
-                    top = vals[:half]
-                    mod.weight.flatten()[top]=0
+            with torch.no_grad():
+                for n,mod in model.named_modules():
+                    if isinstance(mod,SubnetConvLTH):
+                        #l1_unstructured(mod, 'weight', amount=args.prune_rate)
+                        weight_flat = mod.weight.flatten()
+                        half = int(weight_flat.numel() * 0.5)
+                        vals, idx = weight_flat.abs().sort(descending=True)
+                        top = vals[:half]
+                        mod.weight.flatten()[top]=0
 
 
-                print(n)
+
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch )
         print(f"accuracy: {acc1}")
 
