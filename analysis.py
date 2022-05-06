@@ -84,7 +84,7 @@ def main_worker(args):
                         weight_flat = mod.weight.flatten()
                         half = int(weight_flat.numel() * 0.5)
                         vals, idx = weight_flat.abs().sort(descending=True)
-                        top = vals[:half]
+                        top = idx[:half]
                         mod.weight.flatten()[top]=0
 
 
