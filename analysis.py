@@ -75,7 +75,7 @@ def main_worker(args):
 
     if args.pretrained:
         pretrained(args.pretrained, model)
-
+        model.eval()
         if args.conv_type=='SubnetConvLTH':
             for n,mod in model.named_modules():
                 if isinstance(mod,SubnetConvLTH):
