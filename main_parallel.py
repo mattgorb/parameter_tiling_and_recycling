@@ -109,7 +109,7 @@ def main_worker(gpu, args,ngpus_per_node):
                 print(acc1)'''
 
             print(
-                f"=> Rough estimate model params {sum(int(p.numel() * (args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
+                f"=> Rough estimate model params {sum(int(p.numel() ) for n, p in model.named_parameters() if not n.endswith('scores'))}"
             )
         else:
 
