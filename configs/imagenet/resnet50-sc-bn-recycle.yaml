@@ -10,7 +10,7 @@ set: ImageNet
 optimizer: sgd
 lr: 0.1
 lr_policy: cosine_lr
-warmup_length: 5
+warmup_length: 10
 
 # ===== Network training config ===== #
 epochs: 500

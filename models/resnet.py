@@ -166,10 +166,11 @@ class ResNet(nn.Module):
 def ResNet18(pretrained=False):
     return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2], 1000)
 
+def ResNet34(pretrained=False):
+    return ResNet(get_builder(), BasicBlock, [3, 4, 6, 3], 1000)
 
 def ResNet50(pretrained=False):
     return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3], 1000)
-
 
 def ResNet101(pretrained=False):
     return ResNet(get_builder(), Bottleneck, [3, 4, 23, 3], 1000)

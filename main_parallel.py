@@ -63,7 +63,9 @@ def main_worker(gpu, args,ngpus_per_node):
             if args.arch=='ResNet101':
                 model=models_pretrained.resnet101(pretrained=True)
                 model,device = set_gpu(args, model,ngpus_per_node)
-
+            if args.arch=='ResNet34':
+                model=models_pretrained.resnet34(pretrained=True)
+                model,device = set_gpu(args, model,ngpus_per_node)
     set_seed(args.seed)
 
     data = get_dataset(args)
@@ -102,11 +104,11 @@ def main_worker(gpu, args,ngpus_per_node):
     # Data loading code
     if args.evaluate:
         if args.conv_type=='DenseConv':
-            '''acc1, acc5 = validate(data.val_loader, model, criterion, args, None, 0, ngpus_per_node)
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, None, 0, ngpus_per_node)
             if args.rank == 0:
                 #acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
                 print('acc1:')
-                print(acc1)'''
+                print(acc1)
 
             print(
                 f"=> Rough estimate model params {sum(int(p.numel() ) for n, p in model.named_parameters() if not n.endswith('scores'))}"

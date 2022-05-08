@@ -4,6 +4,7 @@ from models.frankle import FC, Conv2, Conv4, Conv6, Conv4Wide, Conv8, Conv6Wide,
 
 __all__ = [
     "ResNet18",
+    "ResNet34",
     "ResNet50",
     "ResNet101",
     "cResNet18",
