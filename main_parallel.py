@@ -302,7 +302,7 @@ def resume(args, model, optimizer):
             args.start_epoch = checkpoint["epoch"]
 
         best_acc1 = checkpoint["best_acc1"]
-
+        print(f'best_acc1: {best_acc1}')
         model.load_state_dict(checkpoint["state_dict"])
 
         optimizer.load_state_dict(checkpoint["optimizer"])
