@@ -88,9 +88,7 @@ def main_worker(gpu, args,ngpus_per_node):
     # Data loading code
     if args.evaluate:
         if args.conv_type=='DenseConv':
-            acc1, acc5 = validate(
-                data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
-            )
+            acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch, ngpus_per_node)
             print('acc1:')
             print(acc1)
         else:
