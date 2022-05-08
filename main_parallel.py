@@ -295,7 +295,7 @@ def resume(args, model, optimizer):
         print(f"=> Loading checkpoint '{args.resume}'")
 
         checkpoint = torch.load(args.resume,
-                                #map_location=f"cuda:{args.gpu}"
+                                map_location=f"cuda:{args.gpu}"
                                 )
         if args.start_epoch is None:
             print(f"=> Setting new start epoch at {checkpoint['epoch']}")
