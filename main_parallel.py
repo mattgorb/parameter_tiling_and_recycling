@@ -83,6 +83,11 @@ def main_worker(gpu, args,ngpus_per_node):
         acc1, acc5 = validate(
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
+        if args.rank == 0:
+            # acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+            print('acc1:')
+            print(acc1)
+        sys.exit()
 
 
     # optionally resume from a checkpoint
@@ -97,15 +102,15 @@ def main_worker(gpu, args,ngpus_per_node):
     # Data loading code
     if args.evaluate:
         if args.conv_type=='DenseConv':
-            acc1, acc5 = validate(data.val_loader, model, criterion, args, None, 0, ngpus_per_node)
+            '''acc1, acc5 = validate(data.val_loader, model, criterion, args, None, 0, ngpus_per_node)
             if args.rank == 0:
                 #acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
                 print('acc1:')
-                print(acc1)
+                print(acc1)'''
 
-                print(
-                    f"=> Rough estimate model params {sum(int(p.numel() * (args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
-                )
+            print(
+                f"=> Rough estimate model params {sum(int(p.numel() * (args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
+            )
         else:
 
             checkpoint=torch.load(args.pretrained)
@@ -290,7 +295,7 @@ def resume(args, model, optimizer):
         print(f"=> Loading checkpoint '{args.resume}'")
 
         checkpoint = torch.load(args.resume,
-                                map_location=f"cuda:{args.gpu}"
+                                #map_location=f"cuda:{args.gpu}"
                                 )
         if args.start_epoch is None:
             print(f"=> Setting new start epoch at {checkpoint['epoch']}")
