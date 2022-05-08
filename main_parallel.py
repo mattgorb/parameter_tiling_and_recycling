@@ -55,7 +55,7 @@ def main_worker(gpu, args,ngpus_per_node):
                 model=models_pretrained.resnet50(pretrained=True)
                 model,device = set_gpu(args, model,ngpus_per_node)
             if args.arch=='WideResNet50':
-                model=models_pretrained.models.wide_resnet50_2()(pretrained=True)
+                model=models_pretrained.models.wide_resnet50_2(pretrained=True)
                 model,device = set_gpu(args, model,ngpus_per_node)
             if args.arch=='ResNet18':
                 model=models_pretrained.resnet18(pretrained=True)
@@ -98,8 +98,10 @@ def main_worker(gpu, args,ngpus_per_node):
     if args.evaluate:
         if args.conv_type=='DenseConv':
             acc1, acc5 = validate(data.val_loader, model, criterion, args, None, 0, ngpus_per_node)
-            print('acc1:')
-            print(acc1)
+            if args.rank == 0:
+                #acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+                print('acc1:')
+                print(acc1)
         else:
 
             checkpoint=torch.load(args.pretrained)
