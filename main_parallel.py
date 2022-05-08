@@ -48,6 +48,11 @@ def main_worker(gpu, args,ngpus_per_node):
     model = get_model(args)
     if not args.evaluate:
         model,device = set_gpu(args, model,ngpus_per_node)
+    else:
+        if args.conv_type=='DenseConv':
+            if args.arch=='ResNet50':
+                model=models_pretrained.resnet50(pretrained=True)
+                model,device = set_gpu(args, model,ngpus_per_node)
 
     set_seed(args.seed)
 
@@ -82,9 +87,6 @@ def main_worker(gpu, args,ngpus_per_node):
     # Data loading code
     if args.evaluate:
         if args.conv_type=='DenseConv':
-            if args.arch=='ResNet50':
-                model=models_pretrained.resnet50(pretrained=True)
-                model,device = set_gpu(args, model,ngpus_per_node)
             acc1, acc5 = validate(
                 data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
             )
