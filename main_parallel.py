@@ -2,7 +2,7 @@ import os
 import pathlib
 import random
 import time
-
+import torchvision.models as models_pretrained
 from torch.utils.tensorboard import SummaryWriter
 import torch
 import torch.nn as nn
@@ -80,10 +80,19 @@ def main_worker(gpu, args,ngpus_per_node):
 
     # Data loading code
     if args.evaluate:
+        if args.conv_type=='DenseConv':
+            if args.arch=='ResNet50':
+                model=models_pretrained.resnet50(pretrained=True)
 
-        checkpoint=torch.load(args.pretrained)
-        print("EPOCH: {}".format(checkpoint['epoch']))
-        print("ACC: {}".format(checkpoint['best_acc1']))
+            acc1, acc5 = validate(
+                data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
+            )
+            print('acc1:')
+            print(acc1)
+        else:
+            checkpoint=torch.load(args.pretrained)
+            print("EPOCH: {}".format(checkpoint['epoch']))
+            print("ACC: {}".format(checkpoint['best_acc1']))
 
         return
 
