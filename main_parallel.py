@@ -61,7 +61,7 @@ def main_worker(gpu, args,ngpus_per_node):
                 model=models_pretrained.resnet18(pretrained=True)
                 model,device = set_gpu(args, model,ngpus_per_node)
             if args.arch=='ResNet101':
-                model=models_pretrained.ResNet101(pretrained=True)
+                model=models_pretrained.resnet101(pretrained=True)
                 model,device = set_gpu(args, model,ngpus_per_node)
 
     set_seed(args.seed)
@@ -102,6 +102,10 @@ def main_worker(gpu, args,ngpus_per_node):
                 #acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
                 print('acc1:')
                 print(acc1)
+
+                print(
+                    f"=> Rough estimate model params {sum(int(p.numel() * (args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
+                )
         else:
 
             checkpoint=torch.load(args.pretrained)
@@ -356,7 +360,7 @@ def get_model(args,):
 
         #set_model_prune_rate(model, prune_rate=args.prune_rate)
         print(
-            f"=> Rough estimate model params {sum(int(p.numel() * (1-args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
+            f"=> Rough estimate model params {sum(int(p.numel() * (args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
         )
 
     # freezing the weights if we are only doing subnet training
