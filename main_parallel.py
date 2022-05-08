@@ -46,7 +46,8 @@ def main_worker(gpu, args,ngpus_per_node):
 
     # create model and optimizer
     model = get_model(args)
-    model,device = set_gpu(args, model,ngpus_per_node)
+    if not args.evaluate:
+        model,device = set_gpu(args, model,ngpus_per_node)
 
     set_seed(args.seed)
 
@@ -83,13 +84,14 @@ def main_worker(gpu, args,ngpus_per_node):
         if args.conv_type=='DenseConv':
             if args.arch=='ResNet50':
                 model=models_pretrained.resnet50(pretrained=True)
-                model=set_gpu(args, model, ngpus_per_node)
+                model,device = set_gpu(args, model,ngpus_per_node)
             acc1, acc5 = validate(
                 data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
             )
             print('acc1:')
             print(acc1)
         else:
+
             checkpoint=torch.load(args.pretrained)
             print("EPOCH: {}".format(checkpoint['epoch']))
             print("ACC: {}".format(checkpoint['best_acc1']))
