@@ -54,6 +54,15 @@ def main_worker(gpu, args,ngpus_per_node):
             if args.arch=='ResNet50':
                 model=models_pretrained.resnet50(pretrained=True)
                 model,device = set_gpu(args, model,ngpus_per_node)
+            if args.arch=='WideResNet50':
+                model=models_pretrained.models.wide_resnet50_2()(pretrained=True)
+                model,device = set_gpu(args, model,ngpus_per_node)
+            if args.arch=='ResNet18':
+                model=models_pretrained.resnet18(pretrained=True)
+                model,device = set_gpu(args, model,ngpus_per_node)
+            if args.arch=='ResNet101':
+                model=models_pretrained.ResNet101(pretrained=True)
+                model,device = set_gpu(args, model,ngpus_per_node)
 
     set_seed(args.seed)
 

@@ -1,5 +1,8 @@
+#USED FOR EVALUATION ONLY
+#SET ARCH ON COMMAND LINE BEFORE RUNNINGN
+
 # Architecture
-arch: ResNet50
+#arch: ResNet
 
 # ===== Dataset ===== #
 data: /s/luffy/b/nobackup/mgorb/
