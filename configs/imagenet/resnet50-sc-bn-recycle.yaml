@@ -3,7 +3,8 @@ arch: ResNet50
 name: baseline
 
 # ===== Dataset ===== #
-data: /s/luffy/b/nobackup/mgorb/
+#data: /s/luffy/b/nobackup/mgorb/
+data: /s/babbage/b/nobackup/nblancha/public-datasets/imagenet
 set: ImageNet
 
 # ===== Learning Rate Policy ======== #
