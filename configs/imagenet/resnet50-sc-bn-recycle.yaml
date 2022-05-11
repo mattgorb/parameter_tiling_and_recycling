@@ -14,7 +14,7 @@ lr_policy: cosine_lr
 warmup_length: 10
 
 # ===== Network training config ===== #
-epochs: 350
+epochs: 500
 weight_decay: 0.000030517578125
 momentum: 0.875
 batch_size: 256
@@ -30,7 +30,7 @@ prune_rate: -1 # Override
 init: signed_constant
 mode: fan_in
 nonlinearity: relu
-#scale_fan: True
+scale_fan: True
 
 rerand_epoch_freq: 10
 rerand_rate: 0.2
