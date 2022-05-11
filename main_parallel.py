@@ -259,7 +259,7 @@ def main_worker(gpu, args,ngpus_per_node):
         )
 
     config = pathlib.Path(args.config).stem
-    print(f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}")
+    #print(f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}")
 
 
 def get_trainer(args,):
@@ -426,7 +426,7 @@ def get_directories(args):
     config = pathlib.Path(args.config).stem
     if args.log_dir is None:
         run_base_dir = pathlib.Path(
-            f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}"
+            f"/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/{config}/{args.name}/prune_rate={args.prune_rate}"
         )
     else:
         run_base_dir = pathlib.Path(
