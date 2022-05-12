@@ -4,7 +4,8 @@ name: baseline
 
 # ===== Dataset ===== #
 #data: /s/luffy/b/nobackup/mgorb/
-data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/
+#data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/
+data: /s/babbage/b/nobackup/nblancha/public-datasets/
 set: ImageNet
 
 # ===== Learning Rate Policy ======== #
