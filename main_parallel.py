@@ -235,8 +235,9 @@ def main_worker(gpu, args,ngpus_per_node):
 
         if args.rank % ngpus_per_node == 0:
             if args.rerand_epoch_freq is not None:
-                if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
-                    rerandomize_model(model, args)
+                if epoch>args.rerand_warmup:
+                    if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
+                        rerandomize_model(model, args)
 
         if args.rank % ngpus_per_node == 0:
             writer.add_scalar("test/lr", cur_lr, epoch)
