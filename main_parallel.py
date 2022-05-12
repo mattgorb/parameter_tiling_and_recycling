@@ -495,9 +495,9 @@ def write_result_to_csv(**kwargs):
 
 if __name__ == "__main__":
     import torch.multiprocessing as mp
-    import os
+    #import os
 
-    local_rank = int(os.environ["LOCAL_RANK"])
+    #local_rank = int(os.environ["LOCAL_RANK"])
 
     ngpus_per_node = torch.cuda.device_count()
     args.ngpus_per_node=ngpus_per_node
