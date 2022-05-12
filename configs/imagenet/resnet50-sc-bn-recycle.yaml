@@ -31,7 +31,7 @@ prune_rate: -1 # Override
 init: signed_constant
 mode: fan_in
 nonlinearity: relu
-scale_fan: True
+#scale_fan: True
 
 rerand_epoch_freq: 10
 rerand_rate: 0.2
