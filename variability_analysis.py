@@ -218,6 +218,7 @@ def pretrained(weight_file, model):
 def get_dataset(args):
     print(f"=> Getting {args.set} dataset")
     args.data='/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/data'
+    args.set='CIFAR10'
     dataset = getattr(data, args.set)(args)
 
     return dataset
