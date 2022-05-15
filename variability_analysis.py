@@ -260,14 +260,14 @@ def get_directories(args):
         raise ValueError("Must have name and config")
 
     config = pathlib.Path(args.config).stem
-    if args.log_dir is None:
+    '''if args.log_dir is None:
         run_base_dir = pathlib.Path(
             f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}"
         )
     else:
         run_base_dir = pathlib.Path(
             f"{args.log_dir}/{config}/{args.name}/prune_rate={args.prune_rate}"
-        )
+        )'''
     if args.width_mult != 1.0:
         run_base_dir = run_base_dir / "width_mult={}".format(str(args.width_mult))
 
