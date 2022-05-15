@@ -2,7 +2,8 @@
 arch: Conv6
 
 # ===== Dataset ===== #
-data: /s/luffy/b/nobackup/mgorb/data
+#data: /s/luffy/b/nobackup/mgorb/data
+data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/data
 set: CIFAR10
 name: baseline
 
