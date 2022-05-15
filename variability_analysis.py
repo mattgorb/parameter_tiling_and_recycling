@@ -58,9 +58,12 @@ def main_worker(args):
 
     #weight_files=[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/5/checkpoints/model_best.pth']+\
                  #[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/{i}/checkpoints/model_best.pth' for i in range(4)]
-    weight_files=[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/checkpoints/model_best.pth']+\
-                 [f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/{i}/checkpoints/model_best.pth' for i in range(14)]
-
+    #weight_files=[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/checkpoints/model_best.pth']+\
+                 #[f'/s/luffy/b/nobackup/mgorb/runs/{args.config.split("/")[-1].split(".")[0]}/baseline/prune_rate={args.prune_rate}/{i}/checkpoints/model_best.pth' for i in range(14)]
+    weight_files=[
+        '/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/conv6-sc-epu-var/baseline/prune_rate=0.1/checkpoints/model_best.pth',
+        '/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/conv6-sc-epu-var/baseline/prune_rate=0.1/0/checkpoints/model_best.pth'
+    ]
     model_num=[i for i in range(len(weight_files))]
     combos=list(itertools.combinations(model_num, 2))
 
