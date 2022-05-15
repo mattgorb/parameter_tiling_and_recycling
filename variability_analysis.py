@@ -64,6 +64,11 @@ def main_worker(args):
         '/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/conv6-sc-epu-var/baseline/prune_rate=0.1/checkpoints/model_best.pth',
         '/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/conv6-sc-epu-var/baseline/prune_rate=0.1/0/checkpoints/model_best.pth'
     ]
+    weight_files=[
+        '/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/conv6-kn-biprop-var/baseline/prune_rate=0.1/4/checkpoints/model_best.pth',
+        '/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/conv6-kn-biprop-var/baseline/prune_rate=0.1/3/checkpoints/model_best.pth'
+    ]
+
     model_num=[i for i in range(len(weight_files))]
     combos=list(itertools.combinations(model_num, 2))
 
