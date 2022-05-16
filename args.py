@@ -258,6 +258,9 @@ def parse_arguments():
     parser.add_argument(
         "--seed", default=0, type=int, help="seed for initializing training. "
     )
+    parser.add_argument(
+        "--ablation", default=False, type=bool, help="seed for initializing training. "
+    )
 
     args = parser.parse_args()
 

@@ -75,11 +75,12 @@ if not jaccard:
     cbar.set_ticklabels([f'{round(min_val2*100,3)}%',f'{round(max_val2*100,3)}%'])
 else:
     cbar.set_ticklabels([f'{round(min_val2,4)}',f'{round(max_val2,4)}'])
-ax.set_title('Biprop', fontsize=26)
-ax.set_xlabel('Score Parameter Seed Number', fontsize=18)
-ax.set_ylabel('Edge-Popup', fontsize=26)
+ax.set_title('Biprop', fontsize=34)
+ax.set_xlabel('Score Parameter Seed Number', fontsize=22)
+ax.set_ylabel('Edge-Popup', fontsize=34)
 #ax.set(xlabel='Score Parameter Seed Number\ncommon xlabel', ylabel='Edge-Popup\nScore Parameter Seed Number', fontsize=18)
 #f.set_axis_labels(None, 'Values')
 plt.tight_layout(rect=[0,-.08,1,1])
 #plt.tight_layout()#rect=[0,.1,1,1]
+print(savefile)
 plt.savefig(savefile)
