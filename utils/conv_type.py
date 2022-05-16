@@ -109,7 +109,7 @@ class SubnetConvEdgePopup(nn.Conv2d):
                 sorted, indices = torch.sort(self.scores.abs().flatten())
                 k = int((self.args.rerand_rate) * self.scores.numel())
                 low_scores=indices[:k]
-                if args.ablation:
+                if self.args.ablation:
                     print("Ablation recycling")
                     high_scores=indices[k:2*k]
                 else:
@@ -217,7 +217,7 @@ class SubnetConvBiprop(nn.Conv2d):
                 sorted, indices = torch.sort(self.scores.abs().flatten())
                 k = int((self.args.rerand_rate) * self.scores.numel())
                 low_scores=indices[:k]
-                if args.ablation:
+                if self.args.ablation:
                     print("Ablation recycling")
                     high_scores=indices[k:2*k]
                 else:
