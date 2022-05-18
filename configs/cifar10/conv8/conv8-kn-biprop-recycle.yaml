@@ -28,7 +28,7 @@ rerand_rate: 0.2
 rerand_type: recycle
 
 weight_init: kaiming_normal
-#scale_fan: True
+scale_fan: True
 score_init: None
 weight_seed: 0
 score_seed: 0
