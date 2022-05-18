@@ -23,7 +23,7 @@ bn_type: NonAffineBatchNorm
 freeze_weights: True
 
 weight_init: kaiming_normal
-scale_fan: False
+#scale_fan: False
 score_init: None
 weight_seed: 0
 score_seed: 0

@@ -30,7 +30,7 @@ sns.lineplot(x=[2425024,2261184,5275840,11678912], y=[87, 89, 89.4,93] ,markers=
 #sns.lineplot(x=[142128,566368,2261184], y=[83.65,87.54,89.14] ,ax=axs[0], label='Conv-6-Widths (Baselines)', legend=False)
 #sns.lineplot(x=[51614,330032,1319392,5275840], y=[75.06,84.75,87.18,89.41] ,ax=axs[0], label='Conv-8-Widths (Baselines)', legend=False)
 
-sns.lineplot(x=[51614,330032,1319392,5275840], y=[75.06,84.75,87.18,89.41] ,ax=axs, label='Conv-8-Widths (Baselines)', legend=False)
+sns.lineplot(x=[215049.60,121251.20,113059.20,263792.00], y=[65.11,73.5,72.11,75] ,ax=axs, label='Conv-8-Widths (Baselines)', legend=False)
 
 axs.set_title(label='Wide Conv-4', fontdict = {'fontsize' : 18})
 
