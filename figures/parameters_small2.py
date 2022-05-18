@@ -5,7 +5,7 @@ import seaborn as sns
 col=1
 plt.clf()
 sns.set_style('whitegrid')
-fig, axs = plt.subplots(1, col, sharex=True, figsize=(5*col,5))
+fig, axs = plt.subplots(1, col, sharex=True, figsize=(6*col,5))
 
 '''
 sns.lineplot(x=[2150496,430099,860198,1720396,2580595,3440793], y=[81.36,76.9,80.23,81.36,81.2,80.28] ,ax=axs[0],linestyle='-.', label='Conv-2', legend=False)
@@ -30,18 +30,18 @@ sns.lineplot(x=[2425024,2261184,5275840,11678912], y=[87, 89, 89.4,93] ,markers=
 #sns.lineplot(x=[142128,566368,2261184], y=[83.65,87.54,89.14] ,ax=axs[0], label='Conv-6-Widths (Baselines)', legend=False)
 #sns.lineplot(x=[51614,330032,1319392,5275840], y=[75.06,84.75,87.18,89.41] ,ax=axs[0], label='Conv-8-Widths (Baselines)', legend=False)
 
-sns.lineplot(x=[215049.60,121251.20,113059.20,263792.00], y=[65.11,73.5,72.11,75] ,ax=axs, label='Biprop+Recycle (95%PR)', legend=False)
-sns.lineplot(x=[215049.60,121251.20,113059.20,263792.00], y=[53.5,64.72,68.8,81.66] ,ax=axs, label='IteRand (95%PR)', legend=False)
+sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[68.8,64.72,81.22,79.78,68.87,86.94,85.34] ,ax=axs, label='IteRand', legend=False)
+sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[60.63,57.61,79.57,74.42,64.05,85.4,83.28] ,ax=axs, label='Edge-Popup', legend=False)
+sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[66.12,64.83,82.38,79,70.1,87.5,85.34] ,ax=axs, label='Biprop', legend=False)
+sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[72.11,73.5,85.5,84.3,76.9,90,87.75] ,ax=axs, label='Weight Recycle', legend=False)
 
 
-sns.lineplot(x=[430099.20,242502.40,226118.40,527584.00], y=[76.9,84.3,85.5,86.4   ] ,ax=axs, label='Biprop+Recycle (90%PR)', legend=False)
-sns.lineplot(x=[430099.20,242502.40,226118.40,527584.00], y=[68.87,78.88,81.22,84.73] ,ax=axs, label='IteRand (90%PR)', legend=False)
 
-
-sns.lineplot(x=[860198.40,485004.80,452236.80,1055168.00], y=[80.23,87.75,90,90.55] ,ax=axs, label='Biprop+Recycle (80%PR)', legend=False)
-sns.lineplot(x=[860198.40,485004.80,452236.80,1055168.00], y=[78.04,85.34,86.94,88.42] ,ax=axs, label='IteRand (80%PR)', legend=False)
-
-axs.set_title(label='Wide Conv-4', fontdict = {'fontsize' : 18})
+#axs.set_title(label='Wide Conv-4', fontdict = {'fontsize' : 18})
 
 
 
@@ -55,18 +55,19 @@ axs[1].set_title(label='Wide Conv-6', fontdict = {'fontsize' : 18})'''
 
 
 #for ax in axs:
-axs.set_xlabel("Number of Parameters", fontdict = {'fontsize' : 18})
+axs.set_xlabel("Number of Parameters (Thousands)", fontdict = {'fontsize' : 15})
     #ax.get_legend().remove()
-axs.set_ylabel("CIFAR-10 Test Accuracy",fontdict = {'fontsize' : 18} )
+axs.set_ylabel("CIFAR-10 Test Accuracy",fontdict = {'fontsize' : 15} )
 
+axs.set(xticklabels=["",100,150,200,250,300,350,400,450,500])
 
-#plt.xticks([.1,.25, .5, 1])
+#plt.xticks()
 #plt.xlim([.1, 1])
 #handles, labels = axs[0].get_legend_handles_labels()
 #fig.legend(handles, labels, loc='lower left', ncol=3,bbox_to_anchor=(.12, .02))
 handles, labels = axs.get_legend_handles_labels()
-fig.legend(handles, labels, loc='lower left', ncol=2,bbox_to_anchor=(.10, .01), prop={'size': 8})
-plt.tight_layout(rect=[0,.1,1,1])
+fig.legend(handles, labels, loc='lower left', ncol=4,bbox_to_anchor=(.02, .01), prop={'size': 11})
+plt.tight_layout(rect=[0,.08,1,1])
 
 #plt.show()
 plt.savefig('figs/params_small2.pdf')
