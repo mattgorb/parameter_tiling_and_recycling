@@ -30,7 +30,16 @@ sns.lineplot(x=[2425024,2261184,5275840,11678912], y=[87, 89, 89.4,93] ,markers=
 #sns.lineplot(x=[142128,566368,2261184], y=[83.65,87.54,89.14] ,ax=axs[0], label='Conv-6-Widths (Baselines)', legend=False)
 #sns.lineplot(x=[51614,330032,1319392,5275840], y=[75.06,84.75,87.18,89.41] ,ax=axs[0], label='Conv-8-Widths (Baselines)', legend=False)
 
-sns.lineplot(x=[215049.60,121251.20,113059.20,263792.00], y=[65.11,73.5,72.11,75] ,ax=axs, label='Conv-8-Widths (Baselines)', legend=False)
+sns.lineplot(x=[215049.60,121251.20,113059.20,263792.00], y=[65.11,73.5,72.11,75] ,ax=axs, label='Biprop+Recycle (95%PR)', legend=False)
+sns.lineplot(x=[215049.60,121251.20,113059.20,263792.00], y=[53.5,64.72,68.8,81.66] ,ax=axs, label='IteRand (95%PR)', legend=False)
+
+
+sns.lineplot(x=[430099.20,242502.40,226118.40,527584.00], y=[76.9,84.3,85.5,86.4   ] ,ax=axs, label='Biprop+Recycle (90%PR)', legend=False)
+sns.lineplot(x=[430099.20,242502.40,226118.40,527584.00], y=[68.87,78.88,81.22,84.73] ,ax=axs, label='IteRand (90%PR)', legend=False)
+
+
+sns.lineplot(x=[860198.40,485004.80,452236.80,1055168.00], y=[80.23,87.75,90,90.55] ,ax=axs, label='Biprop+Recycle (80%PR)', legend=False)
+sns.lineplot(x=[860198.40,485004.80,452236.80,1055168.00], y=[78.04,85.34,86.94,88.42] ,ax=axs, label='IteRand (80%PR)', legend=False)
 
 axs.set_title(label='Wide Conv-4', fontdict = {'fontsize' : 18})
 
@@ -45,22 +54,22 @@ axs[1].set_title(label='Wide Conv-6', fontdict = {'fontsize' : 18})'''
 
 
 
-for ax in axs:
-    ax.set_xlabel("Number of Parameters", fontdict = {'fontsize' : 18})
+#for ax in axs:
+axs.set_xlabel("Number of Parameters", fontdict = {'fontsize' : 18})
     #ax.get_legend().remove()
-axs[0].set_ylabel("CIFAR-10 Test Accuracy",fontdict = {'fontsize' : 18} )
+axs.set_ylabel("CIFAR-10 Test Accuracy",fontdict = {'fontsize' : 18} )
 
 
 #plt.xticks([.1,.25, .5, 1])
 #plt.xlim([.1, 1])
 #handles, labels = axs[0].get_legend_handles_labels()
 #fig.legend(handles, labels, loc='lower left', ncol=3,bbox_to_anchor=(.12, .02))
-handles, labels = axs[0].get_legend_handles_labels()
-fig.legend(handles, labels, loc='lower left', ncol=4,bbox_to_anchor=(.10, .01), prop={'size': 18})
+handles, labels = axs.get_legend_handles_labels()
+fig.legend(handles, labels, loc='lower left', ncol=2,bbox_to_anchor=(.10, .01), prop={'size': 8})
 plt.tight_layout(rect=[0,.1,1,1])
 
 #plt.show()
-plt.savefig('figs/params_small.pdf')
+plt.savefig('figs/params_small2.pdf')
 
 del fig
 del axs
