@@ -5,7 +5,7 @@ import seaborn as sns
 col=1
 plt.clf()
 sns.set_style('whitegrid')
-fig, axs = plt.subplots(1, col, sharex=True, figsize=(6*col,5))
+fig, axs = plt.subplots(1, col, sharex=True, figsize=(7*col,5))
 
 '''
 sns.lineplot(x=[2150496,430099,860198,1720396,2580595,3440793], y=[81.36,76.9,80.23,81.36,81.2,80.28] ,ax=axs[0],linestyle='-.', label='Conv-2', legend=False)
@@ -30,27 +30,16 @@ sns.lineplot(x=[2425024,2261184,5275840,11678912], y=[87, 89, 89.4,93] ,markers=
 #sns.lineplot(x=[142128,566368,2261184], y=[83.65,87.54,89.14] ,ax=axs[0], label='Conv-6-Widths (Baselines)', legend=False)
 #sns.lineplot(x=[51614,330032,1319392,5275840], y=[75.06,84.75,87.18,89.41] ,ax=axs[0], label='Conv-8-Widths (Baselines)', legend=False)
 
-sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
-             y=[68.8,64.72,81.22,79.78,68.87,86.94,85.34] ,ax=axs, label='IteRand', legend=False)
-sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
-             y=[60.63,57.61,79.57,74.42,64.05,85.4,83.28] ,ax=axs, label='Edge-Popup', legend=False)
-sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
-             y=[66.12,64.83,82.38,79,70.1,87.5,85.34] ,ax=axs, label='Biprop', legend=False)
-sns.lineplot(x=[113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
-             y=[72.11,73.5,85.5,84.3,76.9,90,87.75] ,ax=axs, label='Weight Recycle', legend=False)
+sns.lineplot(x=[48500.48,113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[41.6,68.8,64.72,81.22,79.78,68.87,86.94,85.34] ,ax=axs, label='IteRand', legend=False)
+sns.lineplot(x=[48500.48,113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[35.28,60.63,57.61,79.57,74.42,64.05,85.4,83.28] ,ax=axs, label='Edge-Popup', legend=False)
+sns.lineplot(x=[48500.48,113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[44,66.12,64.83,82.38,79,70.1,87.5,85.34] ,ax=axs, label='Biprop', legend=False)
+sns.lineplot(x=[48500.48,113059.20,121251.20,226118.40,242502.40,430099.20,452236.80,485004.80],
+             y=[49.38,72.11,73.5,85.5,84.3,76.9,90,87.75] ,ax=axs, label='Weight Recycle', legend=False)
 
 
-
-#axs.set_title(label='Wide Conv-4', fontdict = {'fontsize' : 18})
-
-
-
-
-'''sns.lineplot(x=[0.1,0.25,0.5,1], y=[57.3,78.48,86.24,89.53] ,ax=axs[1],linestyle='-.', label='Edge-Popup', legend=False)
-sns.lineplot(x=[0.1,0.25,0.5,1], y=[64.5,83,88.18,90.74] ,ax=axs[1],linestyle='-.', label='IteRand', legend=False)
-sns.lineplot(x=[0.1,0.25,0.5,1], y=[64.1,83,88.57,90.9] ,ax=axs[1], label='Edge-Popup+Recycle', legend=False)
-sns.lineplot(x=[0.1,0.25,0.5,1], y=[72.48,83.65,87.54,89.14] ,linestyle='--',ax=axs[1], label='Baseline (Learned Weights)', legend=False)
-axs[1].set_title(label='Wide Conv-6', fontdict = {'fontsize' : 18})'''
 
 
 
@@ -59,7 +48,7 @@ axs.set_xlabel("Number of Parameters (Thousands)", fontdict = {'fontsize' : 15})
     #ax.get_legend().remove()
 axs.set_ylabel("CIFAR-10 Test Accuracy",fontdict = {'fontsize' : 15} )
 
-axs.set(xticklabels=["",100,150,200,250,300,350,400,450,500])
+axs.set(xticklabels=["",100,200,300,400,500])
 
 #plt.xticks()
 #plt.xlim([.1, 1])
