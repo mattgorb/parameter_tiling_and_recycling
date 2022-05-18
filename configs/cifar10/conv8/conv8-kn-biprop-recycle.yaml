@@ -8,7 +8,7 @@ name: baseline
 
 # ===== Learning Rate Policy ======== #
 optimizer: sgd
-lr: 0.05
+lr: 0.001
 lr_policy: cosine_lr
 
 # ===== Network training config ===== #
@@ -27,7 +27,7 @@ rerand_epoch_freq: 10
 rerand_rate: 0.2
 rerand_type: recycle
 
-weight_init: signed_constant
+weight_init: kaiming_normal
 #scale_fan: True
 score_init: None
 weight_seed: 0
