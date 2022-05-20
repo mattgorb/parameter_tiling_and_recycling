@@ -246,7 +246,7 @@ def parse_arguments():
         "--rerand_type", default=None, help="rerand type, iterand or recycle"
     )
     parser.add_argument(
-        "--rerand_warmup", default=None, help="rerand warmup, iterand or recycle"
+        "--rerand_warmup", default=1, help="rerand warmup, iterand or recycle"
     )
 
     parser.add_argument(
