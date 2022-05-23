@@ -117,7 +117,7 @@ def main_worker(args,):
             #data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         #)
 
-        checkpoint=torch.load(args.pretrained)
+        #checkpoint=torch.load(args.pretrained)
         print()
         print("EPOCH: {}".format(checkpoint['epoch']))
         print("ACC: {}".format(checkpoint['best_acc1']))
