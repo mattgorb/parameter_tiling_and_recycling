@@ -312,7 +312,10 @@ def resume(args, model, optimizer):
 
         print(f"=> Loaded checkpoint '{args.resume}' (epoch {checkpoint['epoch']})")
 
-        print(checkpoint)
+        for key, item in checkpoint.items():
+            print(key)
+
+        3print(checkpoint)
         sys.exit()
 
         return best_acc1
