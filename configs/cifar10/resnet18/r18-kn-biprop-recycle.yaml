@@ -13,7 +13,7 @@ lr: 0.1
 lr_policy: cosine_lr
 
 # ===== Network training config ===== #
-epochs: 250
+epochs: 120
 weight_decay: 0.0005
 momentum: 0.9
 batch_size: 128
@@ -29,9 +29,12 @@ score_init: None
 weight_seed: 0
 score_seed: 0
 prune_rate: -1
+
 rerand_epoch_freq: 10
 rerand_rate: 0.2
 rerand_type: recycle
+rerand_warmup: 20
+
 gpu: 0
 # ===== Hardware setup ===== #
 workers: 4
