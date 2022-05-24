@@ -312,6 +312,9 @@ def resume(args, model, optimizer):
 
         print(f"=> Loaded checkpoint '{args.resume}' (epoch {checkpoint['epoch']})")
 
+        print(checkpoint)
+        sys.exit()
+
         return best_acc1
     else:
         print(f"=> No checkpoint found at '{args.resume}'")
