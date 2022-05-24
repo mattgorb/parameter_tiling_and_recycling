@@ -313,7 +313,7 @@ def resume(args, model, optimizer):
 
         model.load_state_dict(checkpoint["state_dict"])
 
-        #optimizer.load_state_dict(checkpoint["optimizer"])
+        optimizer.load_state_dict(checkpoint["optimizer"])
 
         print(f"=> Loaded checkpoint '{args.resume}' (epoch {checkpoint['epoch']})")
 
