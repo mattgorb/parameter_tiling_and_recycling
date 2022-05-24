@@ -315,7 +315,7 @@ def resume(args, model, optimizer):
         for key, item in checkpoint.items():
             print(key)
 
-        3print(checkpoint)
+        #print(checkpoint)
         sys.exit()
 
         return best_acc1
