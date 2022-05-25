@@ -15,7 +15,7 @@ lr_policy: cosine_lr
 warmup_length: 10
 
 # ===== Network training config ===== #
-epochs: 300
+epochs: 130
 weight_decay: 0.000030517578125
 momentum: 0.875
 batch_size: 256
@@ -25,7 +25,7 @@ label_smoothing: 0.1
 
 # ===== Sparsity =========== #
 conv_type: SubnetConvBiprop
-bn_type: LearnedBatchNorm
+bn_type: NonAffineBatchNorm
 freeze_weights: True
 prune_rate: -1 # Override
 weight_init: signed_constant
@@ -33,7 +33,7 @@ mode: fan_in
 nonlinearity: relu
 scale_fan: True
 
-rerand_warmup: 10
+rerand_warmup: 30
 rerand_epoch_freq: 10
 rerand_rate: 0.2
 rerand_type: recycle
