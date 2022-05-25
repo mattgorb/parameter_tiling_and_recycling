@@ -28,7 +28,7 @@ conv_type: SubnetConvBiprop
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 prune_rate: -1 # Override
-weight_init: signed_constant
+weight_init: kaiming_normal
 mode: fan_in
 nonlinearity: relu
 scale_fan: True
