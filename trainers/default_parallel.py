@@ -69,8 +69,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_p
 
 
         if args.rerand_iter_freq is not None:
-            if i%args.rerand_iter_freq==0 and epoch>0:
-                rerandomize_model(model, args)
+            if epoch > int(args.rerand_warmup):
+                if i%args.rerand_iter_freq==0 and epoch>0:
+                    rerandomize_model(model, args)
 
 
     return top1.avg, top5.avg
