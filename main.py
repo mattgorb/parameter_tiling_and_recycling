@@ -11,7 +11,7 @@ import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
-from utils.conv_type import SubnetConvLTH
+
 
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import (
@@ -32,33 +32,12 @@ import models
 from utils.initializations import set_seed
 
 from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop, GetSubnetEdgePopup, GetQuantnet_binary
-
+import matplotlib.pyplot as plt
 
 def main():
 
     print('args: {}'.format(args))
 
-    '''args.conv_type='DenseConv'
-    args.bn_type='NonAffineBatchNorm'
-    for arch in models.__all__:
-        args.arch=arch
-        print(arch)
-        if 'Wide' in arch:
-
-            for wm in [0.1,.25,.5,1,2]:
-                args.width_mult=wm
-                print('width mult')
-                print(wm)
-                model = get_model(args)
-                pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-                print('params:')
-                print(pytorch_total_params)
-        else:
-            continue
-            model = get_model(args)
-            pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-            print(pytorch_total_params)
-    sys.exit()'''
 
     set_seed(args.seed)
 
@@ -76,8 +55,11 @@ def main_worker(args,):
     if args.rerand_iter_freq is not None and args.rerand_epoch_freq is not None:
         print('Use only one of rerand_iter_freq and rerand_epoch_freq')
 
-    # create model and optimizer
     model = get_model(args)
+    #model = nn.DataParallel(model,device_ids = [0,1,2])
+
+    if args.data_type=='float16':
+        model = model.to(torch.float16)
     model,device = set_gpu(args, model,)
 
     set_seed(args.seed)
@@ -113,9 +95,9 @@ def main_worker(args,):
 
     # Data loading code
     if args.evaluate:
-        #acc1, acc5 = validate(
-            #data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
-        #)
+        acc1, acc5 = validate(
+            data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
+        )
 
         #checkpoint=torch.load(args.pretrained)
         print()
@@ -165,13 +147,14 @@ def main_worker(args,):
     )
 
     # Start training
+    lrs=[]
     for epoch in range(args.start_epoch, args.epochs):
 
         lr_policy(epoch, iteration=None)
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
-
+        lrs.append(cur_lr)
         # train for one epoch
         start_train = time.time()
         train_acc1, train_acc5 = train(
@@ -205,47 +188,23 @@ def main_worker(args,):
             if is_best:
                 print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
 
-            if args.conv_type=='SubnetConvLTH':
-                model_saved=copy.deepcopy(model)
-                for n,m in model_saved.named_modules():
-                    if isinstance(m, SubnetConvLTH):
-                        torch.nn.utils.prune.remove(m, "weight")
-
-                save_checkpoint(
-                    {
-                        "epoch": epoch + 1,
-                        "arch": args.arch,
-                        "state_dict": model_saved.state_dict(),
-                        "best_acc1": best_acc1,
-                        "best_acc5": best_acc5,
-                        "best_train_acc1": best_train_acc1,
-                        "best_train_acc5": best_train_acc5,
-                        "optimizer": optimizer.state_dict(),
-                        "curr_acc1": acc1,
-                        "curr_acc5": acc5,
-                    },
-                    is_best,
-                    filename=ckpt_base_dir / f"epoch_{epoch}.state",
-                    save=save,
-                )
-            else:
-                save_checkpoint(
-                    {
-                        "epoch": epoch + 1,
-                        "arch": args.arch,
-                        "state_dict": model.state_dict(),
-                        "best_acc1": best_acc1,
-                        "best_acc5": best_acc5,
-                        "best_train_acc1": best_train_acc1,
-                        "best_train_acc5": best_train_acc5,
-                        "optimizer": optimizer.state_dict(),
-                        "curr_acc1": acc1,
-                        "curr_acc5": acc5,
-                    },
-                    is_best,
-                    filename=ckpt_base_dir / f"epoch_{epoch}.state",
-                    save=save,
-                )
+            save_checkpoint(
+                {
+                    "epoch": epoch + 1,
+                    "arch": args.arch,
+                    "state_dict": model.state_dict(),
+                    "best_acc1": best_acc1,
+                    "best_acc5": best_acc5,
+                    "best_train_acc1": best_train_acc1,
+                    "best_train_acc5": best_train_acc5,
+                    "optimizer": optimizer.state_dict(),
+                    "curr_acc1": acc1,
+                    "curr_acc5": acc5,
+                },
+                is_best,
+                filename=ckpt_base_dir / f"epoch_{epoch}.state",
+                save=save,
+            )
 
             epoch_time.update((time.time() - end_epoch) / 60)
             progress_overall.display(epoch)
@@ -260,7 +219,24 @@ def main_worker(args,):
 
         writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
+    
+    '''
+    args.epochs=args.epochs+250
+    for e in range(epoch, args.epochs):
 
+        lr_policy(e, iteration=None)
+        modifier(args, e, model)
+
+        cur_lr = get_lr(optimizer)
+        lrs.append(cur_lr)
+    print(lrs)
+    plt.clf()
+    plt.plot([i for i in range(len(lrs))], lrs, '.')
+    #plt.ylim([0,0.01])
+    plt.savefig('fig1.png')
+    return 
+    '''
+    
     write_result_to_csv(
         best_acc1=best_acc1,
         best_acc5=best_acc5,
@@ -288,12 +264,10 @@ def set_gpu(args, model,):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
     if args.gpu is not None:
         device=torch.device('cuda:{}'.format(args.gpu))
-        #if args.multigpu is None:
+
         model = model.to(device)
 
-
     print(device)
-    #model = model.to(device)
     cudnn.benchmark = True
     return model, device
 
@@ -365,22 +339,69 @@ def get_model(args,):
 
     print("=> Creating model '{}'".format(args.arch))
     model = models.__dict__[args.arch]()
+    dense_params=sum(int(p.numel() ) for n, p in model.named_parameters() if not n.endswith('scores'))
+    dense_params="{:,}".format(dense_params)
+    print(
+        f"=> Dense model params:\n\t{dense_params}"
+    )
+
+    
 
     # applying sparsity to the network
-    if args.conv_type != "DenseConv":
+    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull':
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
-        #set_model_prune_rate(model, prune_rate=args.prune_rate)
-        print(
-            f"=> Rough estimate model params {sum(int(p.numel() * (1-args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
-        )
+    if args.conv_type=='SubnetConvTiledFull':
+        assert args.model_type=='prune' or args.model_type=='binarize',  'model type needs to be prune or binarize'
+        assert args.alpha_type=='single' or args.alpha_type=='multiple', "alpha needs to be single or multiple"
+    
+    if args.conv_type=="SubnetConvTiledFull":
+
+        if args.global_mask_compression_factor is not None:
+            tiled_params=sum(int(p.numel()/args.global_mask_compression_factor ) for n, p in model.named_parameters() if not n.endswith('scores'))
+            tiled_params+=args.weight_tile_size
+            tiled_params="{:,}".format(tiled_params)
+
+            print(
+                f"=> Tiled params: \n\t {tiled_params}"
+            )
+            
+        if args.layer_mask_compression_factors is not None:
+            
+            model.layer_mask_compression_factors
+            tiled_params=0
+            i=0
+
+            for name, param in model.named_parameters():
+
+
+                if name.endswith('scores'):
+                    continue
+                elif 'bn' in name or 'downsample.1' in name:
+                    print(f"name: {name}, weight size: {param.numel()}")
+                else:
+                    print(f"name: {name}")
+                    print(f"name: {name},i: {i}, weight size: {param.numel()}, compress factor: {model.layer_mask_compression_factors[i]}")
+                    tiled_params+=int(param.numel()/model.layer_mask_compression_factors[i])
+                    #print(model.layer_mask_compression_factors[i])
+                    i+=1
+            if args.weight_tile_size is not None: 
+                tiled_params+=args.weight_tile_size
+            tiled_params="{:,}".format(tiled_params)
+
+            print(
+                f"=> Tiled params: \n\t {tiled_params}"
+            )
+            #sys.exit()
 
     # freezing the weights if we are only doing subnet training
-    if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' or args.conv_type=='SubnetConvSSTL':
+    if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop':
         freeze_model_weights(model)
 
-
+   
+    #sys.exit()
+    print( f"model weight tile size: {args.weight_tile_size}")
 
     return model
 

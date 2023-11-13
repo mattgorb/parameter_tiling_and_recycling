@@ -5,7 +5,6 @@ import tqdm
 from utils.eval_utils import accuracy_parallel as accuracy
 from utils.logging import AverageMeter, ProgressMeter
 
-from utils.conv_type import SubnetConvSSTL,SubnetConvBiprop,SubnetConvEdgePopup
 
 __all__ = ["train", "validate", "modifier","validate_pretrained"]
 
@@ -37,10 +36,12 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_p
         data_time.update(time.time() - end)
 
         if args.gpu is not None:
-            images = images.to("cuda:{}".format(args.gpu))#cuda(args.gpu, non_blocking=True)
+            images = images.to("cuda:{}".format(args.gpu), non_blocking=True)#cuda(args.gpu, non_blocking=True)
 
-        target = target.to("cuda:{}".format(args.gpu))#.cuda(args.gpu, non_blocking=True)
+        target = target.to("cuda:{}".format(args.gpu), non_blocking=True)#.cuda(args.gpu, non_blocking=True)
 
+        if args.data_type=='float16':
+            images = images.to(torch.float16)
         # compute output
         output = model(images)
 
@@ -48,6 +49,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_p
 
         # measure accuracy and record loss
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
+        #print(acc1)
         losses.update(loss.item(), images.size(0))
         top1.update(acc1.item(), images.size(0))
         top5.update(acc5.item(), images.size(0))
@@ -55,6 +57,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_p
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
+        #torch.cuda.synchronize()
         optimizer.step()
 
         # measure elapsed time
@@ -72,8 +75,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_p
             if epoch > int(args.rerand_warmup):
                 if i%args.rerand_iter_freq==0 and epoch>0:
                     rerandomize_model(model, args)
-
-
+        
     return top1.avg, top5.avg
 
 
@@ -88,39 +90,10 @@ def validate(val_loader, model, criterion, args, writer, epoch,ngpus_per_node):
 
     avg_meters=[ losses, top1, top5,]
 
-    track_subnet=False
-    for n, m in model.named_modules() :
-        if isinstance(m, SubnetConvSSTL) :
-            track_subnet=True
-            break
-    if track_subnet:
-        module_meters={}
-        for n, m in model.named_modules():
-            if isinstance(m, SubnetConvSSTL) :
-                module_meters[n+'_pct_prn']=AverageMeter(n, ":6.2f", write_val=False)
-
-        avg_meters.extend(module_meters.values())
-
-        percent_pruned= AverageMeter("PercentPruned", ":6.2f")
-        avg_meters.append(percent_pruned)
 
     progress = ProgressMeter(
         len(val_loader), avg_meters, prefix="Test: "
     )
-
-
-
-    if track_subnet:
-        total_not_pruned=0
-        total_parameters=0
-        for n, m in model.named_modules():
-            if isinstance(m, SubnetConvSSTL):
-                module_meters[n+'_pct_prn'].update(m.get_sparsity().item())
-                total_parameters+=m.scores.size().numel()
-                total_not_pruned+=(m.scores.size().numel()*m.get_sparsity())
-
-        total_percent=((total_not_pruned/total_parameters).item())
-        percent_pruned.update(total_percent)
 
     with torch.no_grad():
         end = time.time()
@@ -128,15 +101,17 @@ def validate(val_loader, model, criterion, args, writer, epoch,ngpus_per_node):
             enumerate(val_loader), ascii=True, total=len(val_loader)
         ):
             if args.gpu is not None:
-                images = images.to("cuda:{}".format(args.gpu))#.cuda(args.gpu, non_blocking=True)
+                images = images.cuda(args.gpu, non_blocking=True)
 
-            target = target.to("cuda:{}".format(args.gpu))#.cuda(args.gpu, non_blocking=True)
+            target = target.cuda(args.gpu, non_blocking=True)
 
-            # compute output
+            if args.data_type=='float16':
+                images = images.to(torch.float16)
+                
             output = model(images)
 
             loss = criterion(output, target)
-
+            #torch.cuda.synchronize()
             # measure accuracy and record loss
             acc1, acc5 = accuracy(output, target, topk=(1, 5))
             losses.update(loss.item(), images.size(0))

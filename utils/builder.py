@@ -9,12 +9,15 @@ import utils.bn_type
 from utils.initializations import _init_weight
 
 class Builder(object):
-    def __init__(self, conv_layer, bn_layer, first_layer=None):
+    def __init__(self, conv_layer, bn_layer, first_layer=None, weight_tile=None, mask_compression_factors=None):
         self.conv_layer = conv_layer
         self.bn_layer = bn_layer
         self.first_layer = first_layer or conv_layer
+        self.weight_tile=weight_tile
+        self.mask_compression_factors=mask_compression_factors
+        self.mask_compression_factors_ind=0
 
-    def conv(self, kernel_size, in_planes, out_planes, stride=1, first_layer=False):
+    def conv(self, kernel_size, in_planes, out_planes, stride=1, first_layer=False, compress_factor=None):
         conv_layer = self.first_layer if first_layer else self.conv_layer
 
         if first_layer:
@@ -54,8 +57,12 @@ class Builder(object):
         else:
             return None
 
-        if args.conv_type!='DenseConv':
-            conv.init(args)
+        if args.conv_type=='SubnetConvTiledFull':
+            conv.init(args, self.weight_tile,
+                      self.mask_compression_factors[self.mask_compression_factors_ind])
+            self.mask_compression_factors_ind+=1
+        elif args.conv_type!='DenseConv':
+            conv.init(args, )
         else:
             conv.args = args
             conv.weight = _init_weight(conv.args, conv.weight)
@@ -64,24 +71,28 @@ class Builder(object):
 
         return conv
 
-    def conv3x3(self, in_planes, out_planes, stride=1, first_layer=False):
+    def conv3x3(self, in_planes, out_planes, stride=1, first_layer=False, compress_factor=None):
         """3x3 convolution with padding"""
-        c = self.conv(3, in_planes, out_planes, stride=stride, first_layer=first_layer)
+        c = self.conv(3, in_planes, out_planes, stride=stride, first_layer=first_layer, 
+                      compress_factor=compress_factor)
         return c
 
-    def conv1x1(self, in_planes, out_planes, stride=1, first_layer=False):
+    def conv1x1(self, in_planes, out_planes, stride=1, first_layer=False, compress_factor=None):
         """1x1 convolution with padding"""
-        c = self.conv(1, in_planes, out_planes, stride=stride, first_layer=first_layer)
+        c = self.conv(1, in_planes, out_planes, stride=stride, first_layer=first_layer, 
+                      compress_factor=compress_factor)
         return c
 
-    def conv7x7(self, in_planes, out_planes, stride=1, first_layer=False):
+    def conv7x7(self, in_planes, out_planes, stride=1, first_layer=False, compress_factor=None):
         """7x7 convolution with padding"""
-        c = self.conv(7, in_planes, out_planes, stride=stride, first_layer=first_layer)
+        c = self.conv(7, in_planes, out_planes, stride=stride, first_layer=first_layer, 
+                      compress_factor=compress_factor)
         return c
 
-    def conv5x5(self, in_planes, out_planes, stride=1, first_layer=False):
+    def conv5x5(self, in_planes, out_planes, stride=1, first_layer=False, compress_factor=None):
         """5x5 convolution with padding"""
-        c = self.conv(5, in_planes, out_planes, stride=stride, first_layer=first_layer)
+        c = self.conv(5, in_planes, out_planes, stride=stride, first_layer=first_layer, 
+                      compress_factor=compress_factor)
         return c
 
     def batchnorm(self, planes, last_bn=False, first_layer=False):
@@ -93,7 +104,7 @@ class Builder(object):
         else:
             raise ValueError(f"{args.nonlinearity} is not an initialization option!")
 
-def get_builder():
+def get_builder(weight_tile=None, mask_compression_factors=None):
 
     print("==> Conv Type: {}".format(args.conv_type))
     print("==> BN Type: {}".format(args.bn_type))
@@ -108,6 +119,7 @@ def get_builder():
     else:
         first_layer = None
 
-    builder = Builder(conv_layer=conv_layer, bn_layer=bn_layer, first_layer=first_layer)
+    builder = Builder(conv_layer=conv_layer, bn_layer=bn_layer, first_layer=first_layer, 
+                      weight_tile=weight_tile, mask_compression_factors=mask_compression_factors)
 
     return builder

@@ -1,0 +1,32 @@
+# Architecture
+arch: Conv6
+
+# ===== Dataset ===== #
+data: /s/luffy/b/nobackup/mgorb/data
+set: CIFAR10
+name: baseline
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.01
+lr_policy: cosine_lr
+
+# ===== Network training config ===== #
+epochs: 100
+weight_decay: 0.0001
+momentum: 0.9
+batch_size: 128
+
+# ===== Sparsity =========== #
+conv_type: DenseConv
+bn_type: NonAffineBatchNorm
+data_type: float16
+
+weight_init: kaiming_normal
+score_init: None
+
+
+
+gpu: 0
+# ===== Hardware setup ===== #
+workers: 4

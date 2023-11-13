@@ -2,6 +2,7 @@ import torch.nn as nn
 
 from utils.builder import get_builder
 from args import args
+from utils.tile_utils import create_signed_tile
 
 # BasicBlock {{{
 class BasicBlock(nn.Module):
@@ -66,9 +67,9 @@ class Bottleneck(nn.Module):
 
     def forward(self, x):
         residual = x
-
         out = self.conv1(x)
         out = self.bn1(out)
+
         out = self.relu(out)
 
         out = self.conv2(out)
@@ -80,9 +81,7 @@ class Bottleneck(nn.Module):
 
         if self.downsample is not None:
             residual = self.downsample(x)
-
         out += residual
-
         out = self.relu(out)
 
         return out
@@ -93,6 +92,26 @@ class Bottleneck(nn.Module):
 # ResNet {{{
 class ResNet(nn.Module):
     def __init__(self, builder, block, layers, num_classes=1000, base_width=64):
+
+        self.num_layers=54
+        self.weight_tile=None
+        self.layer_mask_compression_factors=None
+
+        if args.layer_mask_compression_factors is not None: 
+            assert args.global_mask_compression_factor is None, "global compression factor must be none if layer compression is not none"
+
+        if args.weight_tile_size is not None: 
+            self.weight_tile=create_signed_tile(args.weight_tile_size)
+            print(f"weight tile: {self.weight_tile}")
+        if args.layer_mask_compression_factors is not None:
+            self.layer_mask_compression_factors=list(args.layer_mask_compression_factors.split(','))
+            self.layer_mask_compression_factors=[int(x) for x in self.layer_mask_compression_factors]
+            assert len(self.layer_mask_compression_factors)==self.num_layers, f"mask compression factor must have length {self.num_layers}"
+        if args.global_mask_compression_factor is not None: 
+            self.layer_mask_compression_factors=[args.global_mask_compression_factor for i in range(self.num_layers)]
+
+        self.builder= get_builder(weight_tile=self.weight_tile, mask_compression_factors=self.layer_mask_compression_factors)
+        
         self.inplanes = 64
         super(ResNet, self).__init__()
 
@@ -105,22 +124,22 @@ class ResNet(nn.Module):
                 3, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False
             )
         else:
-            self.conv1 = builder.conv7x7(3, 64, stride=2, first_layer=True)
+            self.conv1 = self.builder.conv7x7(3, 64, stride=2, first_layer=True)
 
-        self.bn1 = builder.batchnorm(64)
-        self.relu = builder.activation()
+        self.bn1 = self.builder.batchnorm(64)
+        self.relu = self.builder.activation()
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(builder, block, 64, layers[0])
-        self.layer2 = self._make_layer(builder, block, 128, layers[1], stride=2)
-        self.layer3 = self._make_layer(builder, block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(builder, block, 512, layers[3], stride=2)
+        self.layer1 = self._make_layer(self.builder, block, 64, layers[0])
+        self.layer2 = self._make_layer(self.builder, block, 128, layers[1], stride=2)
+        self.layer3 = self._make_layer(self.builder, block, 256, layers[2], stride=2)
+        self.layer4 = self._make_layer(self.builder, block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
 
         # self.fc = nn.Linear(512 * block.expansion, num_classes)
         if args.last_layer_dense:
             self.fc = nn.Conv2d(512 * block.expansion, args.num_classes, 1)
         else:
-            self.fc = builder.conv1x1(512 * block.expansion, num_classes)
+            self.fc = self.builder.conv1x1(512 * block.expansion, num_classes)
 
     def _make_layer(self, builder, block, planes, blocks, stride=1):
         downsample = None
@@ -133,20 +152,22 @@ class ResNet(nn.Module):
                 downsample = nn.Sequential(dconv, dbn)
             else:
                 downsample = dconv
-
+        #TRY BIAS
         layers = []
-        layers.append(block(builder, self.inplanes, planes, stride, downsample, base_width=self.base_width))
+        layers.append(block(self.builder, self.inplanes, planes, stride, downsample, base_width=self.base_width))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
-            layers.append(block(builder, self.inplanes, planes, base_width=self.base_width))
+            layers.append(block(self.builder, self.inplanes, planes, base_width=self.base_width))
 
         return nn.Sequential(*layers)
 
     def forward(self, x):
+
         x = self.conv1(x)
 
         if self.bn1 is not None:
             x = self.bn1(x)
+
         x = self.relu(x)
         x = self.maxpool(x)
 
@@ -154,9 +175,10 @@ class ResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-
         x = self.avgpool(x)
+
         x = self.fc(x)
+
         x = x.contiguous().view(x.size(0), -1)
 
         return x
@@ -170,6 +192,7 @@ def ResNet34(pretrained=False):
     return ResNet(get_builder(), BasicBlock, [3, 4, 6, 3], 1000)
 
 def ResNet50(pretrained=False):
+
     return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3], 1000)
 
 def ResNet101(pretrained=False):

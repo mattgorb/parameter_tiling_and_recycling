@@ -1,0 +1,177 @@
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=1 > results/1.txt  2>&1 & #
+nohup python -u main.py --config configs/cifar10/conv8-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=2 > results/2.txt  2>&1 & #84.49% 1,327,152, 5,275,840
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop.yaml --prune_rate=0.5 --gpu=3 > results/3.txt  2>&1 &
+nohup python -u  main_parallel.py --config configs/imagenet/resnet50-baseline.yaml --prune_rate=0.5 > results/4.txt  2>&1 &
+
+
+
+nohup python -u  main_parallel.py --config configs/imagenet/resnet50-baseline.yaml --prune_rate=0.5 > results/5_128images.txt  2>&1 &
+nohup python -u  main_parallel.py --config configs/imagenet/resnet50-baseline.yaml --prune_rate=0.5 --resume=/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-baseline/baseline/prune_rate=0.5/5/checkpoints/model_best.pth > results/5_128images_2.txt  2>&1 &
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/6.txt  2>&1 & #2,4,4,4,4,4,2,2,2, #84.0% accuracy, 574,560 tiled 2,261,184 total
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/7.txt  2>&1 & #[2, 2, 4, 4, 4, 2, 2, 2, 2] tiled: 1,009,760 tiled 2,261,184 total
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/8.txt  2>&1 & #2,4,4,4,4,4,4,4,2 tiled: 574,560 tiled 2,261,184 total
+
+
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/9.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/10.txt  2>&1 & #4,4,4,4,4,4,4,4,4 weight_tile_size: 32768
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ --epochs=1000 > r1sults/11.txt  2>&1 & #4,4,4,4,4,4,4,4,4 epochs=1000
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/12.txt  2>&1 &  #1000 epochs, 2,4,4,4,4,4,4,4,2
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/14.txt  2>&1 & #2,2,2,2,2,2,2,2,2 500 epochs
+
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/15.txt  2>&1 & #4,4,4,4,4,4,4,4,4 500 epochs
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/19.txt  2>&1 & #2,4,4,4,4,4,4,4,2 500 epochs
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/13.txt  2>&1 &  #500 epochs, 2,4,4,4,4,4,4,4,2 rerand rate=0.05, every 25
+
+
+nohup python -u  main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params.yaml --prune_rate=0.5 > results/16.txt  2>&1 & #layer compression
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/17.txt  2>&1 & #1,4,4,4,4,4,1,1,1 500 epochs
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/18.txt  2>&1 & #1,4,4,4,4,4,4,1,1 500 epochs
+
+
+nohup python -u  main_parallel.py --config configs/imagenet/resnet50-biprop.yaml --prune_rate=0.5 > results/20.txt  2>&1 & 
+nohup python -u  main_parallel.py --config configs/imagenet/resnet50-biprop.yaml --resume=/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop/biprop/prune_rate=0.5/0/checkpoints/model_best.pth  --prune_rate=0.5 > results/24.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-dense.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/21.txt  2>&1 & #
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/25.txt  2>&1 & #NEW ALPHA
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/26.txt  2>&1 &
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/27.txt  2>&1 & ##8's
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/28.txt  2>&1 & ##8's, longer weight tile length
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/29.txt  2>&1 & ##18888881's, longer weight tile length
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/30.txt  2>&1 & #2,4,4,4,4,4,4,4,2
+
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/31.txt  2>&1 &
+nohup python -u main.py --config configs/cifar10/conv8-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/32.txt  2>&1 &
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/33.txt  2>&1 & #STE?
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/34.txt  2>&1 & #STE? 2,4,4,4,4,4,4,4,2
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/35.txt  2>&1 & #STE
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/36.txt  2>&1 & #1,1,1,8,8,8,8,1,1 #STE
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/37.txt  2>&1 & #, 1,1,1,8,8,8,8,1,1
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/38.txt  2>&1 & #, 1,1,1,2,2,4,8,1,1
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/39.txt  2>&1 & #, 1,1,1,1,1,1,1,1,1
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/40.txt  2>&1 & #, 1,1,1,1,1,4,4,1,1
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/41.txt  2>&1 & #, 1,1,1,1,1,1,1,1,1
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/42.txt  2>&1 & #, 1,1,1,1,1,4,4,1,1
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/43.txt  2>&1 & #4,4,4,4,4,4,4,4,4 #+-1's hard prune rate, one alpha
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/44.txt  2>&1 & #4,4,4,4,4,4,4,4,4 #+-1's hard prune rate, many alpha
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/45.txt  2>&1 & #4,4,4,4,4,4,4,4,4 #01's hard prune rate, one alpha
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=2 --data=~/ > results/46.txt  2>&1 & #4,4,4,4,4,4,4,4,4 #+-1's soft prune rate, one alpha
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=3 --data=~/ > results/47.txt  2>&1 & #4,4,4,4,4,4,4,4,4 #+-1's soft prune rate, many alpha
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=4 --data=~/ > results/48.txt  2>&1 & #4,4,4,4,4,4,4,4,4 #+-1's soft prune rate, many alpha
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/ > results/49.txt  2>&1 & #4,4,4,4,4,4,4,4,4 #01's soft prune rate, one alpha
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=4 --data=~/ > results/50.txt  2>&1 & # 4,4,4.... #+-1's soft prune rate, many alpha
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=6 --data=~/ > results/51.txt  2>&1 & #4,4,4.... #+-1's soft prune rate, many alpha
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=1 --data=~/ > results/52.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=2 --data=~/ > results/53.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=2 --data=~/ --epochs=1000 > results/54.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=4 --data=~/ > results/55.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=4 --data=~/ > results/56.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=5 --data=~/  --epochs=1000 > results/57.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=5 --data=~/  --epochs=1000 > results/58.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=3 --data=~/  --epochs=1000 > results/59.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=4 --data=~/  --epochs=1000 > results/60.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=7 --data=~/  --epochs=1000 > results/61.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=6 --data=~/  --epochs=1000 > results/62.txt  2>&1 &
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=7 --data=~/  --epochs=1000 > results/63.txt  2>&1 &
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=3 --data=~/  --epochs=1000 > results/64.txt  2>&1 &
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=4 --data=~/  --epochs=1000 > results/65.txt  2>&1 &
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=1000 > results/66.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=2 --data=~/  --epochs=1000 > results/67.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=4 --data=~/  --epochs=1000 > results/68.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=5 --data=~/  --epochs=1000 > results/69.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=6 --data=~/  --epochs=1000 > results/70.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=7 --data=~/  --epochs=1000 > results/71.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-recycling.yaml --prune_rate=0.5 --gpu=2 --data=~/  --epochs=1000 > results/72.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=3 --data=~/  --epochs=1000 > results/73.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=4 --data=~/  --epochs=1000 > results/74.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=2 --data=~/  --epochs=1000 > results/75.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=1 --data=~/  --epochs=2000 > results/76.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=5 --data=~/  --epochs=3000 > results/77.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=6 --data=~/  --epochs=4000 > results/78.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=5000 > results/79.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=10000 > results/80.txt  2>&1 & 
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=3000 > results/81.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=1 --data=~/  --epochs=3000 > results/82.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=2 --data=~/  --epochs=5000 > results/83.txt  2>&1 & 
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-iterand.yaml --prune_rate=0.5 --gpu=7 --data=~/  --epochs=5000 > results/84.txt  2>&1 & 
+
+
+
+
+
+
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-iterand.yaml --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params-iterand/biprop/prune_rate=-1/32/checkpoints/model_best.pth > results/91.txt  2>&1 & 
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-recycle.yaml > results/92.txt  2>&1 & 
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-iterand.yaml --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params-iterand/biprop/prune_rate=-1/34/checkpoints/model_best.pth > results/93.txt  2>&1 &
+
+
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-recycle.yaml > results/94.txt  2>&1 & 
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params.yaml > results/95.txt  2>&1 & 
+
+
+nohup tar -xvf ILSVRC2012_img_train.tar > imagenet.txt  2>&1 &
+
+
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params.yaml > results/96.txt  2>&1 & #BATCH SIZE 512
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params.yaml > results/97.txt  2>&1 & #BATCH SIZE 256, less compression, non affine 7,416,064 params
+#slurm 6169: smaller batch size, nonaffine, less compression, 7,141,63 params
+
+
+
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-randtile.yaml --prune_rate=0.5 --gpu=6 --data=~/  --epochs=4000 > results/98.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params-rand_only.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/100.txt  2>&1 & 
+
+nohup python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-iterand.yaml > results/99.txt  2>&1 & 
+# 6181: tiled with LEARNED batch norm, 128 batch, 7.4 million params 
+
+
+
+
+#log learning rates
+python -u main.py --config configs/imagenet/resnet50-biprop-tiled-params-iterand.yaml 
+python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000
+
+
+peregrine workers works: 20, 30, 50,40 doesnt work
+kestrel workers works: 10,       20, 40,30 doesnt work
+

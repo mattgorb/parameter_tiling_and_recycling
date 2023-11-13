@@ -38,8 +38,17 @@ def parse_arguments():
         default=90,
         type=int,
         metavar="N",
+        help="number of epochs to run with learning rate adjustment. ",
+    )
+    parser.add_argument(
+        "--total_epochs",
+        default=90,
+        type=int,
+        metavar="N",
         help="number of total epochs to run",
     )
+
+
     parser.add_argument(
         "--start-epoch",
         default=None,
@@ -126,12 +135,6 @@ def parse_arguments():
     # This needs to be explicitly passed in
     parser.add_argument("--local_world_size", type=int, default=1)
 
-    parser.add_argument(
-        "--multigpu",
-        default=None,
-        type=lambda x: [int(a) for a in x.split(",")],
-        help="Which GPUs to use for multigpu training",
-    )
 
     parser.add_argument(
         "--gpu", default=1, type=int, help="gpu id"
@@ -248,6 +251,9 @@ def parse_arguments():
     parser.add_argument(
         "--rerand_warmup", default=1, help="rerand warmup, iterand or recycle"
     )
+    parser.add_argument(
+        "--rerand_rate", default=None, help="rerand rate, iterand"
+    )
 
     parser.add_argument(
         "--weight_seed", default=0, help="Weight initialization modifications"
@@ -261,6 +267,19 @@ def parse_arguments():
     parser.add_argument(
         "--ablation", default=False, type=bool, help="seed for initializing training. "
     )
+
+    parser.add_argument(
+        "--multigpu", default=None, type=str,
+        #type=lambda x: [int(a) for a in x.split(",")], 
+    )
+
+    parser.add_argument('--global_mask_compression_factor', type=int, default=None, help='factor of 2')
+    parser.add_argument('--weight_tile_size', type=int, default=None,)
+    parser.add_argument('--data_type', type=str, default=None,)
+    parser.add_argument('--layer_mask_compression_factors', type=str, default=None, help='factor of 2')
+
+    parser.add_argument('--model_type', type=str, default=None, help='prune or binarize')
+    parser.add_argument('--alpha_type', type=str, default=None, help='single or multiple alphas per layer')
 
     args = parser.parse_args()
 

@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import math
 import random
 
+
 def set_seed(seed):
 
     random.seed(seed)
@@ -14,9 +15,11 @@ def set_seed(seed):
     torch.backends.cudnn.deterministic = True
 
 def _init_weight(args,weight):
+    
     set_seed(args.weight_seed)
-    if args.weight_init == "signed_constant":
+    print(f"weight initialization: {args.weight_init}")
 
+    if args.weight_init == "signed_constant":
 
         #using signed constant from iterand code
         fan = nn.init._calculate_correct_fan(weight, 'fan_in')
@@ -39,17 +42,17 @@ def _init_weight(args,weight):
 
     elif args.weight_init == "kaiming_normal":
 
-        if args.scale_fan:
+        '''if args.scale_fan:
             fan = nn.init._calculate_correct_fan(weight, args.mode)
             fan = fan * (1 - args.prune_rate)
             gain = nn.init.calculate_gain(args.nonlinearity)
             std = gain / math.sqrt(fan)
             with torch.no_grad():
                 weight.data.normal_(0, std)
-        else:
-            nn.init.kaiming_normal_(
-                weight, mode=args.mode, nonlinearity=args.nonlinearity
-            )
+        else:'''
+        nn.init.kaiming_normal_(
+            weight, mode=args.mode, nonlinearity=args.nonlinearity
+        )
 
     elif args.weight_init == "kaiming_uniform":
         nn.init.kaiming_uniform_(
@@ -69,6 +72,7 @@ def _init_weight(args,weight):
         nn.init.kaiming_uniform_(weight, a=math.sqrt(5))
     else:
         raise ValueError(f"{args.init} is not an initialization option!")
+
 
     return weight
 

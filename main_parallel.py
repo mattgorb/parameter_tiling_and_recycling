@@ -32,6 +32,8 @@ import models
 from utils.initializations import set_seed
 
 
+import os
+
 
 def main_worker(gpu, args,ngpus_per_node):
     #args.gpu = None
@@ -45,29 +47,31 @@ def main_worker(gpu, args,ngpus_per_node):
         print('Use only one of rerand_iter_freq and rerand_epoch_freq')
 
     # create model and optimizer
-
     if not args.evaluate:
         model = get_model(args)
-        model,device = set_gpu(args, model,ngpus_per_node)
+        if args.data_type=='float16':
+            model=model.to(torch.float16)
+        
+        model,device = set_gpu(args, model,ngpus_per_node, gpu)
     else:
         if args.conv_type=='DenseConv':
             if args.arch=='ResNet50':
                 model=models_pretrained.resnet50(pretrained=True)
-                model,device = set_gpu(args, model,ngpus_per_node)
+                model,device = set_gpu(args, model,ngpus_per_node, gpu)
             if args.arch=='WideResNet50':
                 model=models_pretrained.wide_resnet50_2(pretrained=True)
-                model,device = set_gpu(args, model,ngpus_per_node)
+                model,device = set_gpu(args, model,ngpus_per_node, gpu)
             if args.arch=='ResNet18':
                 model=models_pretrained.resnet18(pretrained=True)
-                model,device = set_gpu(args, model,ngpus_per_node)
+                model,device = set_gpu(args, model,ngpus_per_node, gpu)
             if args.arch=='ResNet101':
                 model=models_pretrained.resnet101(pretrained=True)
-                model,device = set_gpu(args, model,ngpus_per_node)
+                model,device = set_gpu(args, model,ngpus_per_node, gpu)
             if args.arch=='ResNet34':
                 model=models_pretrained.resnet34(pretrained=True)
-                model,device = set_gpu(args, model,ngpus_per_node)
+                model,device = set_gpu(args, model,ngpus_per_node, gpu)
     set_seed(args.seed)
-
+    #return 
     data = get_dataset(args)
 
     optimizer = get_optimizer(args, model)
@@ -173,7 +177,8 @@ def main_worker(gpu, args,ngpus_per_node):
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
-
+        print(f"Epoch {epoch} learning rate: {cur_lr}")
+        
         # train for one epoch
         start_train = time.time()
         train_acc1, train_acc5 = train(
@@ -238,7 +243,7 @@ def main_worker(gpu, args,ngpus_per_node):
                     if epoch>int(args.rerand_warmup):
                         if epoch%args.rerand_epoch_freq==0 and epoch>0 and epoch != args.epochs - 1:
                             rerandomize_model(model, args)
-
+                            torch.cuda.synchronize()
         if args.rank % ngpus_per_node == 0:
             writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
@@ -260,7 +265,6 @@ def main_worker(gpu, args,ngpus_per_node):
         )
 
     config = pathlib.Path(args.config).stem
-    #print(f"/s/luffy/b/nobackup/mgorb/runs/{config}/{args.name}/prune_rate={args.prune_rate}")
 
 
 def get_trainer(args,):
@@ -270,7 +274,7 @@ def get_trainer(args,):
     return trainer.train, trainer.validate, trainer.modifier, trainer.validate_pretrained
 
 
-def set_gpu(args, model,ngpus_per_node):
+def set_gpu(args, model,ngpus_per_node, gpu):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
     if args.gpu is not None:
         device=torch.device('cuda:{}'.format(args.gpu))
@@ -278,17 +282,28 @@ def set_gpu(args, model,ngpus_per_node):
         print('set distributed data parallel')
 
         args.rank = args.rank * ngpus_per_node + args.gpu
+        print(args.rank)
         torch.distributed.init_process_group(backend="nccl",init_method="env://",
                                              world_size=args.world_size,
                                              rank=args.rank)
-        torch.cuda.set_device(args.gpu)
-        model.cuda(args.gpu)
+        print(f'GPU arg: {args.gpu}')
+        print(f'gpu: {gpu}')
+
+        print(f'rank: {args.rank}')
+        print(f'gpu: {gpu}')
+        print(f'world size: {args.world_size}')
+
+        #print(torch.cuda.device_count())
+        args.gpu=gpu
+        #torch.cuda.set_device(args.gpu)
+        torch.cuda.set_device(f"cuda:{gpu}")
+        #model.cuda(args.gpu)
+        
+        model.cuda(f"cuda:{gpu}")
         args.batch_size = int(args.batch_size / ngpus_per_node)
         args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
 
-    #print(device)
-    #model = model.to(device)
     cudnn.benchmark = True
     return model, device
 
@@ -367,21 +382,64 @@ def get_model(args,):
     print("=> Creating model '{}'".format(args.arch))
     model = models.__dict__[args.arch]()
 
-    # applying sparsity to the network
-    if args.conv_type != "DenseConv":
+    print(model)
+
+    dense_params=sum(int(p.numel() ) for n, p in model.named_parameters() if not n.endswith('scores'))
+    dense_params="{:,}".format(dense_params)
+    print(
+        f"=> Dense model params:\n\t{dense_params}"
+    )
+
+    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull':
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
-        #set_model_prune_rate(model, prune_rate=args.prune_rate)
-        print(
-            f"=> Rough estimate model params {sum(int(p.numel() * (args.prune_rate)) for n, p in model.named_parameters() if not n.endswith('scores'))}"
-        )
+    if args.conv_type=='SubnetConvTiledFull':
+        assert args.model_type=='prune' or args.model_type=='binarize',  'model type needs to be prune or binarize'
+        assert args.alpha_type=='single' or args.alpha_type=='multiple', "alpha needs to be single or multiple"
+    
+    if args.conv_type=="SubnetConvTiledFull":
+        if args.global_mask_compression_factor is not None:
+            tiled_params=sum(int(p.numel()/args.global_mask_compression_factor ) for n, p in model.named_parameters() if not n.endswith('scores'))
+            tiled_params+=args.weight_tile_size
+            tiled_params="{:,}".format(tiled_params)
+
+            print(
+                f"=> Tiled params: \n\t {tiled_params}"
+            )
+            i=0
+            for name, param in model.named_parameters():
+                if name.endswith('scores'):
+                    continue
+                print(f"name: {name}, i: {i}, weight size: {param.numel()}, compress factor: {model.layer_mask_compression_factors[i]}")
+                
+                i+=1
+        if args.layer_mask_compression_factors is not None:
+            
+            model.layer_mask_compression_factors
+            tiled_params=0
+            i=0
+            for name, param in model.named_parameters():
+                if name.endswith('scores'):
+                    continue
+                elif 'bn' in name or 'downsample.1' in name:
+                    print(f"name: {name}, weight size: {param.numel()}")
+                else:
+                    print(f"name: {name},i: {i}, weight size: {param.numel()}, compress factor: {model.layer_mask_compression_factors[i]}")
+                    tiled_params+=int(param.numel()/model.layer_mask_compression_factors[i])
+                    i+=1
+            tiled_params+=args.weight_tile_size
+            tiled_params="{:,}".format(tiled_params)
+
+            print(
+                f"=> Tiled params: \n\t {tiled_params}"
+            )
 
     # freezing the weights if we are only doing subnet training
-    if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' or args.conv_type=='SubnetConvSSTL':
+    if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop':
         freeze_model_weights(model)
 
-
+    #sys.exit()
 
     return model
 
@@ -502,12 +560,26 @@ def write_result_to_csv(**kwargs):
 
 if __name__ == "__main__":
     import torch.multiprocessing as mp
-    #import os
 
-    #local_rank = int(os.environ["LOCAL_RANK"])
+    print(args)
+    #import os
+    mp.set_start_method('spawn')
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12345'
 
     ngpus_per_node = torch.cuda.device_count()
-    args.ngpus_per_node=ngpus_per_node
+    print(ngpus_per_node)
+    #sys.exit()
+    #args.ngpus_per_node=ngpus_per_node
+    #print(args.multigpu)
+
+    gpu_list=list(args.multigpu.split(','))
+
+    print(f'gpus: {gpu_list}, number: {len(gpu_list)}')
+    ngpus_per_node=len(gpu_list)
+
+
+    print(f"GPUs per node (torch.cuda.device_count()): {ngpus_per_node}")
     args.world_size = ngpus_per_node * args.world_size
 
     mp.spawn(main_worker, nprocs=ngpus_per_node, args=(args,ngpus_per_node,))
