@@ -52,8 +52,8 @@ def set_gpu(args, model):
         print(f'gpu: {args.gpu}')
         print(f'world size: {args.world_size}')
 
-        torch.distributed.init_process_group(#backend="nccl",#init_method="env://",
-                                             "gloo",
+        torch.distributed.init_process_group(backend="nccl",#init_method="env://",
+                                            # "gloo",
                                              world_size=args.world_size,
                                              rank=args.rank)
 
