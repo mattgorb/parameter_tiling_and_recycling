@@ -40,14 +40,17 @@ def set_gpu(args, model):
         device=torch.device('cuda:{}'.format(args.gpu))
     if args.multigpu:
         print('set distributed data parallel')
-        num_migs = 2
-        mig=args.rank%num_migs
+        #num_migs = 2
+        #mig=args.rank%num_migs
         
-        if mig==0:
-            os.environ['CUDA_VISIBLE_DEVICES'] =str("MIG-53f38b0a-b647-5bb8-a4b6-a779411fefa6")
-        else:
-            os.environ['CUDA_VISIBLE_DEVICES'] = str("MIG-e76f3a00-c295-519b-a337-616ffd0699f5")
-        print(f'mig: {mig}')
+        #if mig==0:
+            #os.environ['CUDA_VISIBLE_DEVICES'] =str("MIG-53f38b0a-b647-5bb8-a4b6-a779411fefa6")
+        #else:
+            #os.environ['CUDA_VISIBLE_DEVICES'] = str("MIG-e76f3a00-c295-519b-a337-616ffd0699f5")
+
+        
+
+        #print(f'mig: {mig}')
         print(f'rank: {args.rank}')
         print(f'gpu: {args.gpu}')
         print(f'world size: {args.world_size}')
@@ -57,20 +60,22 @@ def set_gpu(args, model):
                                              world_size=args.world_size,
                                              rank=args.rank)
 
-        torch.cuda.set_device(f"cuda:{args.gpu}")
-        
-        model.cuda(f"cuda:{args.gpu}")
+        #torch.cuda.set_device(f"cuda:{args.gpu}")
+        #model.cuda(f"cuda:{args.gpu}")
+        torch.cuda.set_device(args.gpu)
+        model.cuda(args.gpu)
+
         args.batch_size = int(args.batch_size / args.world_size)
-        args.workers = 10 # int(int((args.workers + args.world_size - 1) / args.world_size)/2)
+        args.workers = 4 # int(int((args.workers + args.world_size - 1) / args.world_size)/2)
         #args.workers = int((args.workers + args.world_size - 1) / args.world_size)
         #args.batch_size = int(args.batch_size / ngpus_per_node)
         #args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
 
-        if mig==0:
-            os.environ['CUDA_VISIBLE_DEVICES'] = str("MIG-53f38b0a-b647-5bb8-a4b6-a779411fefa6")
-        else:
-            os.environ['CUDA_VISIBLE_DEVICES'] = str("MIG-e76f3a00-c295-519b-a337-616ffd0699f5")
+        #if mig==0:
+            #os.environ['CUDA_VISIBLE_DEVICES'] = str("MIG-53f38b0a-b647-5bb8-a4b6-a779411fefa6")
+        #else:
+            #os.environ['CUDA_VISIBLE_DEVICES'] = str("MIG-e76f3a00-c295-519b-a337-616ffd0699f5")
 
     cudnn.benchmark = True
     return model, device
@@ -83,7 +88,10 @@ def main_worker(rank, args):
     train, validate, modifier,validate_pretrained = get_trainer(args,)
 
     ngpus_per_node=args.world_size
-    args.gpu=0
+    
+    #args.gpu=0
+    args.gpu=rank
+
     print(f' GPU {args.gpu}')
     args.rank=rank
 
@@ -217,7 +225,20 @@ def main_worker(rank, args):
         data.train_sampler.set_epoch(epoch)
         data.val_sampler.set_epoch(epoch)
 
-        lr_policy(epoch, iteration=None)
+        if epoch<args.epochs:
+            lr_policy(epoch, iteration=None)
+        else:
+            #keep at minimum
+            #lr_policy(args.epochs, iteration=None)
+
+            #cos decay at specific rate (value must divide by args.epochs)
+            #epoch_adjustment=int(args.epochs-(5- epoch % 5 ))
+
+            #works for epochs=100 and rerand freq=20
+            #cosine decay at rerand_freq
+            epoch_adjustment=int(args.epochs-(args.rerand_epoch_freq-epoch%args.rerand_epoch_freq))
+            lr_policy(epoch_adjustment, iteration=None)
+
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
@@ -584,11 +605,13 @@ if __name__ == "__main__":
     ngpus_per_node = torch.cuda.device_count()
     print(ngpus_per_node)
 
+    #sys.exit()
+
 
     gpu_list=list(args.multigpu.split(','))
     print(f'gpus: {gpu_list}, number: {len(gpu_list)}')
 
-    #I think we can fit 3 processes into each MIG (1 gpu has 80gb partitioned into 2 migs with 40gb each)
+    
     args.world_size = 2
 
     mp.spawn(main_worker, nprocs=args.world_size, args=(args,))

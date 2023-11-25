@@ -91,9 +91,11 @@ class Bottleneck(nn.Module):
 
 # ResNet {{{
 class ResNet(nn.Module):
-    def __init__(self, builder, block, layers, num_classes=1000, base_width=64):
+    def __init__(self, builder, block, layers,  num_layers, num_classes=1000, base_width=64):
 
-        self.num_layers=54
+        #resnet18=2
+        self.num_layers=num_layers
+        
         self.weight_tile=None
         self.layer_mask_compression_factors=None
 
@@ -186,17 +188,17 @@ class ResNet(nn.Module):
 
 # ResNet }}}
 def ResNet18(pretrained=False):
-    return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2], 1000)
+    return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2], num_layers=21, num_classes=1000)
 
 def ResNet34(pretrained=False):
-    return ResNet(get_builder(), BasicBlock, [3, 4, 6, 3], 1000)
+    return ResNet(get_builder(), BasicBlock, [3, 4, 6, 3], num_layers=37, num_classes=1000)
 
 def ResNet50(pretrained=False):
 
-    return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3], 1000)
+    return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3], num_layers=54, num_classes=1000)
 
 def ResNet101(pretrained=False):
-    return ResNet(get_builder(), Bottleneck, [3, 4, 23, 3], 1000)
+    return ResNet(get_builder(), Bottleneck, [3, 4, 23, 3], num_classes=1000)
 
 
 def WideResNet50_2(pretrained=False):

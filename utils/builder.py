@@ -57,10 +57,10 @@ class Builder(object):
         else:
             return None
 
-        if args.conv_type=='SubnetConvTiledFull':
+        if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvTiledParameter':
             conv.init(args, self.weight_tile,
                       self.mask_compression_factors[self.mask_compression_factors_ind])
-            self.mask_compression_factors_ind+=1
+            self.mask_compression_factors_ind+=1            
         elif args.conv_type!='DenseConv':
             conv.init(args, )
         else:

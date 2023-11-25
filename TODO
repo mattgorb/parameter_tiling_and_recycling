@@ -172,6 +172,20 @@ python -u main.py --config configs/imagenet/resnet50-biprop-tiled-params-iterand
 python -u main.py --config configs/cifar10/conv6-kn-biprop-tiled-params.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000
 
 
-peregrine workers works: 20, 30, 50,40 doesnt work
-kestrel workers works: 10,       20, 40,30 doesnt work
+nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/101.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/resnet18-dense.yaml  --gpu=0 --data=~/  --epochs=250 > results/102.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/resnet34-kn-tiled-full-randtile.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/103.txt  2>&1 & 
 
+nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-8.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000  > results/104.txt  2>&1 & #tuna
+nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-16.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/105.txt  2>&1 & #eel
+
+nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-32.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/109.txt  2>&1 & #swordfish
+nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-full-randtile-4.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/106.txt  2>&1 & #bullhead
+nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-full-randtile-8.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/107.txt  2>&1 & #char
+nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-full-randtile-16.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/108.txt  2>&1 & #cod
+
+nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-full-randtile-4.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/109.txt  2>&1 & #anchovy
+nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-full-randtile-8.yaml --prune_rate=0.5 --gpu=0 --data=~/  --epochs=4000 > results/110.txt  2>&1 & #char
+
+
+nohup python -u train_classification.py > results/pointnet_1.txt  2>&1 & #char

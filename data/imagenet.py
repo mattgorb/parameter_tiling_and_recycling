@@ -56,7 +56,7 @@ class ImageNet:
             traindir,
             transforms.Compose(
                 [
-                    transforms.RandomResizedCrop(144),
+                    transforms.RandomResizedCrop(224),
                     transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),
                     normalize,
@@ -67,8 +67,8 @@ class ImageNet:
             valdir,
             transforms.Compose(
                 [
-                    transforms.Resize(176),
-                    transforms.CenterCrop(144),
+                    transforms.Resize(256),
+                    transforms.CenterCrop(224),
                     transforms.ToTensor(),
                     normalize,
                 ]
@@ -81,7 +81,8 @@ class ImageNet:
 
 
         self.train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=args.batch_size, shuffle=False, sampler=self.train_sampler,**kwargs
+            train_dataset, batch_size=args.batch_size, shuffle=False, sampler=self.train_sampler,
+            **kwargs
         )
 
         self.val_loader = torch.utils.data.DataLoader(

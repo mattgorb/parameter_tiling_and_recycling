@@ -55,7 +55,7 @@ def set_gpu(args, model):
         
         model.cuda(f"cuda:{args.gpu}")
         args.batch_size = int(args.batch_size / args.world_size)
-        args.workers = 10 #works #int((args.workers + args.world_size - 1) / args.world_size)
+        args.workers = 10 #10 with bs 1024 #works #int((args.workers + args.world_size - 1) / args.world_size)
         #args.batch_size = int(args.batch_size / ngpus_per_node)
         #args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
@@ -202,12 +202,26 @@ def main_worker(rank, args):
         )
 
     # Start training
-    for epoch in range(args.start_epoch, args.epochs):
+    for epoch in range(args.start_epoch, args.total_epochs):
 
         data.train_sampler.set_epoch(epoch)
         data.val_sampler.set_epoch(epoch)
 
-        lr_policy(epoch, iteration=None)
+        if epoch<args.epochs:
+            lr_policy(epoch, iteration=None)
+        else:
+            #keep at minimum
+            lr_policy(args.epochs, iteration=None)
+
+            #cos decay at specific rate (value must divide by args.epochs)
+            #epoch_adjustment=int(args.epochs-(5- epoch % 5 ))
+
+            #works for epochs=100 and rerand freq=20
+            #cosine decay at rerand_freq
+            
+            epoch_adjustment=int(args.epochs-(args.rerand_epoch_freq-epoch%args.rerand_epoch_freq))
+            lr_policy(epoch_adjustment, iteration=None)
+        
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
@@ -393,11 +407,11 @@ def get_model(args,):
         f"=> Dense model params:\n\t{dense_params}"
     )
 
-    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull':
+    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull' and args.conv_type!='SubnetConvTiledParameter':
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
-    if args.conv_type=='SubnetConvTiledFull':
+    if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvTiledParameter':
         assert args.model_type=='prune' or args.model_type=='binarize',  'model type needs to be prune or binarize'
         assert args.alpha_type=='single' or args.alpha_type=='multiple', "alpha needs to be single or multiple"
     
@@ -439,7 +453,7 @@ def get_model(args,):
             )
 
     # freezing the weights if we are only doing subnet training
-    if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop':
+    if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' or args.conv_type=='SubnetConvTiledParameter':
         freeze_model_weights(model)
 
     #sys.exit()

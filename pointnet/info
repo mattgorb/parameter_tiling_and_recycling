@@ -1,0 +1,15 @@
+using code from: 
+https://github.com/yanx27/Pointnet_Pointnet2_pytorch/tree/master
+
+
+
+
+Binary pointnet results:
+https://proceedings.mlr.press/v202/qin23b/qin23b.pdf
+https://htqin.github.io/Projects/BiBench/context.html#transformers
+
+
+Modelnet40 data: 
+https://cvgl.stanford.edu/data2/ModelNet40/
+
+tar -xvzf ModelNet40.tgz

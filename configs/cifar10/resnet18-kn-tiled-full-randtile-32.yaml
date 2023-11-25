@@ -1,0 +1,53 @@
+# Architecture
+arch: cResNet18
+
+# ===== Dataset ===== #
+data: /s/luffy/b/nobackup/mgorb/data
+set: CIFAR10
+name: baseline
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.1
+lr_policy: cosine_lr
+
+# ===== Network training config ===== #
+epochs: 500
+weight_decay: 0.0001
+momentum: 0.9
+batch_size: 128
+
+# ===== Sparsity =========== #
+conv_type: SubnetConvTiledFull
+
+weight_tile_size: 65056
+
+layer_mask_compression_factors: 1,1,2,2,2,2,32,32,32,32,32,32,32,32,32,32,32,32,32,1,1
+#global_mask_compression_factor: 32
+
+model_type: binarize
+alpha_type: multiple
+
+rerand_epoch_freq: 20
+rerand_type: rerandomize_and_tile
+data_type: float16
+
+bn_type: NonAffineBatchNorm
+freeze_weights: True
+
+weight_init: kaiming_normal
+scale_fan: True
+score_init: None
+
+
+
+weight_seed: 0
+score_seed: 0
+
+
+
+
+
+gpu: 0
+# ===== Hardware setup ===== #
+workers: 2

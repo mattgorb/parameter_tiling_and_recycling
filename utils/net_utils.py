@@ -6,7 +6,7 @@ import math
 
 import torch
 import torch.nn as nn
-from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull,   GetSubnetEdgePopup, GetQuantnet_binary
+from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull,  SubnetConvTiledParameter
 
 
 def save_checkpoint(state, is_best, filename="checkpoint.pth", save=False):
@@ -31,7 +31,7 @@ def get_lr(optimizer):
 def rerandomize_model(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
-            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull):
+            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull) or isinstance(m, SubnetConvTiledParameter):
                 print(f"==> Rerandomizing weights of {n} with  {args.rerand_type}")
 
                 m.rerandomize()
@@ -44,7 +44,7 @@ def rerandomize_model(model, args):
 def rerandomize_model_parallel(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
-            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull):
+            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull) or isinstance(m, SubnetConvTiledParameter):
                 print(f"==> Rerandomizing weights of {n} with  {args.rerand_type}")
                 m.rerandomize()
     if args.rerand_rate is not None:

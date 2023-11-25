@@ -150,11 +150,14 @@ def main_worker(args,):
     lrs=[]
     for epoch in range(args.start_epoch, args.epochs):
 
+
         lr_policy(epoch, iteration=None)
+
         modifier(args, epoch, model)
 
         cur_lr = get_lr(optimizer)
         lrs.append(cur_lr)
+
         # train for one epoch
         start_train = time.time()
         train_acc1, train_acc5 = train(
@@ -229,13 +232,11 @@ def main_worker(args,):
 
         cur_lr = get_lr(optimizer)
         lrs.append(cur_lr)
-    print(lrs)
-    plt.clf()
-    plt.plot([i for i in range(len(lrs))], lrs, '.')
-    #plt.ylim([0,0.01])
-    plt.savefig('fig1.png')
-    return 
-    '''
+        '''
+    
+
+
+    
     
     write_result_to_csv(
         best_acc1=best_acc1,
@@ -359,17 +360,23 @@ def get_model(args,):
     if args.conv_type=="SubnetConvTiledFull":
 
         if args.global_mask_compression_factor is not None:
-            tiled_params=sum(int(p.numel()/args.global_mask_compression_factor ) for n, p in model.named_parameters() if not n.endswith('scores'))
+            tiled_params=sum(int(p.numel()/args.global_mask_compression_factor )+args.global_mask_compression_factor*16 for n, p in model.named_parameters() if not n.endswith('scores'))
             tiled_params+=args.weight_tile_size
             tiled_params="{:,}".format(tiled_params)
-
+            for name, param in model.named_parameters():
+                if name.endswith('scores'):
+                    continue
+                elif 'bn' in name or 'downsample.1' in name:
+                    print(f"name: {name}, weight size: {param.numel()}")
+                else:
+                    print(f"name: {name}, weight shape: {param.size()}, weight size: {param.numel()}, compress factor: {args.global_mask_compression_factor}")
             print(
                 f"=> Tiled params: \n\t {tiled_params}"
             )
             
         if args.layer_mask_compression_factors is not None:
             
-            model.layer_mask_compression_factors
+            #model.layer_mask_compression_factors
             tiled_params=0
             i=0
 
@@ -382,8 +389,9 @@ def get_model(args,):
                     print(f"name: {name}, weight size: {param.numel()}")
                 else:
                     print(f"name: {name}")
-                    print(f"name: {name},i: {i}, weight size: {param.numel()}, compress factor: {model.layer_mask_compression_factors[i]}")
+                    print(f"name: {name},i: {i}, weight shape: {param.size()}, weight size: {param.numel()}, compress factor: {model.layer_mask_compression_factors[i]}")
                     tiled_params+=int(param.numel()/model.layer_mask_compression_factors[i])
+                    tiled_params+=int(model.layer_mask_compression_factors[i]*16 )
                     #print(model.layer_mask_compression_factors[i])
                     i+=1
             if args.weight_tile_size is not None: 
@@ -393,7 +401,7 @@ def get_model(args,):
             print(
                 f"=> Tiled params: \n\t {tiled_params}"
             )
-            #sys.exit()
+
 
     # freezing the weights if we are only doing subnet training
     if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop':

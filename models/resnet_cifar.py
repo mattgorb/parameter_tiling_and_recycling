@@ -10,7 +10,7 @@ import torch.nn.functional as F
 
 from utils.builder import get_builder
 from args import args
-
+from utils.tile_utils import create_signed_tile
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -69,11 +69,34 @@ class Bottleneck(nn.Module):
 class ResNet(nn.Module):
     def __init__(self, builder, block, num_blocks):
         super(ResNet, self).__init__()
-        self.in_planes = 64
-        self.builder = builder
 
-        self.conv1 = builder.conv3x3(3, 64, stride=1, first_layer=True)
-        self.bn1 = builder.batchnorm(64)
+
+        self.num_layers=21
+        self.weight_tile=None
+        self.layer_mask_compression_factors=None
+
+        if args.layer_mask_compression_factors is not None: 
+            assert args.global_mask_compression_factor is None, "global compression factor must be none if layer compression is not none"
+
+        if args.weight_tile_size is not None: 
+            self.weight_tile=create_signed_tile(args.weight_tile_size)
+            print(f"weight tile: {self.weight_tile}")
+        if args.layer_mask_compression_factors is not None:
+            self.layer_mask_compression_factors=list(args.layer_mask_compression_factors.split(','))
+            self.layer_mask_compression_factors=[int(x) for x in self.layer_mask_compression_factors]
+            assert len(self.layer_mask_compression_factors)==self.num_layers, f"mask compression factor must have length {self.num_layers}"
+        if args.global_mask_compression_factor is not None: 
+            self.layer_mask_compression_factors=[args.global_mask_compression_factor for i in range(self.num_layers)]
+        
+        self.builder= get_builder(weight_tile=self.weight_tile, mask_compression_factors=self.layer_mask_compression_factors)
+        
+
+
+        self.in_planes = 64
+
+
+        self.conv1 = self.builder.conv3x3(3, 64, stride=1, first_layer=True)
+        self.bn1 = self.builder.batchnorm(64)
         self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
@@ -83,7 +106,7 @@ class ResNet(nn.Module):
         if args.last_layer_dense:
             self.fc = nn.Conv2d(512 * block.expansion, 10, 1)
         else:
-            self.fc = builder.conv1x1(512 * block.expansion, 10)
+            self.fc = self.builder.conv1x1(512 * block.expansion, 10)
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1] * (num_blocks - 1)

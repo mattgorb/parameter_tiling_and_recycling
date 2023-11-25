@@ -194,7 +194,104 @@ class SubnetConvTiledFull(nn.Conv2d):
 
 
 
-class GetSubnetBinaryTiledWeight(autograd.Function):
+
+
+class SubnetLinearTiledFull(nn.Linear):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
+        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+
+    def rerandomize(self):
+        with torch.no_grad():
+            if self.args.rerand_type == 'recycle':
+                sorted, indices = torch.sort(self.scores.abs().flatten())
+                k = int((self.args.rerand_rate) * self.scores.numel())
+                low_scores=indices[:k]
+                high_scores=indices[-k:]
+                self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
+                print('recycling {} out of {} weights'.format(k,self.weight.numel()))
+            elif self.args.rerand_type == 'iterand':
+                self.args.weight_seed += 1
+                weight_twin = torch.zeros_like(self.weight)
+                weight_twin = _init_weight(self.args, weight_twin)
+                device = self.weight.device
+                ones = torch.ones(self.weight.size()).to(self.weight.device)
+                b = torch.bernoulli(ones * self.args.rerand_rate)
+                mask=GetQuantnet_binary.apply(self.clamped_scores, self.weight, self.prune_rate)
+                t1 = self.weight.data * mask
+                t2 = self.weight.data * (1 - mask) * (1 - b)
+                t3 = weight_twin.data * (1 - mask) * b
+                self.weight.data = t1 + t2 +t3
+                self.weight=fill_weight_signs(self.weight.to(device),  self.weight_tile.to(device))
+                self.weight=self.weight.to(device)
+
+                print('rerandomizing {} out of {} weights'.format(torch.sum(b), self.weight.numel()))
+            elif self.args.rerand_type == 'rerandomize_and_tile':
+                self.args.weight_seed += 1
+                weight_twin = torch.zeros_like(self.weight)
+                weight_twin = _init_weight(self.args, weight_twin)
+                device = self.weight.device
+                self.weight=torch.nn.Parameter(weight_twin)
+                self.weight=fill_weight_signs(self.weight.to(device),  self.weight_tile.to(device))
+                self.weight=self.weight.to(device)
+                
+                print(f'rerandomizing and tiling {self.weight.numel()} weights ')
+            elif self.args.rerand_type == 'rerandomize_only':
+                self.args.weight_seed += 1
+                weight_twin = torch.zeros_like(self.weight)
+                weight_twin = _init_weight(self.args, weight_twin)
+                device = self.weight.device
+                self.weight=torch.nn.Parameter(weight_twin)
+                self.weight=self.weight.to(device)
+                print(f'rerandomizing {self.weight.numel()} weights ')
+            else:
+                print('set rerand type.')
+                sys.exit(0)
+
+
+    def init(self,args,weight_tile, mask_compression_factor):
+        self.args=args
+        self.weight=_init_weight(args,self.weight)
+        self.scores=_init_score(self.args, self.scores)
+        self.prune_rate=args.prune_rate
+        
+        self.mask_compression_factor=mask_compression_factor
+        if weight_tile is not None:
+            
+            self.weight_tile=weight_tile.to(self.args.gpu, non_blocking=True)
+            self.weight=fill_weight_signs(self.weight.to(self.args.gpu),  self.weight_tile.to(self.args.gpu))
+            print(f'weight_tiled weights with size {self.weight_tile.size(0)}')
+        self.weight.requires_grad = False
+        
+
+
+    def forward(self, x):
+
+        # Get binary mask and gain term for subnetwork
+        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.weight, self.args, self.mask_compression_factor)
+
+        # Binarize weights by taking sign, multiply by pruning mask and gain term (alpha)
+        w = torch.sign(self.weight) * quantnet
+        # Pass binary subnetwork weights to convolution layer
+        #print(x.size())
+        #print(w.size())
+        x = F.linear(
+            x, w, self.bias
+        )
+        # Return output from convolution layer
+        return x
+
+
+
+
+
+
+
+
+
+
+class GetSubnetBinaryTiledParameter(autograd.Function):
     @staticmethod
     def forward(ctx, scores, weights, args, mask_compression_factor):
         
@@ -261,13 +358,13 @@ class GetSubnetBinaryTiledWeight(autograd.Function):
 
 
 
-class SubnetConvTiledFullWeight(nn.Conv2d):
+class SubnetConvTiledParameter(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
-        print("FUTURE ME: need to add logic in main and other places for this method. ")
-        sys.exit()
+        #print("FUTURE ME: need to add logic in main and other places for this method. ")
+        #sys.exit()
 
     def rerandomize(self):
         with torch.no_grad():
@@ -288,6 +385,7 @@ class SubnetConvTiledFullWeight(nn.Conv2d):
                 self.weight=fill_weight_signs(self.weight.to(device),  self.weight_tile.to(device))
                 self.weight=self.weight.to(device)
                 print(f'rerandomizing and tiling {self.weight.numel()} weights ')
+            #this is ablation
             elif self.args.rerand_type == 'rerandomize_only':
                 self.args.weight_seed += 1
                 weight_twin = torch.zeros_like(self.weight)
@@ -320,7 +418,7 @@ class SubnetConvTiledFullWeight(nn.Conv2d):
     def forward(self, x):
 
         # Get binary mask and gain term for subnetwork
-        quantnet = GetSubnetBinaryTiledWeight.apply(self.scores, self.weight, self.args, self.mask_compression_factor)
+        quantnet = GetSubnetBinaryTiledParameter.apply(self.scores, self.weight, self.args, self.mask_compression_factor)
 
         # Binarize weights by taking sign, multiply by pruning mask and gain term (alpha)
         w = torch.sign(self.weight) * quantnet

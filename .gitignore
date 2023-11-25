@@ -128,3 +128,15 @@ dmypy.json
 # Pyre type checker
 .pyre/
 scripts/
+
+
+pointnet/log/
+pointnet/__pycache__
+transformer/__pycache__
+transformer/transformer/__pycache__
+*.log
+__pycache__
+
+results/
+slurm-out/*
+slurm/slurm-*
