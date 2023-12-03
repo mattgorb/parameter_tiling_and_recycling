@@ -145,3 +145,5 @@ transformer/glove.6B/
 transformer/glove.6B/*
 transformer/tiny_bert_dir/*
 transformer/tiny_bert_dir/
+
+vision_transformers/*
