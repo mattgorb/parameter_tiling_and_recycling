@@ -139,4 +139,9 @@ __pycache__
 
 results/
 slurm-out/*
-slurm/slurm-*
+slurm/slurm-*.out
+
+transformer/glove.6B/
+transformer/glove.6B/*
+transformer/tiny_bert_dir/*
+transformer/tiny_bert_dir/

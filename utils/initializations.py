@@ -71,7 +71,8 @@ def _init_weight(args,weight):
     elif args.weight_init == "standard":
         nn.init.kaiming_uniform_(weight, a=math.sqrt(5))
     else:
-        raise ValueError(f"{args.init} is not an initialization option!")
+        print("Using default options")
+        #raise ValueError(f"{args.init} is not an initialization option!")
 
 
     return weight

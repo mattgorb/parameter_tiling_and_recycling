@@ -32,6 +32,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
     for i, (images, target) in tqdm.tqdm(
         enumerate(train_loader), ascii=True, total=len(train_loader)
     ):
+        
         # measure data loading time
         data_time.update(time.time() - end)
 
@@ -41,10 +42,11 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         target = target.to("cuda:{}".format(args.gpu))#.cuda(args.gpu, non_blocking=True)
 
         # compute output
-        if args.data_type=='float16':
-            images=images.to(torch.float16)
+        #if args.data_type=='float16':
+            #images=images.to(torch.float16)
 
-
+        #print(model(torch.randn(128,3,32,32).cuda()))
+        #print(images)
         output = model(images)
 
         loss = criterion(output, target)
@@ -58,6 +60,9 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
+        #print(model.fc.weight.grad[0][0])
+        #print(model.fc.alphas[0])
+        #print(model.conv1.weight.requires_grad)
         optimizer.step()
 
         # measure elapsed time
@@ -107,8 +112,8 @@ def validate(val_loader, model, criterion, args, writer, epoch):
             target = target.to("cuda:{}".format(args.gpu))#.cuda(args.gpu, non_blocking=True)
 
             # compute output
-            if args.data_type=='float16':
-                images=images.to(torch.float16)
+            #if args.data_type=='float16':
+                #images=images.to(torch.float16)
             output = model(images)
 
             loss = criterion(output, target)

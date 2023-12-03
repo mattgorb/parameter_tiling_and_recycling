@@ -9,13 +9,13 @@ import utils.bn_type
 from utils.initializations import _init_weight
 
 class Builder(object):
-    def __init__(self, conv_layer, bn_layer, first_layer=None, weight_tile=None, mask_compression_factors=None):
+    def __init__(self, conv_layer, bn_layer, first_layer=None, weight_tile=None, compression_factors=None):
         self.conv_layer = conv_layer
         self.bn_layer = bn_layer
         self.first_layer = first_layer or conv_layer
         self.weight_tile=weight_tile
-        self.mask_compression_factors=mask_compression_factors
-        self.mask_compression_factors_ind=0
+        self.compression_factors=compression_factors
+        self.compression_factors_ind=0
 
     def conv(self, kernel_size, in_planes, out_planes, stride=1, first_layer=False, compress_factor=None):
         conv_layer = self.first_layer if first_layer else self.conv_layer
@@ -57,10 +57,10 @@ class Builder(object):
         else:
             return None
 
-        if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvTiledParameter':
-            conv.init(args, self.weight_tile,
-                      self.mask_compression_factors[self.mask_compression_factors_ind])
-            self.mask_compression_factors_ind+=1            
+        if args.conv_type=='SubnetConvTiledFull' :
+            conv.init(args, 
+                      self.compression_factors[self.compression_factors_ind])
+            self.compression_factors_ind+=1            
         elif args.conv_type!='DenseConv':
             conv.init(args, )
         else:
@@ -104,7 +104,7 @@ class Builder(object):
         else:
             raise ValueError(f"{args.nonlinearity} is not an initialization option!")
 
-def get_builder(weight_tile=None, mask_compression_factors=None):
+def get_builder(weight_tile=None, compression_factors=None):
 
     print("==> Conv Type: {}".format(args.conv_type))
     print("==> BN Type: {}".format(args.bn_type))
@@ -120,6 +120,6 @@ def get_builder(weight_tile=None, mask_compression_factors=None):
         first_layer = None
 
     builder = Builder(conv_layer=conv_layer, bn_layer=bn_layer, first_layer=first_layer, 
-                      weight_tile=weight_tile, mask_compression_factors=mask_compression_factors)
+                      weight_tile=weight_tile, compression_factors=compression_factors)
 
     return builder

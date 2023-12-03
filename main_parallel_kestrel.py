@@ -58,7 +58,7 @@ def set_gpu(args, model):
         args.workers = 10 #10 with bs 1024 #works #int((args.workers + args.world_size - 1) / args.world_size)
         #args.batch_size = int(args.batch_size / ngpus_per_node)
         #args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
 
     cudnn.benchmark = True
     return model, device
@@ -83,8 +83,7 @@ def main_worker(rank, args):
     # create model and optimizer
     if not args.evaluate:
         model = get_model(args)
-        if args.data_type=='float16':
-            model=model.to(torch.float16)
+
         
         model,device = set_gpu(args, model)
     else:
@@ -202,6 +201,8 @@ def main_worker(rank, args):
         )
 
     # Start training
+    if args.total_epochs is None:
+        args.total_epochs=args.epochs
     for epoch in range(args.start_epoch, args.total_epochs):
 
         data.train_sampler.set_epoch(epoch)
@@ -211,7 +212,7 @@ def main_worker(rank, args):
             lr_policy(epoch, iteration=None)
         else:
             #keep at minimum
-            lr_policy(args.epochs, iteration=None)
+            #lr_policy(args.epochs, iteration=None)
 
             #cos decay at specific rate (value must divide by args.epochs)
             #epoch_adjustment=int(args.epochs-(5- epoch % 5 ))
@@ -219,7 +220,7 @@ def main_worker(rank, args):
             #works for epochs=100 and rerand freq=20
             #cosine decay at rerand_freq
             
-            epoch_adjustment=int(args.epochs-(args.rerand_epoch_freq-epoch%args.rerand_epoch_freq))
+            epoch_adjustment=int(args.epochs-(5-epoch%5))
             lr_policy(epoch_adjustment, iteration=None)
         
         modifier(args, epoch, model)
@@ -344,11 +345,7 @@ def resume(args, model, optimizer):
 
         print(f"=> Loaded checkpoint '{args.resume}' (epoch {checkpoint['epoch']})")
 
-        #for key, item in checkpoint.items():
-            #print(key)
-        #print(checkpoint['optimizer'])
-        #print(checkpoint)fpp
-        #sys.exit()
+
 
         return best_acc1
     else:
@@ -407,18 +404,18 @@ def get_model(args,):
         f"=> Dense model params:\n\t{dense_params}"
     )
 
-    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull' and args.conv_type!='SubnetConvTiledParameter':
+    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull' :
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
-    if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvTiledParameter':
+    if args.conv_type=='SubnetConvTiledFull':
         assert args.model_type=='prune' or args.model_type=='binarize',  'model type needs to be prune or binarize'
         assert args.alpha_type=='single' or args.alpha_type=='multiple', "alpha needs to be single or multiple"
     
     if args.conv_type=="SubnetConvTiledFull":
-        if args.global_mask_compression_factor is not None:
-            tiled_params=sum(int(p.numel()/args.global_mask_compression_factor ) for n, p in model.named_parameters() if not n.endswith('scores'))
-            tiled_params+=args.weight_tile_size
+        if args.global_compression_factor is not None:
+            tiled_params=sum(int(p.numel()/args.global_compression_factor ) for n, p in model.named_parameters() if not n.endswith('scores'))
+
             tiled_params="{:,}".format(tiled_params)
 
             print(
@@ -426,26 +423,29 @@ def get_model(args,):
             )
             i=0
             for name, param in model.named_parameters():
-                if name.endswith('scores'):
+                if name.endswith('scores') or 'alpha' in name:
                     continue
-                print(f"name: {name}, i: {i}, weight size: {param.numel()}, compress factor: {model.layer_mask_compression_factors[i]}")
+                print(f"name: {name}, i: {i}, weight size: {param.numel()}, compress factor: {model.layer_compression_factors[i]}")
                 
                 i+=1
-        if args.layer_mask_compression_factors is not None:
+        if args.layer_compression_factors is not None:
             
-            model.layer_mask_compression_factors
+            model.layer_compression_factors
             tiled_params=0
             i=0
             for name, param in model.named_parameters():
-                if name.endswith('scores'):
+                if name.endswith('scores') or 'alpha' in name:
                     continue
                 elif 'bn' in name or 'downsample.1' in name:
+                    if args.bn_type=='LearnedBatchNorm' and 'bn' in name:
+                        tiled_params+=int(param.numel())
                     print(f"name: {name}, weight size: {param.numel()}")
+                    
                 else:
-                    print(f"name: {name},i: {i}, weight size: {param.numel()}, compress factor: {model.layer_mask_compression_factors[i]}")
-                    tiled_params+=int(param.numel()/model.layer_mask_compression_factors[i])
+                    print(f"name: {name},i: {i}, weight size: {param.numel()}, compress factor: {model.layer_compression_factors[i]}")
+                    tiled_params+=int(param.numel()/model.layer_compression_factors[i])
                     i+=1
-            tiled_params+=args.weight_tile_size
+            
             tiled_params="{:,}".format(tiled_params)
 
             print(
@@ -453,7 +453,7 @@ def get_model(args,):
             )
 
     # freezing the weights if we are only doing subnet training
-    if args.conv_type=='SubnetConvTiledFull' or args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' or args.conv_type=='SubnetConvTiledParameter':
+    if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' :
         freeze_model_weights(model)
 
     #sys.exit()

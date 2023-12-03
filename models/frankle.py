@@ -73,24 +73,24 @@ class Conv6(nn.Module):
         super(Conv6, self).__init__()
         self.num_layers=9
         self.weight_tile=None
-        self.layer_mask_compression_factors=None
+        self.layer_compression_factors=None
 
-        if args.layer_mask_compression_factors is not None: 
-            assert args.global_mask_compression_factor is None, "global compression factor must be none if layer compression is not none"
+        if args.layer_compression_factors is not None: 
+            assert args.global_compression_factor is None, "global compression factor must be none if layer compression is not none"
 
         if args.weight_tile_size is not None: 
             self.weight_tile=create_signed_tile(args.weight_tile_size)
             print(f"weight tile: {self.weight_tile}")
-        if args.layer_mask_compression_factors is not None:
-            self.layer_mask_compression_factors=list(args.layer_mask_compression_factors.split(','))
-            self.layer_mask_compression_factors=[int(x) for x in self.layer_mask_compression_factors]
-            assert len(self.layer_mask_compression_factors)==9, f"mask compression factor must have length {self.num_layers}"
-        if args.global_mask_compression_factor is not None: 
-            self.layer_mask_compression_factors=[args.global_mask_compression_factor for i in range(self.num_layers)]
+        if args.layer_compression_factors is not None:
+            self.layer_compression_factors=list(args.layer_compression_factors.split(','))
+            self.layer_compression_factors=[int(x) for x in self.layer_compression_factors]
+            assert len(self.layer_compression_factors)==9, f"mask compression factor must have length {self.num_layers}"
+        if args.global_compression_factor is not None: 
+            self.layer_compression_factors=[args.global_compression_factor for i in range(self.num_layers)]
 
-        print(f"Layer by layer compression factors: {self.layer_mask_compression_factors}")
+        print(f"Layer by layer compression factors: {self.layer_compression_factors}")
         
-        builder = get_builder(weight_tile=self.weight_tile, mask_compression_factors=self.layer_mask_compression_factors)
+        builder = get_builder(weight_tile=self.weight_tile, compression_factors=self.layer_compression_factors)
         
         self.convs = nn.Sequential(
             builder.conv3x3(3, 64, first_layer=True),
@@ -131,24 +131,24 @@ class Conv8(nn.Module):
         super(Conv8, self).__init__()
         self.num_layers=11
         self.weight_tile=None
-        self.layer_mask_compression_factors=None
+        self.layer_compression_factors=None
 
-        if args.layer_mask_compression_factors is not None: 
-            assert args.global_mask_compression_factor is None, "global compression factor must be none if layer compression is not none"
+        if args.layer_compression_factors is not None: 
+            assert args.global_compression_factor is None, "global compression factor must be none if layer compression is not none"
 
         if args.weight_tile_size is not None: 
             self.weight_tile=create_signed_tile(args.weight_tile_size)
             print(f"weight tile: {self.weight_tile}")
-        if args.layer_mask_compression_factors is not None:
-            self.layer_mask_compression_factors=list(args.layer_mask_compression_factors.split(','))
-            self.layer_mask_compression_factors=[int(x) for x in self.layer_mask_compression_factors]
-            assert len(self.layer_mask_compression_factors)==self.num_layers, f"mask compression factor must have length {self.num_layers}"
-        if args.global_mask_compression_factor is not None: 
-            self.layer_mask_compression_factors=[args.global_mask_compression_factor for i in range(self.num_layers)]
+        if args.layer_compression_factors is not None:
+            self.layer_compression_factors=list(args.layer_compression_factors.split(','))
+            self.layer_compression_factors=[int(x) for x in self.layer_compression_factors]
+            assert len(self.layer_compression_factors)==self.num_layers, f"mask compression factor must have length {self.num_layers}"
+        if args.global_compression_factor is not None: 
+            self.layer_compression_factors=[args.global_compression_factor for i in range(self.num_layers)]
 
-        print(f"Layer by layer compression factors: {self.layer_mask_compression_factors}")
+        print(f"Layer by layer compression factors: {self.layer_compression_factors}")
         
-        builder = get_builder(weight_tile=self.weight_tile, mask_compression_factors=self.layer_mask_compression_factors)
+        builder = get_builder(weight_tile=self.weight_tile, compression_factors=self.layer_compression_factors)
         
         self.convs = nn.Sequential(
             builder.conv3x3(3, 64, first_layer=True),

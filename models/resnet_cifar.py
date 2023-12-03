@@ -67,28 +67,28 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, builder, block, num_blocks):
+    def __init__(self, builder, block, num_blocks, num_layers):
         super(ResNet, self).__init__()
 
 
-        self.num_layers=21
-        self.weight_tile=None
-        self.layer_mask_compression_factors=None
+        #self.num_layers=21
+        self.num_layers=num_layers
 
-        if args.layer_mask_compression_factors is not None: 
-            assert args.global_mask_compression_factor is None, "global compression factor must be none if layer compression is not none"
 
-        if args.weight_tile_size is not None: 
-            self.weight_tile=create_signed_tile(args.weight_tile_size)
-            print(f"weight tile: {self.weight_tile}")
-        if args.layer_mask_compression_factors is not None:
-            self.layer_mask_compression_factors=list(args.layer_mask_compression_factors.split(','))
-            self.layer_mask_compression_factors=[int(x) for x in self.layer_mask_compression_factors]
-            assert len(self.layer_mask_compression_factors)==self.num_layers, f"mask compression factor must have length {self.num_layers}"
-        if args.global_mask_compression_factor is not None: 
-            self.layer_mask_compression_factors=[args.global_mask_compression_factor for i in range(self.num_layers)]
+        self.layer_compression_factors=None
+
+        if args.layer_compression_factors is not None: 
+            assert args.global_compression_factor is None, "global compression factor must be none if layer compression is not none"
+
+
+        if args.layer_compression_factors is not None:
+            self.layer_compression_factors=list(args.layer_compression_factors.split(','))
+            self.layer_compression_factors=[int(x) for x in self.layer_compression_factors]
+            assert len(self.layer_compression_factors)==self.num_layers, f"mask compression factor must have length {self.num_layers}"
+        if args.global_compression_factor is not None: 
+            self.layer_compression_factors=[args.global_compression_factor for i in range(self.num_layers)]
         
-        self.builder= get_builder(weight_tile=self.weight_tile, mask_compression_factors=self.layer_mask_compression_factors)
+        self.builder= get_builder( compression_factors=self.layer_compression_factors)
         
 
 
@@ -129,15 +129,15 @@ class ResNet(nn.Module):
 
 
 def cResNet18():
-    return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2])
+    return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2], num_layers=21)
 
 
 def cResNet34():
-    return ResNet(get_builder(), BasicBlock, [3, 4, 6, 3])
+    return ResNet(get_builder(), BasicBlock, [3, 4, 6, 3], num_layers=37)
 
 
 def cResNet50():
-    return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3])
+    return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3], num_layers=54)
 
 
 def cResNet101():

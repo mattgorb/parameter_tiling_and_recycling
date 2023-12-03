@@ -40,8 +40,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer,ngpus_p
 
         target = target.to("cuda:{}".format(args.gpu), non_blocking=True)#.cuda(args.gpu, non_blocking=True)
 
-        if args.data_type=='float16':
-            images = images.to(torch.float16)
+        #if args.data_type=='float16':
+            #images = images.to(torch.float16)
         # compute output
         output = model(images)
 
@@ -105,8 +105,8 @@ def validate(val_loader, model, criterion, args, writer, epoch,ngpus_per_node):
 
             target = target.cuda(args.gpu, non_blocking=True)
 
-            if args.data_type=='float16':
-                images = images.to(torch.float16)
+            #if args.data_type=='float16':
+                #images = images.to(torch.float16)
                 
             output = model(images)
 

@@ -42,7 +42,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--total_epochs",
-        default=90,
+        default=None,
         type=int,
         metavar="N",
         help="number of total epochs to run",
@@ -233,7 +233,7 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        "--weight_init", default="kaiming_normal", help="Weight initialization modifications"
+        "--weight_init", default=None, help="Weight initialization modifications"
     )
     parser.add_argument(
         "--score_init", default=None, help="Weight initialization modifications"
@@ -265,7 +265,7 @@ def parse_arguments():
         "--seed", default=0, type=int, help="seed for initializing training. "
     )
     parser.add_argument(
-        "--ablation", default=False, type=bool, help="seed for initializing training. "
+        "--ablation", default='none', type=str, help=" "
     )
 
     parser.add_argument(
@@ -273,12 +273,12 @@ def parse_arguments():
         #type=lambda x: [int(a) for a in x.split(",")], 
     )
 
-    parser.add_argument('--global_mask_compression_factor', type=int, default=None, help='factor of 2')
+    parser.add_argument('--global_compression_factor', type=int, default=None, help='factor of 2')
     parser.add_argument('--weight_tile_size', type=int, default=None,)
     parser.add_argument('--data_type', type=str, default=None,)
-    parser.add_argument('--layer_mask_compression_factors', type=str, default=None, help='factor of 2')
+    parser.add_argument('--layer_compression_factors', type=str, default=None, help='factor of 2')
 
-    parser.add_argument('--model_type', type=str, default=None, help='prune or binarize')
+    parser.add_argument('--model_type', type=str, default='binarize', help='prune or binarize')
     parser.add_argument('--alpha_type', type=str, default=None, help='single or multiple alphas per layer')
 
     args = parser.parse_args()

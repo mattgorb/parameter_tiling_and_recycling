@@ -6,7 +6,7 @@ import math
 
 import torch
 import torch.nn as nn
-from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull,  SubnetConvTiledParameter
+from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull
 
 
 def save_checkpoint(state, is_best, filename="checkpoint.pth", save=False):
@@ -31,26 +31,26 @@ def get_lr(optimizer):
 def rerandomize_model(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
-            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull) or isinstance(m, SubnetConvTiledParameter):
+            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull) :
                 print(f"==> Rerandomizing weights of {n} with  {args.rerand_type}")
 
                 m.rerandomize()
     if args.rerand_rate is not None: 
         print(f"==> Rerand_rate:  {args.rerand_rate}")
-    if args.data_type=='float16':
-        model = model.to(torch.float16)
+    #if args.data_type=='compression_factor':
+        #model = model.to(torch.compression_factor)
 
 
 def rerandomize_model_parallel(model, args):
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
-            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull) or isinstance(m, SubnetConvTiledParameter):
+            if isinstance(m, SubnetConvEdgePopup) or isinstance(m, SubnetConvBiprop) or isinstance(m, SubnetConvTiledFull) or isinstance(m, compression_factor):
                 print(f"==> Rerandomizing weights of {n} with  {args.rerand_type}")
                 m.rerandomize()
     if args.rerand_rate is not None:
         print(f"==> Rerand_rate:  {args.rerand_rate}")
-    if args.data_type=='float16':
-        model = model.to(torch.float16)
+    #if args.data_type=='compression_factor':
+        #model = model.to(torch.compression_factor)
     if args.multigpu:
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
 

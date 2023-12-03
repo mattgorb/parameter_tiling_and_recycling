@@ -20,22 +20,15 @@ batch_size: 128
 
 conv_type: DenseConv
 
-weight_tile_size: 65056
+#weight_tile_size: 65056
 
-#layer_mask_compression_factors: 4,4,4,4,4,4,4,4,4
-global_mask_compression_factor: 4
+#layer_compression_factors: 4,4,4,4,4,4,4,4,4
 
-model_type: binarize
-alpha_type: multiple
 
-rerand_epoch_freq: 20
-rerand_type: rerandomize_and_tile
-data_type: float16
+#bn_type: NonAffineBatchNorm
+bn_type: LearnedBatchNorm
 
-bn_type: NonAffineBatchNorm
-freeze_weights: True
-
-weight_init: kaiming_normal
+#weight_init: kaiming_normal
 scale_fan: True
 score_init: None
 

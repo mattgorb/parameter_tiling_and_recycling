@@ -1,0 +1,53 @@
+# Architecture
+arch: simple_vit_cifar10
+
+# ===== Dataset ===== #
+data: /s/luffy/b/nobackup/mgorb/data
+set: CIFAR10
+name: baseline
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+lr: 0.1
+lr_policy: cosine_lr
+
+# ===== Network training config ===== #
+epochs: 500
+weight_decay: 0.0001
+momentum: 0.9
+batch_size: 128
+
+# ===== Sparsity =========== #
+conv_type: Dense
+
+#weight_tile_size: 65056
+
+#layer_compression_factors: 4,4,4,4,4,4,4,4,4
+#global_compression_factor: 4
+layer_compression_factors: 1,1,1,1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,1
+
+model_type: binarize
+alpha_type: multiple
+
+#rerand_type: rerandomize_and_tile
+#data_type: float16
+
+#bn_type: NonAffineBatchNorm
+bn_type: LearnedBatchNorm
+
+weight_init: kaiming_normal
+scale_fan: True
+score_init: None
+
+
+
+weight_seed: 0
+score_seed: 0
+
+
+
+
+
+gpu: 0
+# ===== Hardware setup ===== #
+workers: 2
