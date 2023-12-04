@@ -57,7 +57,7 @@ class Builder(object):
         else:
             return None
 
-        if args.conv_type=='SubnetConvTiledFull' :
+        if args.conv_type=='SubnetConvTiledFull':
             conv.init(args, 
                       self.compression_factors[self.compression_factors_ind])
             self.compression_factors_ind+=1            

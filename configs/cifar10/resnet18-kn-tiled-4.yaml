@@ -24,13 +24,13 @@ conv_type: SubnetConvTiledFull
 
 #layer_compression_factors: 4,4,4,4,4,4,4,4,4
 #global_compression_factor: 4
-layer_compression_factors: 1,1,1,1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,1
+layer_compression_factors: 1,1,1,1,4,4,4,1,4,4,4,4,4,4,4,4,4,4,4,4,1
 
 model_type: binarize
 alpha_type: multiple
 
 #rerand_type: rerandomize_and_tile
-data_type: float16
+#data_type: float16
 
 #bn_type: NonAffineBatchNorm
 bn_type: LearnedBatchNorm

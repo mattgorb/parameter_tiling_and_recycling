@@ -57,3 +57,16 @@ nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu
 
 
 nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 > results/155.txt  2>&1 &  
+
+
+nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single' > results/156.txt  2>&1 & 
+nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' > results/157.txt  2>&1 & 
+
+
+
+
+nohup python -u main.py --config configs/cifar10/dense-simplevit-kn-tiled-full-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 --optimizer='adam'> results/138.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single' --optimizer='adam' > results/158.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --optimizer='adam' > results/159.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --optimizer='adamw' > results/160.txt  2>&1 &
+nohup python -u main.py --config configs/cifar10/dense-simplevit-kn-tiled-full-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 --optimizer='adamw'> results/161.txt  2>&1 & 

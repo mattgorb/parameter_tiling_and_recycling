@@ -84,7 +84,7 @@ class ResNet(nn.Module):
         if args.layer_compression_factors is not None:
             self.layer_compression_factors=list(args.layer_compression_factors.split(','))
             self.layer_compression_factors=[int(x) for x in self.layer_compression_factors]
-            assert len(self.layer_compression_factors)==self.num_layers, f"mask compression factor must have length {self.num_layers}"
+            assert len(self.layer_compression_factors)==self.num_layers, f" compression factor must have length {self.num_layers}"
         if args.global_compression_factor is not None: 
             self.layer_compression_factors=[args.global_compression_factor for i in range(self.num_layers)]
         

@@ -59,7 +59,7 @@ def main_worker(args,):
     #model = nn.DataParallel(model,device_ids = [0,1,2])
 
     #if args.data_type=='float16':
-        #model = model.to(torch.float16)
+    #model = model.to(torch.float16)
     model,device = set_gpu(args, model,)
 
     set_seed(args.seed)
@@ -377,7 +377,7 @@ def get_model(args,):
                 elif 'bn' in name or 'downsample.1' in name or not 'shortcut.1' in name:
                     print(f"name: {name}, weight size: {param.numel()}")
                 else:
-                    print(f"name: {name}, weight shape: {param.size()}, weight size: {param.numel()}, compress factor: {args.global_compression_factor}")
+                    print(f"name: {name}, weight shape: {param.size()}, weight size: {param.numel()}, requires grad?: {param.requires_grad}, compress factor: {args.global_compression_factor}")
             print(
                 f"=> Tiled params: \n\t {tiled_params}"
             )
@@ -399,8 +399,8 @@ def get_model(args,):
                     print(f"name: {name}, weight size: {param.numel()}, requires_grad? {param.requires_grad}")
                 
                 else:
-                    print(f"name: {name}")
-                    print(f"name: {name},i: {i}, weight shape: {param.size()}, weight size: {param.numel()}, compress factor: {model.layer_compression_factors[i]}")
+                    #print(f"name: {name}")
+                    print(f"name: {name},i: {i}, weight shape: {param.size()}, weight size: {param.numel()}, requires grad?: {param.requires_grad}, compress factor: {model.layer_compression_factors[i]}")
                     tiled_params+=int(param.numel()/model.layer_compression_factors[i])
                     tiled_params+=int(model.layer_compression_factors[i]*16 )
                     #print(model.layer_compression_factors[i])
@@ -449,6 +449,10 @@ def get_optimizer(args, model):
         )
     elif args.optimizer == "adam":
         optimizer = torch.optim.Adam(
+            filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr
+        )
+    elif args.optimizer == "adamw":
+        optimizer = torch.optim.AdamW(
             filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr
         )
 
