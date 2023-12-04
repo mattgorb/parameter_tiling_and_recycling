@@ -70,3 +70,20 @@ nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gp
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --optimizer='adam' > results/159.txt  2>&1 & 
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --optimizer='adamw' > results/160.txt  2>&1 &
 nohup python -u main.py --config configs/cifar10/dense-simplevit-kn-tiled-full-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 --optimizer='adamw'> results/161.txt  2>&1 & 
+
+
+
+#perch
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='multiple' > results/162.txt  2>&1 & #scores param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single'  > results/163.txt  2>&1 & #scores param for alpha
+
+#shark
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/164.txt  2>&1 & #scores param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/165.txt  2>&1 & #scores param for alpha
+
+#sole
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='multiple' > results/166.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single'  > results/167.txt  2>&1 & #weight param for alpha
+#swordfish
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/168.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/169.txt  2>&1 & #weight param for alpha

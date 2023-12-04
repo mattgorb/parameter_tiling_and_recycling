@@ -71,7 +71,6 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
 
 
-        #self.num_layers=21
         self.num_layers=num_layers
 
 

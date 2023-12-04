@@ -18,20 +18,19 @@ DenseConv = nn.Conv2d
 
 
 
-
+#straight through estimator
 class GetSubnetBinaryTiled(autograd.Function):
     @staticmethod
     def forward(ctx, scores,  compression_factor, args):
-
         score_agg=torch.sum(scores.flatten().reshape((compression_factor, 
                             int(scores.numel()/compression_factor))), dim=0)
 
-
         out=torch.where(score_agg>0, 1, -1)
+        tiled_tensor=out.tile((compression_factor,))
 
-        tiled_tensor=out.tile((compression_factor,))#[:scores.numel()]
-
-        return tiled_tensor.reshape_as(scores)
+        #important: convert back to float in here.  
+        #if you don't scores param won't get gradients. 
+        return tiled_tensor.reshape_as(scores).float()
         
     
     @staticmethod
@@ -104,17 +103,14 @@ class SubnetConvTiledFull(nn.Conv2d):
         
         self.compression_factor=compression_factor
 
-        assert self.weight.numel()%self.compression_factor ==0 
+        assert self.weight.numel()%self.compression_factor==0
         self.weight.requires_grad = True
-
-        #self.alphas=torch.nn.ParameterList()
-        #for i in range(self.compression_factor):
-            #self.alphas.append(torch.nn.Parameter(torch.randn(1)*0.01, requires_grad=True))
+        self.scores.requires_grad=True
 
 
 
     def alpha_scaling(self,quantnet ):
-        weights_flattened=torch.abs(self.weight.clone()).flatten()
+        weights_flattened=torch.abs(self.weight).flatten()
         quantnet_flatten=quantnet.flatten().float()
 
         if self.args.alpha_type=='multiple':
@@ -134,19 +130,34 @@ class SubnetConvTiledFull(nn.Conv2d):
         return quantnet_flatten.reshape_as(quantnet)
     
 
+    #only use this method for ablation-test whether using same parameter (scores) for tiling AND scaling yields better reuslts.  
+    def alpha_scaling_scores(self,quantnet ):
+        weights_flattened=torch.abs(self.scores).flatten()
+        quantnet_flatten=quantnet.flatten().float()
+
+        if self.args.alpha_type=='multiple':
+            tile_size=int(self.scores.numel()/self.compression_factor)
+            for i in range(self.compression_factor):
+                abs_weight = weights_flattened[i*tile_size:(i+1)*tile_size]
+
+                alpha=torch.sum(abs_weight)/tile_size
+                quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                
+        else:
+            num_unpruned = weights_flattened.numel()
+
+            alpha=torch.sum(weights_flattened)/num_unpruned
+            quantnet_flatten*=alpha
+
+        return quantnet_flatten.reshape_as(quantnet)
+
     def forward(self, x):
         quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
-
-        #quantnet_scaled=self.alpha_scaling(quantnet)
-
-        alpha=torch.sum(self.weight.abs())/self.weight.numel()
-
-        quantnet_scaled=(quantnet.clone().float()*alpha)
-
+        quantnet_scaled=self.alpha_scaling(quantnet)
+        #quantnet_scaled=self.alpha_scaling_scores(quantnet)
         x = F.conv2d(
-            x, quantnet_scaled , None, self.stride, self.padding, self.dilation, self.groups
+            x, quantnet_scaled , self.bias, self.stride, self.padding, self.dilation, self.groups
         )
-
         return x
 
 
@@ -194,7 +205,7 @@ class SubnetConv1dTiledFull(nn.Conv1d):
     
 
     def forward(self, x):
-
+        sys.exit()
         quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
 
         quantnet_scaled=self.alpha_scaling(quantnet)
@@ -275,7 +286,7 @@ class SubnetLinearTiledFull(nn.Linear):
     
 
     def forward(self, x):
-
+        sys.exit()
         quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
 
         quantnet_scaled=self.alpha_scaling(quantnet)

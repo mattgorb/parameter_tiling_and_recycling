@@ -58,6 +58,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
         optimizer.zero_grad()
         loss.backward()
 
+
         optimizer.step()
 
         # measure elapsed time
