@@ -18,7 +18,7 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConvTiledFull
+layer_type: SubnetConvTiledFull
 
 weight_tile_size: 32768
 #global_compression_factor: 4

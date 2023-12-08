@@ -20,7 +20,7 @@ label_smoothing: 0.1
 
 
 # ===== Sparsity =========== #
-conv_type: DenseConv
+layer_type: DenseConv
 data_type: float16
 multigpu: 2,3,4,5,6,7
 ngpus_per_node: 6

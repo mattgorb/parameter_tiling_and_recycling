@@ -147,3 +147,7 @@ transformer/tiny_bert_dir/*
 transformer/tiny_bert_dir/
 
 vision_transformers/*
+vision-transformers-cifar10/checkpoint/*
+vision-transformers-cifar10/log/*
+vision-transformers-cifar10/checkpoint/
+vision-transformers-cifar10/log/

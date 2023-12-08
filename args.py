@@ -267,7 +267,9 @@ def parse_arguments():
     parser.add_argument(
         "--ablation", default='none', type=str, help=" "
     )
-
+    parser.add_argument(
+        "--alpha_param", default='weight', type=str, help=" "
+    )
     parser.add_argument(
         "--multigpu", default=None, type=str,
         #type=lambda x: [int(a) for a in x.split(",")], 

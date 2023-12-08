@@ -17,10 +17,18 @@ import argparse
 
 from pathlib import Path
 from tqdm import tqdm
+#from pointnet.ModelNetDataLoader_modified import ModelNetDataLoader
 from ModelNetDataLoader import ModelNetDataLoader
 
 from pointnet_utils import *
-from model import *
+from pointnet_classification import *
+from tiled_model import *
+
+
+import sys
+sys.path.insert(0, '/s/chopin/l/grad/mgorb/parameter_tiling_and_recycling/')
+from utils.net_utils import model_stats
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
@@ -43,6 +51,7 @@ def parse_args():
     parser.add_argument('--use_normals', action='store_true', default=False, help='use normals')
     parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
+    parser.add_argument('--model_type', default='dense')
     return parser.parse_args()
 
 
@@ -119,7 +128,7 @@ def main(args):
 
     '''DATA LOADING'''
     log_string('Load dataset ...')
-    data_path = '/s/lovelace/c/nobackup/iray/mgorb/pointnet_data/modelnet40_normal_resampled/'
+    data_path = '/s/lovelace/c/nobackup/iray/mgorb/pointnet/modelnet40/modelnet40_normal_resampled/'
     
 
     train_dataset = ModelNetDataLoader(root=data_path, args=args, split='train', process_data=args.process_data)
@@ -134,7 +143,18 @@ def main(args):
     #shutil.copy('models/pointnet2_utils.py', str(exp_dir))
     #shutil.copy('./train_classification.py', str(exp_dir))
 
-    classifier = get_model(num_class, normal_channel=args.use_normals)
+    if args.model_type=='dense':
+        classifier = get_model(num_class, normal_channel=args.use_normals)
+    else:
+        classifier = get_tiled_model(num_class, normal_channel=args.use_normals)
+
+
+
+    model_stats(classifier)
+
+
+
+
     criterion = get_loss()
     classifier.apply(inplace_relu)
 

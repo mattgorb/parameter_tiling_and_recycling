@@ -18,11 +18,11 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConvTiledFull
+layer_type: SubnetConvTiledFull
 
 #weight_tile_size: 65056
 
-layer_compression_factors: 1,4,4,4,4,4,2
+layer_compression_factors: 1,2,4,4,4,4,2
 #global_compression_factor: 4
 
 model_type: binarize
@@ -37,7 +37,7 @@ bn_type: LearnedBatchNorm
 
 weight_init: kaiming_normal
 scale_fan: True
-score_init: kaiming_normal
+#score_init: kaiming_normal
 
 
 

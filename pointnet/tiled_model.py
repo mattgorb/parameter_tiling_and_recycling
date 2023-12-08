@@ -11,7 +11,14 @@ from torch.autograd import Variable
 import numpy as np
 import torch.nn.functional as F
 
-from ..utils.conv_type import SubnetConvTiledFull, SubnetConv1dTiledFull, SubnetLinearTiledFull
+import sys
+ 
+# adding Folder_2 to the system path
+#print(sys.path)
+sys.path.insert(0, '/s/chopin/l/grad/mgorb/parameter_tiling_and_recycling/')
+
+from utils.layer_type import *
+
 
 
 
@@ -44,7 +51,7 @@ class TiledSTN3d(nn.Module):
         x = F.relu(self.bn5(self.fc2(x)))
         x = self.fc3(x)
 
-        iden = Variable(torch.from_numpy(np.array([1, 0, 0, 0, 1, 0, 0, 0, 1]).astype(np.float32))).view(1, 9).repeat(
+        iden = Variable(torch.from_numpy(np.array([1, 0, 0, 0, 1, 0, 0, 0, 1]).astype(float))).view(1, 9).repeat(
             batchsize, 1)
         if x.is_cuda:
             iden = iden.cuda()
@@ -84,7 +91,7 @@ class TiledSTNkd(nn.Module):
         x = F.relu(self.bn5(self.fc2(x)))
         x = self.fc3(x)
 
-        iden = Variable(torch.from_numpy(np.eye(self.k).flatten().astype(np.float32))).view(1, self.k * self.k).repeat(
+        iden = Variable(torch.from_numpy(np.eye(self.k).flatten().astype(float))).view(1, self.k * self.k).repeat(
             batchsize, 1)
         if x.is_cuda:
             iden = iden.cuda()

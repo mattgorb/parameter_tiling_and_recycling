@@ -2,74 +2,13 @@
 
 nohup python -u train_classification.py > results/pointnet_1.txt  2>&1 & #char
 
-nohup sh training_data.sh > results/training_data.txt  2>&1 & 
-
-
-nohup sh train.sh > results/MRPC_train.txt  2>&1 &
 
 
 
 
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml --prune_rate=0.5 --gpu=0 --data=~/ --epochs=100 --ablation='remove_t1' > results/120.txt  2>&1 & 
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml --prune_rate=0.5 --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet18-kn-tiled-full-randtile-4-norerand/baseline/prune_rate=0.5/10/checkpoints/model_best.pth > results/123.txt  2>&1 & 
-
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 > results/124.txt  2>&1 &
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml  --gpu=0 --data=~/ --epochs=250 --total_epochs=300 > results/125.txt  2>&1 &
-
-
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 > results/126.txt  2>&1 & 
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 > results/127.txt  2>&1 &
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml --gpu=0 --data=~/ --epochs=100 --rerand_type='recycle' --rerand_epoch_freq=20 --rerand_rate=0.1 > results/128.txt  2>&1 &
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml  --gpu=0 --data=~/ --epochs=400 --total_epochs=500 > results/129.txt  2>&1 &
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-full-randtile-4-norerand.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single' > results/130.txt  2>&1 & 
-
-
-nohup python -u main.py --config configs/cifar10/dense-simplevit-kn-tiled-full-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 > results/133.txt  2>&1 & 
-nohup python -u main.py --config configs/imagenet/dense-mobilevit-kn-tiled-full-4.yaml  --gpu=0  --epochs=100 --total_epochs=300 > results/132.txt  2>&1 & 
 
 
 
-
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/141.txt  2>&1 & 
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/140.txt  2>&1 & 
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-32.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/142.txt  2>&1 &
-
-nohup python -u main.py --config configs/cifar10/resnet34-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=500 > results/143.txt  2>&1 &  
-nohup python -u main.py --config configs/cifar10/resnet34-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/144.txt  2>&1 &  
-nohup python -u main.py --config configs/cifar10/resnet34-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/145.txt  2>&1 &  
-
-nohup python -u main.py --config configs/cifar10/resnet50-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/146.txt  2>&1 &
-nohup python -u main.py --config configs/cifar10/resnet50-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/147.txt  2>&1 &
-
-
-nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 > results/148.txt  2>&1 &  
-nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/149.txt  2>&1 &  
-nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 > results/150.txt  2>&1 &  
-
-
-
-nohup python -u main.py --config configs/cifar10/resnet34-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=500 > results/151.txt  2>&1 & #bias
-
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=500 > results/152.txt  2>&1 & #bias
-
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=500 > results/153.txt  2>&1 & #nobias
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 > results/154.txt  2>&1 & #nobias+epochs
-
-
-nohup python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 > results/155.txt  2>&1 &  
-
-
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single' > results/156.txt  2>&1 & 
-nohup python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' > results/157.txt  2>&1 & 
-
-
-
-
-nohup python -u main.py --config configs/cifar10/dense-simplevit-kn-tiled-full-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 --optimizer='adam'> results/138.txt  2>&1 & 
-nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single' --optimizer='adam' > results/158.txt  2>&1 & 
-nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --optimizer='adam' > results/159.txt  2>&1 & 
-nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --optimizer='adamw' > results/160.txt  2>&1 &
-nohup python -u main.py --config configs/cifar10/dense-simplevit-kn-tiled-full-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=500 --optimizer='adamw'> results/161.txt  2>&1 & 
 
 
 
@@ -84,6 +23,102 @@ nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gp
 #sole
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='multiple' > results/166.txt  2>&1 & #weight param for alpha
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single'  > results/167.txt  2>&1 & #weight param for alpha
+
 #swordfish
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/168.txt  2>&1 & #weight param for alpha
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/169.txt  2>&1 & #weight param for alpha
+
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/170.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/171.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  --alpha_param='scores' > results/172.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  --alpha_param='scores'  > results/173.txt  2>&1 & #weight param for alpha
+
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple' --global_compression_factor=4 > results/174.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  --global_compression_factor=4  > results/175.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'   > results/176.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/177.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/178.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/179.txt  2>&1 & #weight param for alpha
+
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  --alpha_param='scores'  > results/180.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  --alpha_param='scores' > results/181.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/182.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/183.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  --alpha_param='scores' > results/184.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  --alpha_param='scores' > results/185.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-32.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/186.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-32.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/187.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/188.txt  2>&1 & #4
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/189.txt  2>&1 & #4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  --alpha_param='scores'  > results/190.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  --alpha_param='scores'  > results/191.txt  2>&1 & 
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/192.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/193.txt  2>&1 & 
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/194.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/195.txt  2>&1 & 
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/196.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/197.txt  2>&1 & 
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 --alpha_type='multiple'  > results/198.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 --alpha_type='single'  > results/199.txt  2>&1 &
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=500 --alpha_type='multiple'  > results/200.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=2000 --total_epochs=500 --alpha_type='multiple'  > results/201.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=500 --alpha_type='multiple'  > results/202.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=3000 --total_epochs=500 --alpha_type='multiple'  > results/203.txt  2>&1 & 
+
+
+
+
+
+nohup  python -u train_cifar10.py --net=mlpmixer --n_epochs=500 --lr=1e-3 > ../results/mlpmixer_cifar10_dense.txt  2>&1 &
+nohup  python -u train_cifar10.py --net swin --n_epochs 400 > ../results/swin_cifar10_dense.txt  2>&1 &
+nohup  python -u train_cifar10.py --patch 2 --n_epochs 500 > ../results/vit_cifar10_dense.txt  2>&1 &
+
+
+nohup python -u train_semseg.py > results/pointnet_semseg_dense.txt  2>&1 & #char
+nohup python -u train_partseg.py > results/pointnet_partseg_dense.txt  2>&1 & #char

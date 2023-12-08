@@ -6,7 +6,9 @@ import math
 
 import torch
 import torch.nn as nn
-from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull
+from utils.layer_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull, SubnetConv1dTiledFull, SubnetLinearTiledFull
+
+import torch.nn as nn
 
 
 def save_checkpoint(state, is_best, filename="checkpoint.pth", save=False):
@@ -155,3 +157,86 @@ class SubnetL1RegLoss(nn.Module):
                 l1_accum += (p*temperature).sigmoid().sum()
 
         return l1_accum
+
+
+
+def model_stats(model):
+    for n,m in model.named_parameters():
+        print(f'{n}, {m.size()}, {m.numel()}')
+    model_layer_params={
+        'linear': 0,
+        'bias': 0,
+        'batchnorm2d':0,
+        'batchnorm1d':0,
+        'layernorm':0,
+        'conv2d':0,
+        'conv1d':0
+    }
+    for n, m in model.named_modules():
+        if hasattr(m, "weight") and m.weight is not None:
+            if isinstance(m, nn.Linear) :
+                model_layer_params['linear']+=m.weight.numel()
+            elif isinstance(m, nn.BatchNorm2d) :
+                model_layer_params['batchnorm2d']+=m.weight.numel()
+            elif isinstance(m, nn.BatchNorm1d) :
+                model_layer_params['batchnorm1d']+=m.weight.numel()
+            elif isinstance(m, nn.LayerNorm) :
+                model_layer_params['layernorm']+=m.weight.numel()
+            elif isinstance(m, nn.Conv2d) :
+                model_layer_params['conv2d']+=m.weight.numel()
+            elif isinstance(m, nn.Conv1d) :
+                model_layer_params['conv1d']+=m.weight.numel()
+            else:
+                if  not isinstance(m, SubnetConv1dTiledFull) and\
+                    not isinstance(m, SubnetLinearTiledFull) and\
+                    not isinstance(m, SubnetConvTiledFull):
+                    print(f'module instance not found for module with weights: {n}')
+                    print("add instance before continuing!!!!!!!")
+                    sys.exit()
+        if hasattr(m, "bias") and m.bias is not None:
+            #print(f'adding {m.bias.numel()} bias params for module {n}')
+            model_layer_params['bias']+=m.bias.numel()
+    
+    print('\ndense model summary:')
+    for layer, params in model_layer_params.items():
+        print(f'\t{layer}, {params}')
+
+
+    model_layer_params={
+        'linear': 0,
+        'bias': 0,
+        'batchnorm2d':0,
+        'batchnorm1d':0,
+        'layernorm':0,
+        'conv2d':0,
+        'conv1d':0
+    }
+    for n, m in model.named_modules():
+        if hasattr(m, "weight") and m.weight is not None:
+            if isinstance(m, SubnetLinearTiledFull) :
+                model_layer_params['linear']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
+            elif isinstance(m, nn.BatchNorm2d) :
+                model_layer_params['batchnorm2d']+=m.weight.numel()
+            elif isinstance(m, nn.BatchNorm1d) :
+                model_layer_params['batchnorm1d']+=m.weight.numel()
+            elif isinstance(m, nn.LayerNorm) :
+                model_layer_params['layernorm']+=m.weight.numel()
+            elif isinstance(m, SubnetConvTiledFull) :
+                model_layer_params['conv2d']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
+            elif isinstance(m, SubnetConv1dTiledFull) :
+                model_layer_params['conv1d']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
+            else:
+                if  not isinstance(m, nn.Conv2d) and\
+                    not isinstance(m, nn.Conv1d) and\
+                    not isinstance(m, nn.Linear):
+                    print(f'module instance not found for module with weights: {n}')
+                    print("add instance before continuing!!!!!!!")
+                    sys.exit()
+        if hasattr(m, "bias") and m.bias is not None:
+            #print(f'adding {m.bias.numel()} bias params for module {n}')
+            model_layer_params['bias']+=m.bias.numel()
+    
+    print('\ntiled model summary:')
+    print("(linear, conv1d, conv2d are compressed)")
+    for layer, params in model_layer_params.items():
+        print(f'\t{layer}, {params}')

@@ -19,7 +19,7 @@ from utils.net_utils import (
     save_checkpoint,
     get_lr,
     LabelSmoothing,
-    rerandomize_model
+    rerandomize_model,model_stats
 )
 from utils.schedulers import get_policy
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -31,7 +31,7 @@ import data
 import models
 from utils.initializations import set_seed
 
-from utils.conv_type import SubnetConvEdgePopup, SubnetConvBiprop, GetSubnetEdgePopup, GetQuantnet_binary
+from utils.layer_type import SubnetConvEdgePopup, SubnetConvBiprop, GetSubnetEdgePopup, GetQuantnet_binary
 import matplotlib.pyplot as plt
 
 def main():
@@ -355,15 +355,15 @@ def get_model(args,):
     
 
     # applying sparsity to the network
-    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull':
+    if args.layer_type != "DenseConv" and args.layer_type!='SubnetConvTiledFull':
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
-    if args.conv_type=='SubnetConvTiledFull':
+    if args.layer_type=='SubnetConvTiledFull':
         assert args.model_type=='prune' or args.model_type=='binarize',  'model type needs to be prune or binarize'
         assert args.alpha_type=='single' or args.alpha_type=='multiple', "alpha needs to be single or multiple"
-    
-    if args.conv_type=="SubnetConvTiledFull":
+        model_stats(model)
+    '''if args.layer_type=="SubnetConvTiledFull":
         #print(model)
         if args.global_compression_factor is not None:
             tiled_params=sum(int(p.numel()/args.global_compression_factor )+args.global_compression_factor*16 
@@ -409,11 +409,11 @@ def get_model(args,):
 
             print(
                 f"=> Tiled params: \n\t {tiled_params}"
-            )
+            )'''
 
 
     # freezing the weights if we are only doing subnet training
-    if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop':
+    if args.layer_type=='SubnetConvEdgePopup' or args.layer_type=='SubnetConvBiprop':
         freeze_model_weights(model)
 
 

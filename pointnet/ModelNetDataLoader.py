@@ -1,3 +1,8 @@
+'''
+@author: Xu Yan
+@file: ModelNet.py
+@time: 2021/3/19 15:51
+'''
 import os
 import numpy as np
 import warnings
@@ -87,7 +92,7 @@ class ModelNetDataLoader(Dataset):
                     fn = self.datapath[index]
                     cls = self.classes[self.datapath[index][0]]
                     cls = np.array([cls]).astype(np.int32)
-                    point_set = np.loadtxt(fn[1], delimiter=',').astype(np.float32)
+                    point_set = np.loadtxt(fn[1], delimiter=',').astype(float)
 
                     if self.uniform:
                         point_set = farthest_point_sample(point_set, self.npoints)
@@ -114,7 +119,7 @@ class ModelNetDataLoader(Dataset):
             fn = self.datapath[index]
             cls = self.classes[self.datapath[index][0]]
             label = np.array([cls]).astype(np.int32)
-            point_set = np.loadtxt(fn[1], delimiter=',').astype(np.float32)
+            point_set = np.loadtxt(fn[1], delimiter=',').astype(float)
 
             if self.uniform:
                 point_set = farthest_point_sample(point_set, self.npoints)
@@ -134,7 +139,7 @@ class ModelNetDataLoader(Dataset):
 if __name__ == '__main__':
     import torch
 
-    data = ModelNetDataLoader('/s/lovelace/c/nobackup/iray/mgorb/pointnet_data/modelnet40_normal_resampled/', split='train')
+    data = ModelNetDataLoader('/data/modelnet40_normal_resampled/', split='train')
     DataLoader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)
     for point, label in DataLoader:
         print(point.shape)

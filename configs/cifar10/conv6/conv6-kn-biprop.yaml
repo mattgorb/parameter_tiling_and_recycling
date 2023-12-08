@@ -18,7 +18,7 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: SubnetConvBiprop
+layer_type: SubnetConvBiprop
 bn_type: NonAffineBatchNorm
 freeze_weights: True
 data_type: float16

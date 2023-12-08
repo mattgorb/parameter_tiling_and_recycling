@@ -18,7 +18,7 @@ momentum: 0.9
 batch_size: 128
 
 
-conv_type: DenseConv
+layer_type: DenseConv
 
 #weight_tile_size: 65056
 

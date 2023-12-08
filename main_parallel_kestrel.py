@@ -87,7 +87,7 @@ def main_worker(rank, args):
         
         model,device = set_gpu(args, model)
     else:
-        if args.conv_type=='DenseConv':
+        if args.layer_type=='DenseConv':
             if args.arch=='ResNet50':
                 model=models_pretrained.resnet50(pretrained=True)
                 
@@ -140,7 +140,7 @@ def main_worker(rank, args):
 
     # Data loading code
     if args.evaluate:
-        if args.conv_type=='DenseConv':
+        if args.layer_type=='DenseConv':
             acc1, acc5 = validate(data.val_loader, model, criterion, args, None, 0, ngpus_per_node)
             if args.rank == 0:
                 #acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
@@ -404,15 +404,15 @@ def get_model(args,):
         f"=> Dense model params:\n\t{dense_params}"
     )
 
-    if args.conv_type != "DenseConv" and args.conv_type!='SubnetConvTiledFull' :
+    if args.layer_type != "DenseConv" and args.layer_type!='SubnetConvTiledFull' :
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
-    if args.conv_type=='SubnetConvTiledFull':
+    if args.layer_type=='SubnetConvTiledFull':
         assert args.model_type=='prune' or args.model_type=='binarize',  'model type needs to be prune or binarize'
         assert args.alpha_type=='single' or args.alpha_type=='multiple', "alpha needs to be single or multiple"
     
-    if args.conv_type=="SubnetConvTiledFull":
+    if args.layer_type=="SubnetConvTiledFull":
         if args.global_compression_factor is not None:
             tiled_params=sum(int(p.numel()/args.global_compression_factor ) for n, p in model.named_parameters() if not n.endswith('scores'))
 
@@ -453,7 +453,7 @@ def get_model(args,):
             )
 
     # freezing the weights if we are only doing subnet training
-    if args.conv_type=='SubnetConvEdgePopup' or args.conv_type=='SubnetConvBiprop' :
+    if args.layer_type=='SubnetConvEdgePopup' or args.layer_type=='SubnetConvBiprop' :
         freeze_model_weights(model)
 
     #sys.exit()

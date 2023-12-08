@@ -99,8 +99,6 @@ class ResNet(nn.Module):
 
         self.layer_compression_factors=None
 
-        if args.layer_compression_factors is not None: 
-            assert args.global_compression_factor is None, "global compression factor must be none if layer compression is not none"
 
 
         if args.layer_compression_factors is not None:

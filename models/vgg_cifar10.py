@@ -7,7 +7,7 @@ from utils.tile_utils import create_signed_tile
 from args import args
 from utils.bn_type import NonAffineBatchNorm, LearnedBatchNorm
 
-from utils.conv_type import SubnetConvTiledFull, SubnetLinearTiledFull
+from utils.layer_type import SubnetConvTiledFull, SubnetLinearTiledFull
 
 def conv_layer_init(cin, cout, layer_compression_factor):
         conv=SubnetConvTiledFull(cin, cout, kernel_size=3, padding=1, bias=False)
@@ -24,8 +24,6 @@ class VGG_SMALL(nn.Module):
 
         self.layer_compression_factors=None
 
-        if args.layer_compression_factors is not None: 
-            assert args.global_compression_factor is None, "global compression factor must be none if layer compression is not none"
 
 
         if args.layer_compression_factors is not None:

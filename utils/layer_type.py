@@ -104,57 +104,45 @@ class SubnetConvTiledFull(nn.Conv2d):
         self.compression_factor=compression_factor
 
         assert self.weight.numel()%self.compression_factor==0
-        self.weight.requires_grad = True
+
+        if self.args.alpha_param=='scores':
+            self.weight.requires_grad = False
+
         self.scores.requires_grad=True
 
 
 
     def alpha_scaling(self,quantnet ):
-        weights_flattened=torch.abs(self.weight).flatten()
+        if self.args.alpha_param=='scores':
+            alpha_tens_flattened=torch.abs(self.scores).flatten()
+        elif self.args.alpha_param=='weight':
+            alpha_tens_flattened=torch.abs(self.weight).flatten()
+
         quantnet_flatten=quantnet.flatten().float()
 
         if self.args.alpha_type=='multiple':
             tile_size=int(self.weight.numel()/self.compression_factor)
             for i in range(self.compression_factor):
-                abs_weight = weights_flattened[i*tile_size:(i+1)*tile_size]
+                abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
 
                 alpha=torch.sum(abs_weight)/tile_size
                 quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
                 
         else:
-            num_unpruned = weights_flattened.numel()
+            num_unpruned = alpha_tens_flattened.numel()
 
-            alpha=torch.sum(weights_flattened)/num_unpruned
+            alpha=torch.sum(alpha_tens_flattened)/num_unpruned
             quantnet_flatten*=alpha
 
         return quantnet_flatten.reshape_as(quantnet)
     
 
-    #only use this method for ablation-test whether using same parameter (scores) for tiling AND scaling yields better reuslts.  
-    def alpha_scaling_scores(self,quantnet ):
-        weights_flattened=torch.abs(self.scores).flatten()
-        quantnet_flatten=quantnet.flatten().float()
 
-        if self.args.alpha_type=='multiple':
-            tile_size=int(self.scores.numel()/self.compression_factor)
-            for i in range(self.compression_factor):
-                abs_weight = weights_flattened[i*tile_size:(i+1)*tile_size]
-
-                alpha=torch.sum(abs_weight)/tile_size
-                quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
-                
-        else:
-            num_unpruned = weights_flattened.numel()
-
-            alpha=torch.sum(weights_flattened)/num_unpruned
-            quantnet_flatten*=alpha
-
-        return quantnet_flatten.reshape_as(quantnet)
 
     def forward(self, x):
         quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
         quantnet_scaled=self.alpha_scaling(quantnet)
-        #quantnet_scaled=self.alpha_scaling_scores(quantnet)
+
         x = F.conv2d(
             x, quantnet_scaled , self.bias, self.stride, self.padding, self.dilation, self.groups
         )
@@ -170,44 +158,52 @@ class SubnetConv1dTiledFull(nn.Conv1d):
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
 
-    def init(self,args,compression_factor):
+    def init(self,args, compression_factor):
         self.args=args
         self.weight=_init_weight(args,self.weight)
         self.scores=_init_score(self.args, self.scores)
-        self.prune_rate=args.prune_rate
+
         
         self.compression_factor=compression_factor
 
-        assert self.weight.numel()%self.compression_factor ==0 
-        self.weight.requires_grad = True
+        assert self.weight.numel()%self.compression_factor==0
 
-        #self.alphas=torch.nn.ParameterList()
-        #for i in range(self.compression_factor):
-        #    self.alphas.append(torch.nn.Parameter(torch.randn(1)*0.01, requires_grad=True))
+        if self.args.alpha_param=='scores':
+            self.weight.requires_grad = False
+
+        self.scores.requires_grad=True
+
+
 
     def alpha_scaling(self,quantnet ):
-        weights_flattened=torch.abs(self.weight).flatten()
-        quantnet_flatten=quantnet.clone().flatten().float()
+        if self.args.alpha_param=='scores':
+            alpha_tens_flattened=torch.abs(self.scores).flatten()
+        elif self.args.alpha_param=='weight':
+            alpha_tens_flattened=torch.abs(self.weight).flatten()
 
+        quantnet_flatten=quantnet.flatten().float()
 
         if self.args.alpha_type=='multiple':
-            tile_size=int(self.scores.numel()/self.compression_factor)
+            tile_size=int(self.weight.numel()/self.compression_factor)
             for i in range(self.compression_factor):
-                abs_weight = weights_flattened[i*tile_size:(i+1)*tile_size]
+                abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
+
                 alpha=torch.sum(abs_weight)/tile_size
                 quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                
         else:
-            num_unpruned = weights_flattened.numel()
-            alpha=torch.sum(weights_flattened)/num_unpruned
+            num_unpruned = alpha_tens_flattened.numel()
+
+            alpha=torch.sum(alpha_tens_flattened)/num_unpruned
             quantnet_flatten*=alpha
 
         return quantnet_flatten.reshape_as(quantnet)
     
 
-    def forward(self, x):
-        sys.exit()
-        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
 
+
+    def forward(self, x):
+        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
         quantnet_scaled=self.alpha_scaling(quantnet)
 
         # Pass scaled quantnet to convolution layer
@@ -254,41 +250,48 @@ class SubnetLinearTiledFull(nn.Linear):
         self.args=args
         self.weight=_init_weight(args,self.weight)
         self.scores=_init_score(self.args, self.scores)
-        self.prune_rate=args.prune_rate
+
         
         self.compression_factor=compression_factor
 
-        assert self.weight.numel()%self.compression_factor ==0 
-        self.weight.requires_grad = True
-        
-        #self.alphas=torch.nn.ParameterList()
-        #for i in range(self.compression_factor):
-        #    self.alphas.append(torch.nn.Parameter(torch.randn(1)*0.01, requires_grad=True))
+        assert self.weight.numel()%self.compression_factor==0
+
+        if self.args.alpha_param=='scores':
+            self.weight.requires_grad = False
+
+        self.scores.requires_grad=True
+
+
 
     def alpha_scaling(self,quantnet ):
-        weights_flattened=torch.abs(self.weight).flatten()
-        quantnet_flatten=quantnet.clone().flatten().float()
-        #if self.args.data_type=='float16':
-            #quantnet_flatten=quantnet_flatten.to(torch.float16)
+        if self.args.alpha_param=='scores':
+            alpha_tens_flattened=torch.abs(self.scores).flatten()
+        elif self.args.alpha_param=='weight':
+            alpha_tens_flattened=torch.abs(self.weight).flatten()
+
+        quantnet_flatten=quantnet.flatten().float()
 
         if self.args.alpha_type=='multiple':
-            tile_size=int(self.scores.numel()/self.compression_factor)
+            tile_size=int(self.weight.numel()/self.compression_factor)
             for i in range(self.compression_factor):
-                abs_weight = weights_flattened[i*tile_size:(i+1)*tile_size]
+                abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
+
                 alpha=torch.sum(abs_weight)/tile_size
                 quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                
         else:
-            num_unpruned = weights_flattened.numel()
-            alpha=torch.sum(weights_flattened)/num_unpruned
+            num_unpruned = alpha_tens_flattened.numel()
+
+            alpha=torch.sum(alpha_tens_flattened)/num_unpruned
             quantnet_flatten*=alpha
 
         return quantnet_flatten.reshape_as(quantnet)
     
 
-    def forward(self, x):
-        sys.exit()
-        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
 
+
+    def forward(self, x):
+        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
         quantnet_scaled=self.alpha_scaling(quantnet)
 
         # Pass scaled quantnet to convolution layer

@@ -4,7 +4,7 @@ import math
 import torch
 import torch.nn as nn
 from torch.nn.utils import weight_norm as wn
-import utils.conv_type
+import utils.layer_type
 import utils.bn_type
 from utils.initializations import _init_weight
 
@@ -57,11 +57,11 @@ class Builder(object):
         else:
             return None
 
-        if args.conv_type=='SubnetConvTiledFull':
+        if args.layer_type=='SubnetConvTiledFull':
             conv.init(args, 
                       self.compression_factors[self.compression_factors_ind])
             self.compression_factors_ind+=1            
-        elif args.conv_type!='DenseConv':
+        elif args.layer_type!='DenseConv':
             conv.init(args, )
         else:
             conv.args = args
@@ -106,15 +106,15 @@ class Builder(object):
 
 def get_builder(weight_tile=None, compression_factors=None):
 
-    print("==> Conv Type: {}".format(args.conv_type))
+    print("==> Conv Type: {}".format(args.layer_type))
     print("==> BN Type: {}".format(args.bn_type))
 
-    conv_layer = getattr(utils.conv_type, args.conv_type)
+    conv_layer = getattr(utils.layer_type, args.layer_type)
 
     bn_layer = getattr(utils.bn_type, args.bn_type)
 
     if args.first_layer_type is not None:
-        first_layer = getattr(utils.conv_type, args.first_layer_type)
+        first_layer = getattr(utils.layer_type, args.first_layer_type)
         print(f"==> First Layer Type: {args.first_layer_type}")
     else:
         first_layer = None

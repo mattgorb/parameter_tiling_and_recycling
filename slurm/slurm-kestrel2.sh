@@ -9,10 +9,13 @@
 #SBATCH --mem=50G                  		 # total memory per node
 #SBATCH --gres=gpu:3090:3               # Request 3 GPU (3090 24GB)
 #SBATCH --time=5-00:00:00 				 #  node
-#SBATCH --nodelist=kestrel1
+#SBATCH --nodelist=kestrel2
 
 module purge
 module load python/bundle-3.9
+#unset PYTHONPATH
+#source /s/lovelace/c/nobackup/iray/mgorb/anaconda3/bin/activate
+#conda activate quant
 
 #TORCH_DISTRIBUTED_DEBUG=DETAIL NCCL_DEBUG=INFO NCCL_MAX_ASYNC_OPS=6  
 #python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-recycle.yaml --gpu=0 --multigpu=0,1,2  --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params/biprop/prune_rate=-1/9/checkpoints/model_best.pth

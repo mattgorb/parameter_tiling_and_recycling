@@ -18,7 +18,7 @@ momentum: 0.9
 batch_size: 128
 
 # ===== Sparsity =========== #
-conv_type: DenseConv
+layer_type: DenseConv
 bn_type: NonAffineBatchNorm
 data_type: float16
 

@@ -20,7 +20,7 @@ label_smoothing: 0.1
 
 
 # ===== Sparsity =========== #
-conv_type: SubnetConvTiledFull
+layer_type: SubnetConvTiledFull
 weight_tile_size: 65536
 layer_compression_factors: 1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,2
 
