@@ -40,11 +40,9 @@ alpha_type: multiple
 #bn_type: NonAffineBatchNorm
 bn_type: LearnedBatchNorm
 
-prune_rate: -1 # Override1=2
 weight_init: kaiming_normal
-mode: fan_in
-nonlinearity: relu
 scale_fan: True
+score_init: None
 
 
 

@@ -20,10 +20,7 @@ batch_size: 128
 
 layer_type: DenseConv
 
-weight_tile_size: 65056
 
-#layer_compression_factors: 4,4,4,4,4,4,4,4,4
-global_compression_factor: 4
 
 model_type: binarize
 alpha_type: multiple

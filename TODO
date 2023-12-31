@@ -11,7 +11,6 @@ nohup python -u train_classification.py > results/pointnet_1.txt  2>&1 & #char
 
 
 
-
 #perch
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='multiple' > results/162.txt  2>&1 & #scores param for alpha
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=100 --total_epochs=300 --alpha_type='single'  > results/163.txt  2>&1 & #scores param for alpha
@@ -27,6 +26,13 @@ nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gp
 #swordfish
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple'  > results/168.txt  2>&1 & #weight param for alpha
 nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single'  > results/169.txt  2>&1 & #weight param for alpha
+
+
+
+
+
+
+
 
 
 
@@ -106,10 +112,34 @@ nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 -
 
 
 
-nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=500 --alpha_type='multiple'  > results/200.txt  2>&1 & 
-nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=2000 --total_epochs=500 --alpha_type='multiple'  > results/201.txt  2>&1 & 
-nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=500 --alpha_type='multiple'  > results/202.txt  2>&1 & 
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1000 --alpha_type='multiple'  > results/200.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=2000 --total_epochs=2000 --alpha_type='multiple'  > results/201.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=1500 --alpha_type='multiple'  > results/202.txt  2>&1 & 
 nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=3000 --total_epochs=500 --alpha_type='multiple'  > results/203.txt  2>&1 & 
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-dense.yaml  --gpu=0 --data=~/ --epochs=300  > results/vgg_small_dense.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 --alpha_type='multiple'  > results/204.txt  2>&1 & #default init
+
+
+
+
+
+
+
+nohup python -u train_semseg.py > results/pointnet_semseg_dense.txt  2>&1 & #char
+nohup python -u train_partseg.py > results/pointnet_partseg_dense.txt  2>&1 & #char
+
+
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4 > results/pointnet_class_tiled_4.txt  2>&1 & #char
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 4   > results/pointnet_partseg_tiled_4.txt  2>&1 & #char
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 4   > results/pointnet_semseg_tiled_4.txt  2>&1 & #char
+
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4  --epoch=500 > results/pointnet_class_tiled_4_500_epochs.txt  2>&1 & #char
+
+
+
+
 
 
 
@@ -117,8 +147,475 @@ nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 -
 
 nohup  python -u train_cifar10.py --net=mlpmixer --n_epochs=500 --lr=1e-3 > ../results/mlpmixer_cifar10_dense.txt  2>&1 &
 nohup  python -u train_cifar10.py --net swin --n_epochs 400 > ../results/swin_cifar10_dense.txt  2>&1 &
-nohup  python -u train_cifar10.py --patch 2 --n_epochs 500 > ../results/vit_cifar10_dense.txt  2>&1 &
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 500 > ../results/vit_cifar10_dense_patch_4.txt  2>&1 &
+nohup  python -u train_cifar10.py --net swin --n_epochs 800 > ../results/swin_cifar10_dense_800epochs.txt  2>&1 &
 
 
-nohup python -u train_semseg.py > results/pointnet_semseg_dense.txt  2>&1 & #char
-nohup python -u train_partseg.py > results/pointnet_partseg_dense.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1500 > ../results/vit_cifar10_dense_patch_4_1500.txt  2>&1 &
+nohup  python -u train_cifar10.py --net swin --n_epochs 1500 > ../results/swin_cifar10_dense_1500epochs.txt  2>&1 &
+
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 4   > ../results/vit_4_tiled_4_1000_epochs.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 8   > ../results/vit_4_tiled_8_1000_epochs.txt  2>&1 & #char
+
+
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=1000 --lr=1e-3  --compression_factor 4 > ../results/tiled_mlpmixer_4_1000.txt  2>&1 &
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=1000 --lr=1e-3  --compression_factor 8 > ../results/tiled_mlpmixer_8_1000.txt  2>&1 &
+
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 1000 --compression_factor 4 --bs 64 > ../results/tiled_convmixer_4_1000.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 1000 --compression_factor 8 --bs 64 > ../results/tiled_convmixer_4_1000.txt  2>&1 &
+
+
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 1500  --compression_factor 4  --bs 256 > ../results/swin_cifar10_tiled_4_1600epochs.txt  2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 1500  --compression_factor 8  --bs 256 > ../results/swin_cifar10_tiled_8_1600epochs.txt  2>&1 &
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1000 --alpha_type='multiple'  > results/200.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=2000 --total_epochs=2000 --alpha_type='multiple'  > results/201.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=1500 --alpha_type='multiple'  > results/202.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=3000 --total_epochs=500 --alpha_type='multiple'  > results/203.txt  2>&1 & 
+
+
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 4   --epoch=500 > results/pointnet_partseg_tiled_4_500_epochs.txt  2>&1 & #char
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 4   --epoch=200 > results/pointnet_semseg_tiled_4_100_epochs.txt  2>&1 & #char
+
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4  --epoch=500 > results/pointnet_class_tiled_4_500_epochs.txt  2>&1 & #char
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4  --epoch=500 --alpha_type='single' > results/pointnet_class_tiled_4_500_epochs_single.txt  2>&1 & #char
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple' --global_compression_factor=8  > results/205.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --global_compression_factor=8 > results/206.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=600 --alpha_type='multiple'   > results/207.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=600 --alpha_type='single'  > results/208.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=800 --total_epochs=800 --alpha_type='multiple'   > results/209.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=800 --total_epochs=800 --alpha_type='single'  > results/210.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple' --global_compression_factor=16  > results/211.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='single' --global_compression_factor=16 > results/212.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=300 --total_epochs=300 --alpha_type='multiple' --global_compression_factor=4  > results/213.txt  2>&1 & #weight param for alpha
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 --alpha_type='single' --alpha_param='scores' > results/214.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=500 --total_epochs=500 --alpha_type='multiple' --alpha_param='scores' > results/215.txt  2>&1 & #different weight seed from 214
+
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4  --epoch=250 --alpha_type='single'  --alpha_param='scores' > results/pointnet_class_tiled_4_250_epochs_scores.txt  2>&1 & #char
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4  --epoch=250 --alpha_type='single'   > results/pointnet_class_tiled_4_250_epochs_more_params.txt  2>&1 & #char more <150,000 compress=1
+
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=900 --total_epochs=900 --alpha_type='multiple'   > results/216.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=900 --total_epochs=900 --alpha_type='single'  > results/217.txt  2>&1 & #weight param for alpha
+
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1200 --total_epochs=1200 --alpha_type='multiple'   > results/218.txt  2>&1 & #weight param for alpha
+nohup  python -u main.py --config configs/cifar10/resnet18-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1200 --total_epochs=1200 --alpha_type='single'  > results/219.txt  2>&1 & #weight param for alpha
+
+
+
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='single' --alpha_param='scores' > results/220.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' --alpha_param='scores' > results/221.txt  2>&1 & #different weight seed from 214
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='single' --alpha_param='scores' > results/222.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' --alpha_param='scores' > results/223.txt  2>&1 & #different weight seed from 214
+
+
+nohup  python -u train_cifar10.py --net=mlpmixer --n_epochs=500 --lr=1e-3 > ../results/mlpmixer_cifar10_dense2.txt  2>&1 &
+nohup  python -u train_cifar10.py --net swin --n_epochs 400 --cos > ../results/swin_cifar10_dense2.txt  2>&1 &
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 500 --cos > ../results/vit_cifar10_dense_patch_4_2.txt  2>&1 &
+
+
+
+
+
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4  --epoch=400 --min_compress_size=64000 > results/pointnet_class_tiled_4_1.txt  2>&1 & #more params
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 4  --epoch=400 --min_compress_size=138000 > results/pointnet_class_tiled_4_2.txt  2>&1 & #more params
+
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 4   --epoch=400 --min_compress_size=64000  > results/pointnet_partseg_tiled_4_1.txt  2>&1 & #char
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 4   --epoch=400 --min_compress_size=138000  > results/pointnet_partseg_tiled_4_2.txt  2>&1 & #char
+
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 4  --epoch=400 --min_compress_size=64000 > results/pointnet_semseg_tiled_4_1.txt  2>&1 & #char
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 4 --epoch=400  --min_compress_size=138000 > results/pointnet_semseg_tiled_4_2.txt  2>&1 & #char
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='single'  > results/230.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' > results/231.txt  2>&1 & #different weight seed from 214
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' --alpha_param='scores' > results/232.txt  2>&1 & #different weight seed from 214
+
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='single'  > results/233.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' > results/234.txt  2>&1 & #different weight seed from 214
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' --alpha_param='scores' > results/235.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=800 --total_epochs=1000 --alpha_type='single' --alpha_param='scores' > results/236.txt  2>&1 & 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1200 --alpha_type='single' --alpha_param='scores' > results/238.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1200 --alpha_type='multiple' --alpha_param='scores' > results/239.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1200 --alpha_type='single' > results/240.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1200 --alpha_type='multiple'  > results/241.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='single' --alpha_param='scores' > results/242.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='multiple' --alpha_param='scores' > results/243.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='single' > results/244.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='multiple'  > results/245.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='single' --alpha_param='scores' > results/246.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='multiple' --alpha_param='scores' > results/247.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='single' > results/248.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1500 --total_epochs=2000 --alpha_type='multiple'  > results/249.txt  2>&1 & #different weight seed from 214
+
+
+
+#run these
+
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 2  --epoch=400 --min_compress_size=64000 > results/pointnet_class_tiled_2_1.txt  2>&1 & #more params
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 2  --epoch=400 --min_compress_size=138000 > results/pointnet_class_tiled_2_2.txt  2>&1 & #more params
+
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 2   --epoch=400 --min_compress_size=64000  > results/pointnet_partseg_tiled_2_1.txt  2>&1 & #char
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 2   --epoch=400 --min_compress_size=138000  > results/pointnet_partseg_tiled_2_2.txt  2>&1 & #char
+
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 2  --epoch=400 --min_compress_size=64000 > results/pointnet_semseg_tiled_2_1.txt  2>&1 & #char
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 2 --epoch=400  --min_compress_size=138000 > results/pointnet_semseg_tiled_2_2.txt  2>&1 & #char
+
+
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 8  --epoch=400 --min_compress_size=64000 > results/pointnet_class_tiled_8_1.txt  2>&1 & #more params
+nohup python -u train_classification.py --model_type 'tiled' --compression_factor 8  --epoch=400 --min_compress_size=138000 > results/pointnet_class_tiled_8_2.txt  2>&1 & #more params
+
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 8   --epoch=400 --min_compress_size=64000  > results/pointnet_partseg_tiled_8_1.txt  2>&1 & #char
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 8   --epoch=400 --min_compress_size=138000  > results/pointnet_partseg_tiled_8_2.txt  2>&1 & #char
+
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 8  --epoch=400 --min_compress_size=64000 > results/pointnet_semseg_tiled_8_1.txt  2>&1 & #char
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 8 --epoch=400  --min_compress_size=138000 > results/pointnet_semseg_tiled_8_2.txt  2>&1 & #char
+
+
+
+
+nohup  python -u train_cifar10.py --net=mlpmixer --n_epochs=500 --lr=1e-3 > ../results/mlpmixer_cifar10_dense_2.txt  2>&1 &
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 500 > ../results/vit_cifar10_dense_patch_4_3.txt  2>&1 &
+nohup  python -u train_cifar10.py --net convmixer --n_epochs 400 --bs 64 > ../results/cifar10_dense_convmixer_3.txt  2>&1 &
+nohup  python -u train_cifar10.py --net swin --n_epochs 400 > ../results/swin_cifar10_dense_2.txt  2>&1 &
+
+
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 750 --net='tiled_vit' --compression_factor 4   > ../results/vit_4_tiled_4_750_epochs_2.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 750 --net='tiled_vit' --compression_factor 8   > ../results/vit_4_tiled_8_750_epochs_2.txt  2>&1 & #char
+
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 4 > ../results/tiled_mlpmixer_4_750_2.txt  2>&1 &
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 8 > ../results/tiled_mlpmixer_8_750_2.txt  2>&1 &
+
+
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 4 --bs 64 > ../results/tiled_convmixer_4_750_2.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 8 --bs 64 > ../results/tiled_convmixer_4_750_2.txt  2>&1 &
+
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 750  --compression_factor 4  --bs 128 > ../results/swin_cifar10_tiled_4_2.txt  2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 750  --compression_factor 8  --bs 128 > ../results/swin_cifar10_tiled_8_2.txt  2>&1 &
+
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 4  --epoch=400 --min_compress_size=64000 > results/pointnet_semseg_tiled_2_1.txt  2>&1 & #char
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 8 --epoch=400  --min_compress_size=138000 > results/pointnet_semseg_tiled_8_2.txt  2>&1 & #char
+
+
+
+/s/lovelace/c/nobackup/iray/mgorb/results_tiling
+
+
+
+
+
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 750 --net='tiled_vit' --compression_factor 4   > ../results/vit_4_tiled_4_750_epochs_3.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 750 --net='tiled_vit' --compression_factor 8   > ../results/vit_4_tiled_8_750_epochs_3.txt  2>&1 & #char
+
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 4 > ../results/tiled_mlpmixer_4_750_3.txt  2>&1 &
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 8 > ../results/tiled_mlpmixer_8_750_3.txt  2>&1 &
+
+
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 4 --bs 64 > ../results/tiled_convmixer_4_750_3.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 8 --bs 64 > ../results/tiled_convmixer_8_750_3.txt  2>&1 &
+
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 750  --compression_factor 4  --bs 128 > ../results/swin_cifar10_tiled_4_3.txt  2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 750  --compression_factor 8  --bs 128 > ../results/swin_cifar10_tiled_8_3.txt  2>&1 &
+
+
+
+
+
+
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 16 > ../results/tiled_mlpmixer_16_750_3.txt  2>&1 &
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 32 > ../results/tiled_mlpmixer_32_750_3.txt  2>&1 &
+
+
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 16 --bs 64 > ../results/tiled_convmixer_16_750_3.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 32 --bs 64 > ../results/tiled_convmixer_32_750_3.txt  2>&1 &
+
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='single'  >  results/250.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' > results/251.txt  2>&1 & #different weight seed from 214
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800 --alpha_type='multiple' > results/251.txt  2>&1 & #different weight seed from 214
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#check these!
+
+
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 4   --epoch=800 --min_compress_size=138000  > results/pointnet_partseg_tiled_4_2_3.txt  2>&1 & #char
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 4 --epoch=800  --min_compress_size=138000 > results/pointnet_semseg_tiled_4_2_3.txt  2>&1 & #char
+
+
+nohup python -u train_semseg.py --model_type='tiled' --compression_factor 8 --epoch=800  --min_compress_size=138000 > results/pointnet_semseg_tiled_8_2_3.txt  2>&1 & #char
+nohup python -u train_partseg.py --model_type='tiled' --compression_factor 8   --epoch=800 --min_compress_size=138000  > results/pointnet_partseg_tiled_8_2_3.txt  2>&1 & #char
+
+
+
+
+
+
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 4 --bs 64 > ../results/tiled_convmixer_4_750_4.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 8 --bs 64 > ../results/tiled_convmixer_8_750_4.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 16 --bs 64 > ../results/tiled_convmixer_16_750_4.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 32 --bs 64 > ../results/tiled_convmixer_32_750_4.txt  2>&1 &
+
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=800 --alpha_type='single'  >  results/252.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=800 --alpha_type='multiple' > results/253.txt  2>&1 & #different weight seed from 214
+
+
+
+
+
+
+
+
+
+
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 4  > ../results/tiled_mlpmixer_4_750_4.txt  2>&1 & #min compress size 1
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 8   > ../results/tiled_mlpmixer_8_750_4.txt  2>&1 & #min compress size 1
+
+
+
+
+
+
+
+
+
+
+#12/18
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=3000 --total_epochs=3200 --alpha_type='single' > results/1.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-8.yaml  --gpu=0 --data=~/ --epochs=3000 --total_epochs=3200 --alpha_type='multiple'  > results/2.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=3000 --total_epochs=3200 --alpha_type='single' > results/3.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/vgg-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=3000 --total_epochs=3200 --alpha_type='multiple'  > results/4.txt  2>&1 & #different weight seed from 214
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800  --global_compression_factor=4   --min_compress_size 1 > results/5.txt  2>&1 & ####BADDDDSD
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-4.yaml  --gpu=0 --data=~/ --epochs=600 --total_epochs=800  --global_compression_factor=4   --min_compress_size 1 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-kn-tiled-4/baseline/prune_rate=0.0/5/checkpoints/model_best.pth > results/6.txt  2>&1 & 
+
+
+
+
+#12/19
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 4 --alpha_type='single' > ../results/tiled_mlpmixer_4_750_5_1.txt  2>&1 & 
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 4 --alpha_type='multiple' > ../results/tiled_mlpmixer_4_750_5_2.txt  2>&1 & 
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 4 --alpha_type='multiple' --alpha_param 'scores'> ../results/tiled_mlpmixer_4_750_5_3.txt  2>&1 & 
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 4 --alpha_type='single' --global_compression_factor 4 --min_compress_size 1 > ../results/tiled_mlpmixer_4_750_5_4.txt  2>&1 & 
+
+
+
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 8  --alpha_type='single'  > ../results/tiled_mlpmixer_8_750_5_1.txt  2>&1 & #min compress size 1
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 8  --alpha_type='multiple'  > ../results/tiled_mlpmixer_8_750_5_2.txt  2>&1 & #min compress size 1
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 8  --alpha_type='multiple'   --alpha_param 'scores' > ../results/tiled_mlpmixer_8_750_5_3.txt  2>&1 & #min compress size 1
+nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs 750 --lr 1e-3  --compression_factor 8  --alpha_type='single'  --global_compression_factor 8 --min_compress_size 1 > ../results/tiled_mlpmixer_8_750_5_4.txt  2>&1 & #min compress size 1
+
+
+
+
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1000 --alpha_type='single' --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-kn-tiled-16/baseline/prune_rate=0.0/4/checkpoints/model_best.pth >  results/7.txt  2>&1 & 
+nohup  python -u main.py --config configs/cifar10/resnet50-kn-tiled-16.yaml  --gpu=0 --data=~/ --epochs=1000 --total_epochs=1000 --alpha_type='multiple' --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-kn-tiled-16/baseline/prune_rate=0.0/5/checkpoints/model_best.pth > results/8.txt  2>&1 & #different weight seed from 214
+
+
+
+
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 4 --bs 64 > ../results/tiled_convmixer_4_750_4.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 8 --bs 64 > ../results/tiled_convmixer_8_750_4.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 16 --bs 64 > ../results/tiled_convmixer_16_750_4.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 32 --bs 64 > ../results/tiled_convmixer_32_750_4.txt  2>&1 &
+
+
+
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 350 --compression_factor 4 --bs 64 > ../results/tiled_convmixer_4_750_4_2.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 350 --compression_factor 8 --bs 128 > ../results/tiled_convmixer_8_750_4_2.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 350 --compression_factor 16 --bs 64 > ../results/tiled_convmixer_16_750_4_2.txt  2>&1 &
+nohup python train_cifar10.py --net tiled_convmixer --n_epochs 350 --compression_factor 32 --bs 64 > ../results/tiled_convmixer_32_750_4_2.txt  2>&1 &
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+python -u performance.py --config configs/cifar10/resnet18-dense.yaml
+python -u performance.py --config configs/cifar10/resnet18-dense.yaml  --layer_type=SubnetConvTiledFullInference --global_compression_factor=4
+
+
+
+
+python -u performance.py --model 
+
+
+
+nohup python -u ssd/train_bidet_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size 16  > ../results/objectdetection_bidet.txt  2>&1 &
+
+
+
+nohup python 1_bnn_train.py  > 1_bnn_train.txt  2>&1 &
+nohup python 1_bnn_train.py  --model_type='fp' > 1_fp_train.txt  2>&1 &
+
+nohup python 1_tiled_nn_train.py  > 1_tiled_nn_train.txt  2>&1 &
+
+
+
+
+
+nohup python 1_bnn_train.py --hidden_size=512 > 1_bnn_train_512.txt  2>&1 &
+nohup python 1_bnn_train.py  --model_type='fp' --hidden_size=512 > 1_fp_train_512.txt  2>&1 &
+
+
+
+nohup python 1_tiled_nn_train.py --hidden_size=512 > 1_tiled_nn_train_512.txt  2>&1 &
+
+nohup python 1_tiled_nn_train.py --hidden_size=512 > 1_tiled_nn_train_512_single.txt  2>&1 &
+
+nohup python 1_tiled_nn_train.py --hidden_size=512 > 1_tiled_nn_train_512_single_500_epochs.txt  2>&1 &
+
+nohup python 1_tiled_nn_train.py --hidden_size=1024 > 1_tiled_nn_train_1024_single_500_epochs_no_bias.txt  2>&1 &
+
+nohup python 1_cnn.py --hidden_size=128 > 1_tiled_cnn_128.txt  2>&1 &
+nohup python 1_cnn.py --hidden_size=64 > 1_tiled_cnn_64.txt  2>&1 &
+nohup python 1_cnn.py --hidden_size=32 > 1_tiled_cnn_32.txt  2>&1 &

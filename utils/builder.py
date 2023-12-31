@@ -57,7 +57,7 @@ class Builder(object):
         else:
             return None
 
-        if args.layer_type=='SubnetConvTiledFull':
+        if args.layer_type=='SubnetConvTiledFull' or args.layer_type=='SubnetConvTiledFullInference':
             conv.init(args, 
                       self.compression_factors[self.compression_factors_ind])
             self.compression_factors_ind+=1            

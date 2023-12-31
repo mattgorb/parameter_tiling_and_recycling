@@ -151,3 +151,10 @@ vision-transformers-cifar10/checkpoint/*
 vision-transformers-cifar10/log/*
 vision-transformers-cifar10/checkpoint/
 vision-transformers-cifar10/log/
+
+
+
+figures/
+
+objectdetection/
+objectdetection/logs/

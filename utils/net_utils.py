@@ -6,7 +6,7 @@ import math
 
 import torch
 import torch.nn as nn
-from utils.layer_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull, SubnetConv1dTiledFull, SubnetLinearTiledFull
+from utils.layer_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull, SubnetConv1dTiledFull, SubnetLinearTiledFull, SubnetConv1dTiledFullInference,SubnetConvTiledFullInference,SubnetLinearTiledFullInference
 
 import torch.nn as nn
 
@@ -161,17 +161,26 @@ class SubnetL1RegLoss(nn.Module):
 
 
 def model_stats(model):
+
+    print(f'Total model parameters: { sum(p.numel() for p in model.parameters()) }')
     for n,m in model.named_parameters():
         print(f'{n}, {m.size()}, {m.numel()}')
+
+        
     model_layer_params={
         'linear': 0,
         'bias': 0,
         'batchnorm2d':0,
         'batchnorm1d':0,
         'layernorm':0,
-        'conv2d':0,
-        'conv1d':0
+        'conv1x1':0,
+        'conv_gt_1x1':0, 
+
     }
+    '''model_layer_conv_kernels={
+        'conv1x1':0,
+        'conv_gt_1x1':0
+    }'''
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
             if isinstance(m, nn.Linear) :
@@ -182,10 +191,14 @@ def model_stats(model):
                 model_layer_params['batchnorm1d']+=m.weight.numel()
             elif isinstance(m, nn.LayerNorm) :
                 model_layer_params['layernorm']+=m.weight.numel()
-            elif isinstance(m, nn.Conv2d) :
-                model_layer_params['conv2d']+=m.weight.numel()
-            elif isinstance(m, nn.Conv1d) :
-                model_layer_params['conv1d']+=m.weight.numel()
+
+            elif  isinstance(m, nn.Conv2d) or isinstance(m, nn.Conv1d):
+                #print(m.kernel_size)
+                kernel_size=m.kernel_size[0]
+                if kernel_size==1:
+                    model_layer_params['conv1x1']+=m.weight.numel()
+                else:
+                    model_layer_params['conv_gt_1x1']+=m.weight.numel()
             else:
                 if  not isinstance(m, SubnetConv1dTiledFull) and\
                     not isinstance(m, SubnetLinearTiledFull) and\
@@ -193,6 +206,14 @@ def model_stats(model):
                     print(f'module instance not found for module with weights: {n}')
                     print("add instance before continuing!!!!!!!")
                     sys.exit()
+
+            '''elif isinstance(m, nn.Conv2d) :
+                model_layer_params['conv2d']+=m.weight.numel()
+            elif isinstance(m, nn.Conv1d) :
+                model_layer_params['conv1d']+=m.weight.numel()'''
+
+
+
         if hasattr(m, "bias") and m.bias is not None:
             #print(f'adding {m.bias.numel()} bias params for module {n}')
             model_layer_params['bias']+=m.bias.numel()
@@ -200,6 +221,8 @@ def model_stats(model):
     print('\ndense model summary:')
     for layer, params in model_layer_params.items():
         print(f'\t{layer}, {params}')
+    
+
 
 
     model_layer_params={
@@ -213,18 +236,21 @@ def model_stats(model):
     }
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
-            if isinstance(m, SubnetLinearTiledFull) :
+            if isinstance(m, SubnetLinearTiledFull) or isinstance(m, SubnetLinearTiledFullInference)  :
                 model_layer_params['linear']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
+                print(f'layer {n} compression rate: {m.compression_factor}')
             elif isinstance(m, nn.BatchNorm2d) :
                 model_layer_params['batchnorm2d']+=m.weight.numel()
             elif isinstance(m, nn.BatchNorm1d) :
                 model_layer_params['batchnorm1d']+=m.weight.numel()
             elif isinstance(m, nn.LayerNorm) :
                 model_layer_params['layernorm']+=m.weight.numel()
-            elif isinstance(m, SubnetConvTiledFull) :
+            elif isinstance(m, SubnetConvTiledFull) or isinstance(m, SubnetConvTiledFullInference) :
                 model_layer_params['conv2d']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
-            elif isinstance(m, SubnetConv1dTiledFull) :
+                print(f'layer {n} compression rate: {m.compression_factor}')
+            elif isinstance(m, SubnetConv1dTiledFull)  or isinstance(m, SubnetConv1dTiledFullInference) :
                 model_layer_params['conv1d']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
+                print(f'layer {n} compression rate: {m.compression_factor}')
             else:
                 if  not isinstance(m, nn.Conv2d) and\
                     not isinstance(m, nn.Conv1d) and\

@@ -13,7 +13,8 @@ import provider
 import numpy as np
 import time
 
-from pointnet_sem_seg import *
+from pointnet_models.pointnet_sem_seg import *
+from pointnet_models.tiled_pointnet_sem_seg import *
 
 import sys
 sys.path.insert(0, '/s/chopin/l/grad/mgorb/parameter_tiling_and_recycling/')
@@ -51,8 +52,18 @@ def parse_args():
     parser.add_argument('--step_size', type=int, default=10, help='Decay step for lr decay [default: every 10 epochs]')
     parser.add_argument('--lr_decay', type=float, default=0.7, help='Decay rate for lr decay [default: 0.7]')
     parser.add_argument('--test_area', type=int, default=5, help='Which area to use for test, option: 1-6 [default: 5]')
-    parser.add_argument('--model_type', default='dense')
 
+
+    parser.add_argument('--model_type', default='dense')
+    parser.add_argument('--weight_init', default=None)
+    parser.add_argument('--score_init', default=None)
+    parser.add_argument('--compression_factor', default=None, type=int)
+    parser.add_argument('--weight_seed', default=0)
+    parser.add_argument('--score_seed', default=0)
+    parser.add_argument('--alpha_param', default='weight')
+    parser.add_argument('--alpha_type', default='multiple')
+    parser.add_argument('--min_compress_size', default=64000)
+    parser.add_argument('--global_compression_factor', type=int, default=None, help='factor of 2')
     return parser.parse_args()
 
 
@@ -75,9 +86,9 @@ def main(args):
     else:
         experiment_dir = experiment_dir.joinpath(args.log_dir)
     experiment_dir.mkdir(exist_ok=True)
-    checkpoints_dir = experiment_dir.joinpath('checkpoints/')
+    checkpoints_dir = experiment_dir.joinpath('/s/lovelace/c/nobackup/iray/mgorb/tiling_results/checkpoints/')
     checkpoints_dir.mkdir(exist_ok=True)
-    log_dir = experiment_dir.joinpath('logs/')
+    log_dir = experiment_dir.joinpath('/s/lovelace/c/nobackup/iray/mgorb/tiling_results/logs/')
     log_dir.mkdir(exist_ok=True)
 
     '''LOG'''
@@ -120,9 +131,9 @@ def main(args):
         #classifier = get_model(num_class, normal_channel=args.use_normals)
         classifier = get_model(NUM_CLASSES).cuda()
     else:
-        classifier = get_tiled_model(NUM_CLASSES)
+        classifier = get_tiled_model(NUM_CLASSES, args)
 
-    #classifier = MODEL.get_model(NUM_CLASSES).cuda()
+    classifier = classifier.cuda()
     criterion = get_loss().cuda()
     classifier.apply(inplace_relu)
 

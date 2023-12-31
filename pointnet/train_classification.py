@@ -18,11 +18,11 @@ import argparse
 from pathlib import Path
 from tqdm import tqdm
 #from pointnet.ModelNetDataLoader_modified import ModelNetDataLoader
-from ModelNetDataLoader import ModelNetDataLoader
+from data_utils.ModelNetDataLoader import ModelNetDataLoader
 
-from pointnet_utils import *
-from pointnet_classification import *
-from tiled_model import *
+from pointnet_models.pointnet_utils import *
+from pointnet_models.pointnet_classification import *
+from pointnet_models.tiled_pointnet_classification import *
 
 
 import sys
@@ -51,7 +51,16 @@ def parse_args():
     parser.add_argument('--use_normals', action='store_true', default=False, help='use normals')
     parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
+
     parser.add_argument('--model_type', default='dense')
+    parser.add_argument('--weight_init', default=None)
+    parser.add_argument('--score_init', default=None)
+    parser.add_argument('--compression_factor', default=None, type=int)
+    parser.add_argument('--weight_seed', default=0)
+    parser.add_argument('--score_seed', default=0)
+    parser.add_argument('--alpha_param', default='weight')
+    parser.add_argument('--alpha_type', default='multiple')
+    parser.add_argument('--min_compress_size', default=64000)
     return parser.parse_args()
 
 
@@ -72,7 +81,8 @@ def test(model, loader, num_class=40):
             points, target = points.cuda(), target.cuda()
 
         points = points.transpose(2, 1)
-        pred, _ = classifier(points)
+        pred, _ = classifier(points.float())
+
         pred_choice = pred.data.max(1)[1]
 
         for cat in np.unique(target.cpu()):
@@ -109,9 +119,9 @@ def main(args):
     else:
         exp_dir = exp_dir.joinpath(args.log_dir)
     exp_dir.mkdir(exist_ok=True)
-    checkpoints_dir = exp_dir.joinpath('checkpoints/')
+    checkpoints_dir = exp_dir.joinpath('/s/lovelace/c/nobackup/iray/mgorb/tiling_results/checkpoints/')
     checkpoints_dir.mkdir(exist_ok=True)
-    log_dir = exp_dir.joinpath('logs/')
+    log_dir = exp_dir.joinpath('/s/lovelace/c/nobackup/iray/mgorb/tiling_results/logs/')
     log_dir.mkdir(exist_ok=True)
 
     '''LOG'''
@@ -146,7 +156,7 @@ def main(args):
     if args.model_type=='dense':
         classifier = get_model(num_class, normal_channel=args.use_normals)
     else:
-        classifier = get_tiled_model(num_class, normal_channel=args.use_normals)
+        classifier = get_tiled_model(num_class, normal_channel=args.use_normals, args=args)
 
 
 
@@ -195,9 +205,11 @@ def main(args):
         mean_correct = []
         classifier = classifier.train()
 
-        scheduler.step()
+        '''scheduler.step()
         for batch_id, (points, target) in tqdm(enumerate(trainDataLoader, 0), total=len(trainDataLoader), smoothing=0.9):
             optimizer.zero_grad()
+
+
 
             points = points.data.numpy()
             points = provider.random_point_dropout(points)
@@ -209,7 +221,11 @@ def main(args):
             if not args.use_cpu:
                 points, target = points.cuda(), target.cuda()
 
+
             pred, trans_feat = classifier(points)
+
+
+
             loss = criterion(pred, target.long(), trans_feat)
             pred_choice = pred.data.max(1)[1]
 
@@ -220,7 +236,7 @@ def main(args):
             global_step += 1
 
         train_instance_acc = np.mean(mean_correct)
-        log_string('Train Instance Accuracy: %f' % train_instance_acc)
+        log_string('Train Instance Accuracy: %f' % train_instance_acc)'''
 
         with torch.no_grad():
             instance_acc, class_acc = test(classifier.eval(), testDataLoader, num_class=num_class)

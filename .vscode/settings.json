@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "tiled_nn.h": "c",
+        "stdio.h": "c",
+        "tiled_nn_weights.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "util.h": "c"
+    }
+}

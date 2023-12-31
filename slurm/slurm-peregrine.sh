@@ -21,5 +21,4 @@ module load python/bundle-3.9
 #TORCH_DISTRIBUTED_DEBUG=DETAIL NCCL_DEBUG=INFO NCCL_MAX_ASYNC_OPS=6 
 #python -u main_parallel_peregrine.py --config configs/imagenet/resnet50-biprop-tiled-params-iterand.yaml --gpu=0 --multigpu=0 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params-iterand/biprop/prune_rate=-1/49/checkpoints/model_best.pth
 
-CUDA_LAUNCH_BLOCKING=1 python -u main_parallel_peregrine.py --config configs/imagenet/resnet50-biprop-tiled-params-randtile.yaml --gpu=0 --multigpu=0,1 --batch-size=256
-#--gres=gpu:nvidia_a100.80gb:2
+python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet34-tiled-full-rerandtile.yaml --gpu=0 --multigpu=0,1,2 --batch-size=128  --alpha_param='scores' 

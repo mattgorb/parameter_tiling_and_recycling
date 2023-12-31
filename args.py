@@ -188,7 +188,7 @@ def parse_arguments():
         help="One batch train set for debugging purposes (test overfitting)",
     )
     parser.add_argument(
-        "--conv-type", type=str, default=None, help="What kind of sparsity to use"
+        "--layer_type", type=str, default=None, 
     )
     parser.add_argument(
         "--freeze-weights",
@@ -276,12 +276,16 @@ def parse_arguments():
     )
 
     parser.add_argument('--global_compression_factor', type=int, default=None, help='factor of 2')
+    parser.add_argument('--compression_factor', type=int, default=None, help='factor of 2')
+
     parser.add_argument('--weight_tile_size', type=int, default=None,)
     parser.add_argument('--data_type', type=str, default=None,)
     parser.add_argument('--layer_compression_factors', type=str, default=None, help='factor of 2')
 
     parser.add_argument('--model_type', type=str, default='binarize', help='prune or binarize')
     parser.add_argument('--alpha_type', type=str, default=None, help='single or multiple alphas per layer')
+    parser.add_argument('--min_compress_size', default=64000)
+
 
     args = parser.parse_args()
 

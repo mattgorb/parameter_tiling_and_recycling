@@ -22,7 +22,8 @@ layer_type: SubnetConvTiledFull
 
 #weight_tile_size: 65056
 
-layer_compression_factors: 1,2,8,8,8,8,2
+layer_compression_factors: 1,1,8,8,8,8,1
+#layer_compression_factors: 1,1,4,4,4,4,1
 #global_compression_factor: 4
 
 model_type: binarize

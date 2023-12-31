@@ -11,9 +11,11 @@ import numpy as np
 
 from pathlib import Path
 from tqdm import tqdm
-from ShapeNetDataLoader import PartNormalDataset
+from data_utils.ShapeNetDataLoader import PartNormalDataset
 
-from pointnet_part_seg import *
+from pointnet_models.pointnet_part_seg import *
+from pointnet_models.tiled_pointnet_part_seg import *
+
 import sys
 sys.path.insert(0, '/s/chopin/l/grad/mgorb/parameter_tiling_and_recycling/')
 from utils.net_utils import model_stats
@@ -59,7 +61,18 @@ def parse_args():
     parser.add_argument('--normal', action='store_true', default=False, help='use normals')
     parser.add_argument('--step_size', type=int, default=20, help='decay step for lr decay')
     parser.add_argument('--lr_decay', type=float, default=0.5, help='decay rate for lr decay')
+
+    
     parser.add_argument('--model_type', default='dense')
+    parser.add_argument('--weight_init', default=None)
+    parser.add_argument('--score_init', default=None)
+    parser.add_argument('--compression_factor', default=None, type=int)
+    parser.add_argument('--weight_seed', default=0)
+    parser.add_argument('--score_seed', default=0)
+    parser.add_argument('--alpha_param', default='weight')
+    parser.add_argument('--alpha_type', default='multiple')
+    parser.add_argument('--min_compress_size', default=64000)
+    parser.add_argument('--global_compression_factor', type=int, default=None, help='factor of 2')
     
     return parser.parse_args()
 
@@ -83,9 +96,9 @@ def main(args):
     else:
         exp_dir = exp_dir.joinpath(args.log_dir)
     exp_dir.mkdir(exist_ok=True)
-    checkpoints_dir = exp_dir.joinpath('checkpoints/')
+    checkpoints_dir = exp_dir.joinpath('/s/lovelace/c/nobackup/iray/mgorb/tiling_results/checkpoints/')
     checkpoints_dir.mkdir(exist_ok=True)
-    log_dir = exp_dir.joinpath('logs/')
+    log_dir = exp_dir.joinpath('/s/lovelace/c/nobackup/iray/mgorb/tiling_results/logs/')
     log_dir.mkdir(exist_ok=True)
 
     '''LOG'''
@@ -117,8 +130,8 @@ def main(args):
         #classifier = get_model(num_class, normal_channel=args.use_normals)
         classifier = get_model(num_part, normal_channel=args.normal).cuda()
     else:
-        classifier = get_tiled_model(num_class, normal_channel=args.use_normals)
-
+        classifier = get_tiled_model(num_part, normal_channel=args.normal, args=args)
+    classifier = classifier.cuda()
     
     criterion = get_loss().cuda()
     classifier.apply(inplace_relu)
@@ -195,7 +208,6 @@ def main(args):
             points = torch.Tensor(points)
             points, label, target = points.float().cuda(), label.long().cuda(), target.long().cuda()
             points = points.transpose(2, 1)
-
             seg_pred, trans_feat = classifier(points, to_categorical(label, num_classes))
             seg_pred = seg_pred.contiguous().view(-1, num_part)
             target = target.view(-1, 1)[:, 0]

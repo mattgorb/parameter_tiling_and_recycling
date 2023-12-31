@@ -22,7 +22,7 @@ layer_type: SubnetConvTiledFull
 
 #weight_tile_size: 65056
 
-layer_compression_factors: 1,2,4,4,4,4,2
+layer_compression_factors: 1,1,4,4,4,4,1
 #global_compression_factor: 4
 
 model_type: binarize
@@ -35,14 +35,14 @@ alpha_type: multiple
 #bn_type: NonAffineBatchNorm
 bn_type: LearnedBatchNorm
 
-weight_init: kaiming_normal
-scale_fan: True
+#weight_init: kaiming_normal
+#scale_fan: True
 #score_init: kaiming_normal
 
 
 
-weight_seed: 0
-score_seed: 0
+weight_seed: 1
+score_seed: 1
 
 
 

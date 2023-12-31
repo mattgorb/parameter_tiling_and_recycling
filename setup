@@ -15,3 +15,12 @@ conda activate subnetworks
 python main.py --config configs/cifar10/resnet18-dense-cifar10.yaml
 
 cd /s/chopin/l/grad/mgorb/miniconda3
+
+
+
+/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet18-kn-tiled-4/baseline
+tensorboard --samples_per_plugin=scalars=3000 --logdir=/s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet18-kn-tiled-4/baseline
+
+ssh -N -f -L  localhost:16006:localhost:6006 -i ~/.ssh/id_rsa_new mgorb@brill.cs.colostate.edu
+localhost:16006
+1

@@ -410,6 +410,7 @@ def get_model(args,):
             print(
                 f"=> Tiled params: \n\t {tiled_params}"
             )'''
+    model_stats(model)
 
 
     # freezing the weights if we are only doing subnet training
