@@ -158,3 +158,6 @@ figures/
 
 objectdetection/
 objectdetection/logs/
+
+c_implementation/data/*
+c_implementation/python/mnist/*

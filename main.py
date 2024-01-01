@@ -417,7 +417,6 @@ def get_model(args,):
     if args.layer_type=='SubnetConvEdgePopup' or args.layer_type=='SubnetConvBiprop':
         freeze_model_weights(model)
 
-
     return model
 
 

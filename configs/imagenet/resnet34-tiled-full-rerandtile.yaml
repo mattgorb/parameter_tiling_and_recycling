@@ -24,8 +24,9 @@ label_smoothing: 0.1
 
 # ===== Sparsity =========== #
 layer_type: SubnetConvTiledFull
-#global_compression_factor: 4
-layer_compression_factors: 1,1,1,1,1,1,1,2,4,1,4,4,4,4,4,4,4,4,1,4,4,4,4,4,4,4,4,4,4,4,4,1,4,4,4,4,4
+global_compression_factor: 4
+min_compress_size: 132000
+#layer_compression_factors: 1,1,1,1,1,1,1,2,4,1,4,4,4,4,4,4,4,4,1,4,4,4,4,4,4,4,4,4,4,4,4,1,4,4,4,4,4
 
 model_type: binarize
 alpha_type: multiple

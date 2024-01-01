@@ -19,7 +19,7 @@ from utils.net_utils import (
     save_checkpoint,
     get_lr,
     LabelSmoothing,
-    rerandomize_model
+    rerandomize_model,model_stats
 )
 from utils.schedulers import get_policy
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -58,7 +58,7 @@ def set_gpu(args, model):
         args.workers = 10 #10 with bs 1024 #works #int((args.workers + args.world_size - 1) / args.world_size)
         #args.batch_size = int(args.batch_size / ngpus_per_node)
         #args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=False)
 
     cudnn.benchmark = True
     return model, device
@@ -404,60 +404,63 @@ def get_model(args,):
         f"=> Dense model params:\n\t{dense_params}"
     )
 
-    if args.layer_type != "DenseConv" and args.layer_type!='SubnetConvTiledFull' :
+    # applying sparsity to the network
+    if args.layer_type != "DenseConv" and args.layer_type!='SubnetConvTiledFull':
         if args.prune_rate < 0:
             raise ValueError("Need to set a positive prune rate")
 
     if args.layer_type=='SubnetConvTiledFull':
         assert args.model_type=='prune' or args.model_type=='binarize',  'model type needs to be prune or binarize'
         assert args.alpha_type=='single' or args.alpha_type=='multiple', "alpha needs to be single or multiple"
-    
-    if args.layer_type=="SubnetConvTiledFull":
+        model_stats(model)
+    '''if args.layer_type=="SubnetConvTiledFull":
+        #print(model)
         if args.global_compression_factor is not None:
-            tiled_params=sum(int(p.numel()/args.global_compression_factor ) for n, p in model.named_parameters() if not n.endswith('scores'))
-
+            tiled_params=sum(int(p.numel()/args.global_compression_factor )+args.global_compression_factor*16 
+                             for n, p in model.named_parameters() if not n.endswith('scores') and 
+                             not 'bn' in n and not 'shortcut.1' in n and not 'bias' in n)
+            
             tiled_params="{:,}".format(tiled_params)
-
+            for name, param in model.named_parameters():
+                if name.endswith('scores'):
+                    continue
+                elif 'bn' in name or 'downsample.1' in name or not 'shortcut.1' in name:
+                    print(f"name: {name}, weight size: {param.numel()}")
+                else:
+                    print(f"name: {name}, weight shape: {param.size()}, weight size: {param.numel()}, requires grad?: {param.requires_grad}, compress factor: {args.global_compression_factor}")
             print(
                 f"=> Tiled params: \n\t {tiled_params}"
             )
-            i=0
-            for name, param in model.named_parameters():
-                if name.endswith('scores') or 'alpha' in name:
-                    continue
-                print(f"name: {name}, i: {i}, weight size: {param.numel()}, compress factor: {model.layer_compression_factors[i]}")
-                
-                i+=1
+            
         if args.layer_compression_factors is not None:
             
-            model.layer_compression_factors
+            #model.layer_compression_factors
             tiled_params=0
             i=0
+
             for name, param in model.named_parameters():
-                if name.endswith('scores') or 'alpha' in name:
-                    continue
-                elif 'bn' in name or 'downsample.1' in name:
+
+
+                if 'score' in name or 'alpha' in name:
+                    print(f"name: {name}, weight size: {param.numel()}, requires_grad? {param.requires_grad}")
+                elif 'bn' in name or 'downsample.1' in name or  'shortcut.1' in str(name) or 'bias' in name:
                     if args.bn_type=='LearnedBatchNorm' and 'bn' in name:
                         tiled_params+=int(param.numel())
-                    print(f"name: {name}, weight size: {param.numel()}")
-                    
+                    print(f"name: {name}, weight size: {param.numel()}, requires_grad? {param.requires_grad}")
+                
                 else:
-                    print(f"name: {name},i: {i}, weight size: {param.numel()}, compress factor: {model.layer_compression_factors[i]}")
+                    #print(f"name: {name}")
+                    print(f"name: {name},i: {i}, weight shape: {param.size()}, weight size: {param.numel()}, requires grad?: {param.requires_grad}, compress factor: {model.layer_compression_factors[i]}")
                     tiled_params+=int(param.numel()/model.layer_compression_factors[i])
+                    tiled_params+=int(model.layer_compression_factors[i]*16 )
+                    #print(model.layer_compression_factors[i])
                     i+=1
-            
             tiled_params="{:,}".format(tiled_params)
 
             print(
                 f"=> Tiled params: \n\t {tiled_params}"
-            )
-
-    # freezing the weights if we are only doing subnet training
-    if args.layer_type=='SubnetConvEdgePopup' or args.layer_type=='SubnetConvBiprop' :
-        freeze_model_weights(model)
-
-    #sys.exit()
-
+            )'''
+    model_stats(model)
     return model
 
 

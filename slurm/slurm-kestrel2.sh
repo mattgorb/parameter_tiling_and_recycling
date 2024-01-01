@@ -21,4 +21,4 @@ module load python/bundle-3.9
 #python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-recycle.yaml --gpu=0 --multigpu=0,1,2  --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params/biprop/prune_rate=-1/9/checkpoints/model_best.pth
 #python -u main_parallel_kestrel.py --config configs/imagenet/resnet50-biprop-tiled-params.yaml --gpu=0 --multigpu=0,1,2 --epochs=110 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params/biprop/prune_rate=-1/26/checkpoints/model_best.pth
 #python -u main.py --config configs/imagenet/resnet50-biprop-tiled-params-recycle.yaml --gpu=0 --multigpu=0,1,2  
-python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet34-tiled-full-rerandtile.yaml --gpu=0 --multigpu=0,1,2 --batch-size=128  --alpha_param='scores' --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet34-tiled-full-rerandtile/tiled/prune_rate=-1/1/checkpoints/model_best.pth
+python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet34-tiled-full-rerandtile.yaml --gpu=0 --multigpu=0,1,2 --batch-size=128

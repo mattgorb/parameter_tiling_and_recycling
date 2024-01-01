@@ -204,8 +204,8 @@ def model_stats(model):
                     not isinstance(m, SubnetLinearTiledFull) and\
                     not isinstance(m, SubnetConvTiledFull):
                     print(f'module instance not found for module with weights: {n}')
-                    print("add instance before continuing!!!!!!!")
-                    sys.exit()
+                    #print("add instance before continuing!!!!!!!")
+                    #sys.exit()
 
             '''elif isinstance(m, nn.Conv2d) :
                 model_layer_params['conv2d']+=m.weight.numel()
@@ -256,8 +256,8 @@ def model_stats(model):
                     not isinstance(m, nn.Conv1d) and\
                     not isinstance(m, nn.Linear):
                     print(f'module instance not found for module with weights: {n}')
-                    print("add instance before continuing!!!!!!!")
-                    sys.exit()
+                    #print("add instance before continuing!!!!!!!")
+                    #sys.exit()
         if hasattr(m, "bias") and m.bias is not None:
             #print(f'adding {m.bias.numel()} bias params for module {n}')
             model_layer_params['bias']+=m.bias.numel()

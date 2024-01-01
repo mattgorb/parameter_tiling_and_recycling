@@ -559,6 +559,7 @@ nohup python train_cifar10.py --net tiled_convmixer --n_epochs 350 --compression
 
 
 
+nohup python -u main.py --config ../configs/imagenet/resnet18-tiled-full-rerandtile.yaml --gpu=0 --batch-size=128 > results/imagenet_resnet18.txt  2>&1 &
 
 
 
@@ -578,44 +579,14 @@ nohup python train_cifar10.py --net tiled_convmixer --n_epochs 350 --compression
 
 
 
+nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  > ../results/objectdetection_bidet.txt  2>&1 &
 
 
-python -u performance.py --config configs/cifar10/resnet18-dense.yaml
-python -u performance.py --config configs/cifar10/resnet18-dense.yaml  --layer_type=SubnetConvTiledFullInference --global_compression_factor=4
+nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2023-12-31 13:02:28/model_15000_loc_1.9947_conf_2.3276_reg_0.0_prior_0.0_loss_4.3222_lr_0.001.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' > ../results/objectdetection_bidet_eval.txt  2>&1 &
+nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2023-12-31 13:02:28/model_5000_loc_2.6412_conf_3.3711_reg_0.0_prior_0.0_loss_6.0123_lr_0.001.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' > ../results/objectdetection_bidet_eval_5000.txt  2>&1 &
+nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2023-12-31 13:02:28/model_55000_loc_1.5792_conf_3.7974_reg_0.0051_prior_0.3102_loss_5.6919_lr_0.0001.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' > ../results/objectdetection_bidet_eval_55000.txt  2>&1 &
 
 
+nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  --global_compression_factor=4  > ../results/objectdetection_tbn_4.txt  2>&1 &
 
 
-python -u performance.py --model 
-
-
-
-nohup python -u ssd/train_bidet_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size 16  > ../results/objectdetection_bidet.txt  2>&1 &
-
-
-
-nohup python 1_bnn_train.py  > 1_bnn_train.txt  2>&1 &
-nohup python 1_bnn_train.py  --model_type='fp' > 1_fp_train.txt  2>&1 &
-
-nohup python 1_tiled_nn_train.py  > 1_tiled_nn_train.txt  2>&1 &
-
-
-
-
-
-nohup python 1_bnn_train.py --hidden_size=512 > 1_bnn_train_512.txt  2>&1 &
-nohup python 1_bnn_train.py  --model_type='fp' --hidden_size=512 > 1_fp_train_512.txt  2>&1 &
-
-
-
-nohup python 1_tiled_nn_train.py --hidden_size=512 > 1_tiled_nn_train_512.txt  2>&1 &
-
-nohup python 1_tiled_nn_train.py --hidden_size=512 > 1_tiled_nn_train_512_single.txt  2>&1 &
-
-nohup python 1_tiled_nn_train.py --hidden_size=512 > 1_tiled_nn_train_512_single_500_epochs.txt  2>&1 &
-
-nohup python 1_tiled_nn_train.py --hidden_size=1024 > 1_tiled_nn_train_1024_single_500_epochs_no_bias.txt  2>&1 &
-
-nohup python 1_cnn.py --hidden_size=128 > 1_tiled_cnn_128.txt  2>&1 &
-nohup python 1_cnn.py --hidden_size=64 > 1_tiled_cnn_64.txt  2>&1 &
-nohup python 1_cnn.py --hidden_size=32 > 1_tiled_cnn_32.txt  2>&1 &
