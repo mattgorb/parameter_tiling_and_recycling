@@ -33,6 +33,9 @@ from utils.initializations import set_seed
 
 
 import os
+import warnings
+warnings.filterwarnings("ignore")
+
 
 def set_gpu(args, model):
     assert torch.cuda.is_available(), "CPU-only experiments currently unsupported"
