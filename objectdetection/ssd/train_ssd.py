@@ -2,6 +2,9 @@ import random
 import numpy as np
 import torch
 
+
+
+
 SEED = 1
 
 
@@ -15,9 +18,12 @@ def set_seed(seed=1):
 set_seed(SEED)
 
 from data import *
-from utils.augmentations import SSDAugmentation
+from utils_od.augmentations import SSDAugmentation
 from layers.modules import MultiBoxLoss
-from bidet_ssd import build_bidet_ssd
+
+#from bidet_ssd import build_bidet_ssd
+from tbn_ssd import build_tiled_ssd
+
 import os
 import time
 import math
@@ -29,6 +35,13 @@ import torch.utils.data as data
 import argparse
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0, 1'
+
+import warnings
+warnings.filterwarnings("ignore")
+
+import sys
+sys.path.insert(0, '/s/chopin/l/grad/mgorb/parameter_tiling_and_recycling/')
+from utils.net_utils import model_stats
 
 REGULARIZATION_LOSS_WEIGHT = 1.
 PRIOR_LOSS_WEIGHT = 1.
@@ -82,6 +95,19 @@ parser.add_argument('--opt', default='Adam', type=str,
                     help='Optimizer for training the network')
 parser.add_argument('--clip_grad', default=False, type=str2bool,
                     help='whether to clip gradient when training')
+
+
+
+parser.add_argument('--weight_init', default=None)
+parser.add_argument('--score_init', default=None)
+parser.add_argument('--compression_factor', default=None, type=int)
+parser.add_argument('--weight_seed', default=0)
+parser.add_argument('--score_seed', default=0)
+parser.add_argument('--alpha_param', default='weight')
+parser.add_argument('--alpha_type', default='multiple')
+parser.add_argument('--min_compress_size', default=2**17)
+parser.add_argument('--global_compression_factor', default=None, type=int)
+
 args = parser.parse_args()
 
 if torch.cuda.is_available():
@@ -95,25 +121,29 @@ else:
     torch.set_default_tensor_type('torch.FloatTensor')
 
 start_datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-logs_dir = os.path.join('logs', args.dataset, str(start_datetime))
+logs_dir = os.path.join('/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs', args.dataset, str(start_datetime))
 
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
 
-def train():
+def train(args):
     global REGULARIZATION_LOSS_WEIGHT, PRIOR_LOSS_WEIGHT, NMS_CONF_THRE
     if args.dataset == 'COCO':
         cfg = coco
-        dataset = COCODetection(root=args.data_root,
-                                transform=SSDAugmentation(cfg['min_dim'], MEANS))
+        #dataset = COCODetection(root=args.data_root,
+                                #transform=SSDAugmentation(cfg['min_dim'], MEANS))
     elif args.dataset == 'VOC':
         cfg = voc
         dataset = VOCDetection(root=args.data_root,
                                transform=SSDAugmentation(cfg['min_dim'], MEANS))
 
-    ssd_net = build_bidet_ssd('train', cfg['min_dim'], cfg['num_classes'],
-                              nms_conf_thre=NMS_CONF_THRE)
+    ssd_net = build_tiled_ssd('train', cfg['min_dim'], cfg['num_classes'],
+                              nms_conf_thre=NMS_CONF_THRE,args=args)
+    
+    model_stats(ssd_net)
+    #sys.exit()
+
     net = ssd_net
 
     if args.cuda:
@@ -128,7 +158,7 @@ def train():
             print('Extracting from checkpoint')
             ckp = torch.load(args.weight_path, map_location='cpu')
             ssd_net.load_state_dict(ckp['weight'])
-            opt_state_dict = ckp['opt']
+            opt_state_dict = ckp['opt']=1
     #else:
         #if args.basenet.lower() != 'none':
             #vgg_weights = torch.load(args.basenet)
@@ -351,7 +381,7 @@ def train():
         prior_loss_save += loss_p
         t1 = time.time()
 
-        if iteration % 100 == 0:
+        if iteration % 1000 == 0:
             print('timer: %.4f sec.' % (t1 - t0))
             print('iter:', iteration, 'loss:', round(loss.detach().cpu().item(), 4))
             print('conf_loss:', round(loss_c, 4), 'loc_loss:', round(loss_l, 4),
@@ -369,7 +399,7 @@ def train():
                 'weight': net.module.state_dict(),
                 'opt': optimizer.state_dict()
             }
-            torch.save(checkpoint, logs_dir + '/model_' + str(iteration) +
+            torch.save(checkpoint, logs_dir + '/model_tiled_' + str(iteration) +
                        '_loc_' + str(round(loc_loss_save / 5000., 4)) +
                        '_conf_' + str(round(conf_loss_save / 5000., 4)) +
                        '_reg_' + str(round(reg_loss_save / 5000., 4)) +
@@ -422,4 +452,4 @@ if __name__ == '__main__':
     PRIOR_LOSS_WEIGHT = args.prior_weight
     NMS_CONF_THRE = args.nms_conf_threshold
 
-    train()
+    train(args)

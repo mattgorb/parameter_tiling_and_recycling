@@ -6,7 +6,8 @@ import math
 
 import torch
 import torch.nn as nn
-from utils.layer_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull, SubnetConv1dTiledFull, SubnetLinearTiledFull, SubnetConv1dTiledFullInference,SubnetConvTiledFullInference,SubnetLinearTiledFullInference
+from utils.layer_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull, SubnetConv1dTiledFull
+from utils.layer_type import SubnetLinearTiledFull, SubnetConv1dTiledFullInference,SubnetConvTiledFullInference,SubnetLinearTiledFullInference,LinearTiledFullInferenceTritonKernelInference
 
 import torch.nn as nn
 
@@ -177,10 +178,7 @@ def model_stats(model):
         'conv_gt_1x1':0, 
 
     }
-    '''model_layer_conv_kernels={
-        'conv1x1':0,
-        'conv_gt_1x1':0
-    }'''
+    #print(model)
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None:
             if isinstance(m, nn.Linear) :
@@ -207,10 +205,7 @@ def model_stats(model):
                     #print("add instance before continuing!!!!!!!")
                     #sys.exit()
 
-            '''elif isinstance(m, nn.Conv2d) :
-                model_layer_params['conv2d']+=m.weight.numel()
-            elif isinstance(m, nn.Conv1d) :
-                model_layer_params['conv1d']+=m.weight.numel()'''
+
 
 
 
@@ -235,8 +230,8 @@ def model_stats(model):
         'conv1d':0
     }
     for n, m in model.named_modules():
-        if hasattr(m, "weight") and m.weight is not None:
-            if isinstance(m, SubnetLinearTiledFull) or isinstance(m, SubnetLinearTiledFullInference)  :
+        if hasattr(m, "weight") and m.weight is not None :
+            if isinstance(m, SubnetLinearTiledFull) or isinstance(m, SubnetLinearTiledFullInference)  or isinstance(m, LinearTiledFullInferenceTritonKernelInference):
                 model_layer_params['linear']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
                 print(f'layer {n} compression rate: {m.compression_factor}')
             elif isinstance(m, nn.BatchNorm2d) :
@@ -258,6 +253,10 @@ def model_stats(model):
                     print(f'module instance not found for module with weights: {n}')
                     #print("add instance before continuing!!!!!!!")
                     #sys.exit()
+        if  hasattr(m, "weight_size"):
+            if  isinstance(m, LinearTiledFullInferenceTritonKernelInference):
+                model_layer_params['linear']+=m.weight_size[0]*m.weight_size[1]/m.compression_factor+m.compression_factor*32
+                print(f'layer {n} compression rate: {m.compression_factor}')
         if hasattr(m, "bias") and m.bias is not None:
             #print(f'adding {m.bias.numel()} bias params for module {n}')
             model_layer_params['bias']+=m.bias.numel()

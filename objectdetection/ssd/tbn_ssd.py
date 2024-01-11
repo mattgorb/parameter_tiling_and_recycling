@@ -5,20 +5,28 @@ from torch.autograd import Variable
 
 from layers import *
 from data import voc, coco
-from binary_utils import BinarizeConv2d
+
+#from binary_utils import SubnetConvTiledFull
+
+import sys
+sys.path.insert(0, '/s/chopin/l/grad/mgorb/parameter_tiling_and_recycling/')
+from utils.layer_type import *
+
 
 CFG = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'C', 512, 512, 512, 'M', 512, 512, 512]
 EXTRAS = [256, 'S', 512, 128, 'S', 256, 128, 256, 128, 256]
 MBOX = [4, 6, 6, 6, 4, 4]
 
 
-class BiDetVGGBlock(nn.Module):
+class TBNVGGBlock(nn.Module):
 
     def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False,
                  downsample=None):
-        super(BiDetVGGBlock, self).__init__()
-        self.conv = BinarizeConv2d(in_channels, out_channels,
-                                   kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
+        super(TBNVGGBlock, self).__init__()
+
+        self.conv = SubnetConvTiledFull(in_channels, out_channels,  kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
+
+
         self.bn = nn.BatchNorm2d(out_channels)
         self.downsample = downsample
 
@@ -40,7 +48,7 @@ def bidet_vgg(cfg, i=3, bias=False):
     for j in range(len(cfg)):
         v = cfg[j]
         if v == 'M':
-            layers += [BiDetVGGBlock(in_channels=cfg[j - 1], out_channels=cfg[j + 1],
+            layers += [TBNVGGBlock(in_channels=cfg[j - 1], out_channels=cfg[j + 1],
                                      kernel_size=3, stride=2, padding=1, bias=bias,
                                      downsample=nn.Sequential(
                                          nn.AvgPool2d(kernel_size=2, stride=2),
@@ -50,7 +58,7 @@ def bidet_vgg(cfg, i=3, bias=False):
                                      ))]
             in_channels = cfg[j + 1]
         elif v == 'C':
-            layers += [BiDetVGGBlock(in_channels=cfg[j - 1], out_channels=cfg[j + 1],
+            layers += [TBNVGGBlock(in_channels=cfg[j - 1], out_channels=cfg[j + 1],
                                      kernel_size=3, stride=2, padding=1, bias=bias,
                                      downsample=nn.Sequential(
                                          nn.AvgPool2d(kernel_size=2, stride=2, ceil_mode=True),
@@ -64,12 +72,14 @@ def bidet_vgg(cfg, i=3, bias=False):
                 conv = nn.Conv2d(in_channels, v, kernel_size=3, stride=1, padding=1, bias=bias)
                 layers += [conv, nn.BatchNorm2d(v)]
             else:
-                layers += [BiDetVGGBlock(in_channels, v, kernel_size=3, padding=1, bias=bias)]
+                layers += [TBNVGGBlock(in_channels, v, kernel_size=3, padding=1, bias=bias)]
             in_channels = v
 
     pool5 = nn.MaxPool2d(kernel_size=3, stride=1, padding=1)
-    conv6 = BinarizeConv2d(512, 1024, kernel_size=3, padding=6, dilation=6, bias=bias)
+
+    conv6 = SubnetConvTiledFull(512, 1024, kernel_size=3, padding=6, dilation=6, bias=bias)
     conv7 = nn.Conv2d(1024, 1024, kernel_size=1)  # shouldn't binarize fc layer
+
     layers += [pool5]
     layers += [conv6, nn.BatchNorm2d(1024), nn.ReLU(inplace=True)]
     layers += [conv7, nn.BatchNorm2d(1024), nn.ReLU(inplace=True)]
@@ -77,9 +87,9 @@ def bidet_vgg(cfg, i=3, bias=False):
     return layers
 
 
-def init_model(model):
+def init_model(model, args):
     for m in model.modules():
-        if isinstance(m, nn.Conv2d) or isinstance(m, BinarizeConv2d):
+        if isinstance(m, nn.Conv2d) or isinstance(m, SubnetConvTiledFull):
             nn.init.xavier_normal_(m.weight)
             if m.bias is not None:
                 m.bias.data.zero_()
@@ -90,6 +100,10 @@ def init_model(model):
             m.weight.data.normal_(0, 0.01)
             if m.bias is not None:
                 m.bias.data.zero_()
+        
+        if isinstance(m, SubnetConvTiledFull):
+            print("HERE")
+            m.init(args, args.compression_factor)
 
 
 class VGGBase(nn.Module):
@@ -109,7 +123,7 @@ class VGGBase(nn.Module):
         return output1, output2
 
 
-class BiDetSSD(nn.Module):
+class TiledSSD(nn.Module):
     """Single Shot Multibox Architecture
     The network is composed of a base VGG network followed by the
     added multibox conv layers.  Each multibox layer branches into
@@ -128,8 +142,8 @@ class BiDetSSD(nn.Module):
     """
 
     def __init__(self, phase, size, base, extras, head, num_classes,
-                 nms_conf_thre=0.03, nms_iou_thre=0.45, nms_top_k=200):
-        super(BiDetSSD, self).__init__()
+                 nms_conf_thre=0.03, nms_iou_thre=0.45, nms_top_k=200, args=None):
+        super(TiledSSD, self).__init__()
         self.phase = phase
         self.num_classes = num_classes
         self.cfg = (coco, voc)[num_classes == 21]
@@ -155,7 +169,8 @@ class BiDetSSD(nn.Module):
         if self.phase == "test":
             self.detect = Detect(num_classes, 0, nms_top_k, nms_conf_thre, nms_iou_thre)
 
-        init_model(self)
+        self.args=args
+        init_model(self,args)
 
     def forward(self, x):
         """Applies network layers and ops on input image(s) x.
@@ -235,11 +250,11 @@ def add_extras(cfg, i):
     for k, v in enumerate(cfg):
         if in_channels != 'S':
             if v == 'S':
-                layers += [BinarizeConv2d(in_channels, cfg[k + 1],
+                layers += [SubnetConvTiledFull(in_channels, cfg[k + 1],
                                           kernel_size=(1, 3)[flag], stride=2, padding=1,
                                           bias=False)]
             else:
-                layers += [BinarizeConv2d(in_channels, v, kernel_size=(1, 3)[flag],
+                layers += [SubnetConvTiledFull(in_channels, v, kernel_size=(1, 3)[flag],
                                           bias=False)]
             flag = not flag
         in_channels = v
@@ -265,8 +280,8 @@ def multibox(vgg, extra_layers, cfg, num_classes):
     return vgg, extra_layers, (loc_layers, conf_layers)
 
 
-def build_bidet_ssd(phase, size=300, num_classes=21,
-                    nms_conf_thre=0.01, nms_iou_thre=0.45, nms_top_k=200):
+def build_tiled_ssd(phase, size=300, num_classes=21,
+                    nms_conf_thre=0.01, nms_iou_thre=0.45, nms_top_k=200, args=None):
     if phase != "test" and phase != "train":
         print("ERROR: Phase: " + phase + " not recognized")
         return
@@ -277,5 +292,5 @@ def build_bidet_ssd(phase, size=300, num_classes=21,
     base_, extras_, head_ = multibox(bidet_vgg(CFG, 3, bias=False),
                                      add_extras(EXTRAS, 1024),
                                      MBOX, num_classes)
-    return BiDetSSD(phase, size, base_, extras_, head_, num_classes,
-                    nms_conf_thre, nms_iou_thre, nms_top_k)
+    return TiledSSD(phase, size, base_, extras_, head_, num_classes,
+                    nms_conf_thre, nms_iou_thre, nms_top_k, args)

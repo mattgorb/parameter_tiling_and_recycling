@@ -52,17 +52,17 @@ def main_worker(args,):
 
     #only run CIFAR10
     # Warm-up the model (optional)
-    input_tensor=torch.randn(1,3,32,32).to(torch.float).cuda()
-    model=model.to(torch.float).cuda()
+    input_tensor=torch.randn(1,3,32,32).to(torch.float32).cuda()
+    model=model.to(torch.float32).cuda()
 
     #if args.arch=='pointnet' or 'pointnet_tiled':
-    input_tensor=0.5*torch.ones(1,3,1024).to(torch.float).cuda()
+    #input_tensor=0.5*torch.ones(1,3,1024).to(torch.float).cuda()
 
     model.eval()
 
     with torch.no_grad():
-        model(input_tensor)
-
+        model(input_tensor)#warmup
+    sys.exit()
     fps_ls=[]
     for i in range(5):
         # Measure FPS
@@ -126,9 +126,24 @@ def get_model(args,):
                     downscaling_factors=(2,2,2,1), args=args)
     elif args.arch=='swint':
         from vision_transformers_cifar10.models.swin import swin_t
-        net = swin_t(window_size=args.patch,
+        model = swin_t(window_size=args.patch,
                     num_classes=10,
                     downscaling_factors=(2,2,2,1))
+    elif args.arch=="tiled_vit":
+        # ViT for cifar10
+        from vision_transformers_cifar10.models.tiled_vit_inference import TiledViT
+        model = TiledViT(
+        image_size = 32,
+        patch_size = 4,
+        num_classes = 10,
+        dim = 512,
+        depth = 6,
+        heads = 8,
+        mlp_dim = 512,
+        dropout = 0.1,
+        emb_dropout = 0.1, 
+        args=args
+    )
     else:
         print("=> Creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch]()

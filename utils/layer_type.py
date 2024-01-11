@@ -10,7 +10,7 @@ import sys
 from utils.initializations import _init_weight,_init_score
 import numpy as np
 from utils.tile_utils import fill_weight_signs
-
+from utils.kernels import matmul, matmul_tile
 #from torch.nn.utils.prune  import l1_unstructured
 
 DenseConv = nn.Conv2d
@@ -534,13 +534,124 @@ class SubnetLinearTiledFullInference(nn.Linear):
 
     def forward(self, x):
         #quantnet_scaled=tiled_tensor.reshape_as(self.weight)*self.alpha
-
-        # Pass scaled quantnet to convolution layer
         x = F.linear(
             x,self.tiled_tensor.reshape_as(self.weight), self.bias
         )
 
         return x
+
+
+
+
+
+
+class LinearTiledFullInferenceTritonKernelInference(nn.Linear):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
+        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+
+
+
+    def init(self,args, compression_factor):
+        self.args=args
+        self.weight=_init_weight(args,self.weight)
+
+
+        self.scores=_init_score(self.args, self.scores)
+
+        
+        if args.global_compression_factor is not None:
+            if self.weight.numel()<int(args.min_compress_size):
+        
+                self.compression_factor=1
+            else:
+                self.compression_factor=args.global_compression_factor
+        else:
+            self.compression_factor=compression_factor
+            
+        assert self.weight.numel()%int(self.compression_factor)==0
+
+        if self.args.alpha_param=='scores':
+            self.weight.requires_grad = False
+
+        self.scores.requires_grad=True
+
+        self.tile_size=int(self.weight.flatten().numel()/self.compression_factor)
+
+        self.alpha=torch.randn(1)
+        self.tile=torch.randn(self.tile_size)*self.alpha
+
+        self.weight_size=self.weight.size()
+
+        if self.args.kernel=='standard':
+            self.tiled_tensor=self.tile.flatten().expand((self.compression_factor,self.tile_size))
+            self.tiled_tensor=self.tiled_tensor.reshape(self.weight_size).t().contiguous().cuda()
+
+       
+
+        def is_power_of_two(n):
+            """Check if a number is a power of 2."""
+            return n > 0 and (n & (n - 1)) == 0
+        
+        #if is_power_of_two(self.weight_size[0]) and self.compression_factor>1:
+        if isinstance(self.weight_size[0]//self.compression_factor, int) and self.compression_factor>1:
+            self.tile=self.tile.reshape(self.weight_size[0]//self.compression_factor, self.weight_size[1])
+        else:
+            #print(self.weight_size)
+            #print(self.compression_factor)
+            assert self.compression_factor==1
+            self.tile=self.tile.reshape_as(self.weight)
+
+
+
+        del self.scores
+        del self.weight
+
+
+    def check_equality(self,output,x):
+        torch.cuda.empty_cache()
+        print(f'memory allocated (KB): {torch.cuda.memory_allocated()//1000}')
+
+        self.tiled_tensor=self.tile.flatten().expand((self.compression_factor,self.tile_size)).cuda()
+        if torch.allclose(output, F.linear(x,self.tiled_tensor.reshape(self.weight_size)), atol=5e-2, rtol=0):
+            print("✅ Triton and Torch match")
+        else:
+            print("❌ Triton and Torch differ")  
+            print(F.linear(x,self.tiled_tensor.reshape(self.weight_size)))
+            print(output)
+            sys.exit()
+
+        del self.tiled_tensor
+
+    def forward(self, x,):
+        
+
+        if self.args.kernel=='tiled':
+            if len(x.size())>2 and x.size()[0]==1:
+                x=x.squeeze(0)
+                output=matmul_tile(x,self.tile.t().contiguous().cuda() , self.weight_size)
+
+                self.check_equality(output, x)
+                return output.unsqueeze(0)
+
+            else:
+                output=matmul_tile(x,self.tile.t().contiguous().cuda() , self.weight_size)
+                self.check_equality(output, x)
+                return output
+        
+        if self.args.kernel=='standard':
+            #this is the standard kernel
+            if len(x.size())>2 and x.size()[0]==1:
+                output=matmul(x.squeeze(0),self.tiled_tensor)
+                self.check_equality(output, x)
+                return output.unsqueeze(0)
+
+            else:
+                output=matmul(x,self.tiled_tensor)
+                self.check_equality(output, x)
+                return output
+
 
 
 

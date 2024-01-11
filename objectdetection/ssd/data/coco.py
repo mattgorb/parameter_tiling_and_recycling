@@ -44,7 +44,7 @@ class COCOAnnotationTransform(object):
     """
 
     def __init__(self):
-        self.label_map = get_label_map(osp.join('data', 'coco_labels.txt'))
+        self.label_map = get_label_map(osp.join('/s/lovelace/c/nobackup/iray/mgorb/objectdetection/data', 'coco_labels.txt'))
 
     def __call__(self, target, width, height):
         """

@@ -379,7 +379,6 @@ nohup  python -u train_cifar10.py --patch 4 --n_epochs 750 --net='tiled_vit' --c
 nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 4 > ../results/tiled_mlpmixer_4_750_2.txt  2>&1 &
 nohup  python -u train_cifar10.py --net=tiled_mlpmixer --n_epochs=750 --lr=1e-3  --compression_factor 8 > ../results/tiled_mlpmixer_8_750_2.txt  2>&1 &
 
-
 nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 4 --bs 64 > ../results/tiled_convmixer_4_750_2.txt  2>&1 &
 nohup python train_cifar10.py --net tiled_convmixer --n_epochs 750 --compression_factor 8 --bs 64 > ../results/tiled_convmixer_4_750_2.txt  2>&1 &
 
@@ -388,7 +387,6 @@ nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 750  --compression
 
 nohup python -u train_semseg.py --model_type='tiled' --compression_factor 4  --epoch=400 --min_compress_size=64000 > results/pointnet_semseg_tiled_2_1.txt  2>&1 & #char
 nohup python -u train_semseg.py --model_type='tiled' --compression_factor 8 --epoch=400  --min_compress_size=138000 > results/pointnet_semseg_tiled_8_2.txt  2>&1 & #char
-
 
 
 /s/lovelace/c/nobackup/iray/mgorb/results_tiling
@@ -590,3 +588,11 @@ nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb
 nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  --global_compression_factor=4  > ../results/objectdetection_tbn_4.txt  2>&1 &
 
 
+
+
+
+
+
+
+
+ python -u performance.py  --config configs/cifar10/resnet18-kn-tiled-4.yaml --arch=tiled_mlpmixer  --compression_factor 4 

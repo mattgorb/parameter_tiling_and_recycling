@@ -285,7 +285,7 @@ def parse_arguments():
     parser.add_argument('--model_type', type=str, default='binarize', help='prune or binarize')
     parser.add_argument('--alpha_type', type=str, default=None, help='single or multiple alphas per layer')
     parser.add_argument('--min_compress_size', default=64000)
-
+    parser.add_argument('--kernel', type=str, default=None)
 
     args = parser.parse_args()
 

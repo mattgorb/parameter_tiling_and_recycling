@@ -11,7 +11,7 @@ from utils.layer_type import *
 
 
 def init_linear(in_channel, out_channel,args):
-    layer=SubnetLinearTiledFullInference(in_channel, out_channel)
+    layer=LinearTiledFullInferenceTritonKernelInference(in_channel, out_channel)
     if layer.weight.numel()<64000:
         layer.init(args, compression_factor=1)
     else:
@@ -174,7 +174,8 @@ class PatchMerging(nn.Module):
         self.args=args
         self.downscaling_factor = downscaling_factor
         self.patch_merge = nn.Unfold(kernel_size=downscaling_factor, stride=downscaling_factor, padding=0)
-        self.linear = init_linear(in_channels * downscaling_factor ** 2, out_channels,self.args)
+        #self.linear = init_linear(in_channels * downscaling_factor ** 2, out_channels,self.args)
+        self.linear = nn.Linear(in_channels * downscaling_factor ** 2, out_channels)
 
     def forward(self, x):
         b, c, h, w = x.shape
@@ -206,6 +207,7 @@ class StageModule(nn.Module):
 
     def forward(self, x):
         x = self.patch_partition(x)
+
         for regular_block, shifted_block in self.layers:
             x = regular_block(x)
             x = shifted_block(x)

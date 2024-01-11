@@ -31,9 +31,9 @@ def init_conv1d(in_channel, out_channel,kernel_size,args):
     return layer
 
 def init_linear(in_channel, out_channel,args):
-    layer=SubnetLinearTiledFullInference(in_channel, out_channel)
-    if layer.weight.numel()<64000:
-        layer.init(args, compression_factor=1)
+    layer=LinearTiledFullInferenceTritonKernelInference(in_channel, out_channel, bias=False)
+    #layer=SubnetLinearTiledFullInference(in_channel, out_channel)
+    
     if layer.weight.numel()<64000:
         layer.init(args, compression_factor=1)
     else:

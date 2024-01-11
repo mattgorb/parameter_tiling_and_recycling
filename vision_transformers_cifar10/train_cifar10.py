@@ -71,7 +71,9 @@ def parse_args():
     parser.add_argument('--cos', action='store_false', help='Train with cosine annealing scheduling')
     parser.add_argument('--global_compression_factor', default=None, type=int)
     parser.add_argument('--min_compress_size', default=64000, type=int)
-
+    parser.add_argument(
+        "--layer_type", type=str, default=None, 
+    )
 
     #print()
     return parser.parse_args()
@@ -220,6 +222,17 @@ def main(args):
         num_classes = 10, 
         args=args
     )
+    elif args.net=="tiled_mlpmixer_inf":
+        from models.tiled_mlpmixer_inference import TiledMLPMixer
+        net = TiledMLPMixer(
+        image_size = 32,
+        channels = 3,
+        patch_size = args.patch,
+        dim = 512,
+        depth = 6,
+        num_classes = 10, 
+        args=args
+    )
     elif args.net=="tiled_convmixer":
   
         from models.tiled_convmixer import TiledConvMixer
@@ -277,6 +290,7 @@ def main(args):
         total = 0
         for batch_idx, (inputs, targets) in enumerate(trainloader):
             inputs, targets = inputs.to(device), targets.to(device)
+
             # Train with amp
             with torch.cuda.amp.autocast(enabled=use_amp):
                 outputs = net(inputs)
@@ -369,11 +383,6 @@ def main(args):
             writer.writerow(list_loss) 
             writer.writerow(list_acc) 
             writer.writerow(train_acc)
-        #print(list_loss)
-
-    # writeout wandb
-    #if usewandb:
-        #wandb.save("wandb_{}.h5".format(args.net))
     
 if __name__ == "__main__":
     global best_acc
@@ -381,6 +390,6 @@ if __name__ == "__main__":
     args = parse_args()
     main(args)
 
-    #main(args)
+
 
 
