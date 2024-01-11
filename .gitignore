@@ -161,3 +161,4 @@ c_implementation/data/*
 c_implementation/python/mnist/*
 
 figures/csv/
+objectdetection/eval/test/
