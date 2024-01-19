@@ -46,7 +46,7 @@ plt.rcParams["image.cmap"] = "Dark2"
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=plt.cm.Dark2.colors)
 
 width = 0.5
-fig, ax = plt.subplots(figsize=(25,10))
+fig, ax = plt.subplots(figsize=(28,10))
 #fig, ax = plt.subplots()
 bottom = np.zeros(6)
 plt.rcParams['font.size'] = 18
@@ -61,7 +61,7 @@ for boolean, weight_count in weight_counts.items():
     i+=1
     
 
-ax.set_title("Proportion of Parameter Types in Different Architectures", fontsize=40)
+#ax.set_title("Proportion of Parameter Types in Different Architectures", fontsize=40)
 plt.ylabel('Number of Parameters', fontsize=40)
 #plt.xlabel('Architecture', fontsize=20)
 #ax.legend(loc='best', fontsize=26)
@@ -73,15 +73,26 @@ from matplotlib.ticker import FuncFormatter
 def millions_formatter(x, pos):
     return f'{x / 1e6:.0f}M'
 plt.gca().yaxis.set_major_formatter(FuncFormatter(millions_formatter))
+
 y = [10000000, 20000000,]
-ax.set_yticks(y, fontsize=40)
-for tick in plt.gca().yaxis.get_major_ticks():
-    tick.label.set_fontsize(34) 
+def millions_formatter(x, pos):
+    return f'{int(x / 1e6)}M'
+
+# Apply the custom formatter to y-axis ticks
+ax.yaxis.set_major_formatter(FuncFormatter(millions_formatter))
+
+# Set fontsize for y-axis tick labels
+ax.tick_params(axis='y', labelsize=40)
+#ax.set_yticks(y, fontsize=40)
+#ax.set_yticklabels(y, fontsize=40)
+#for tick in plt.gca().yaxis.get_major_ticks():
+    #tick.label.set_fontsize(34) 
 
 
 
 # Hide the top border by setting the color of the top side of the bars to match the background color
-#plt.axes[-1].set_edgecolor('white')
+# Set edge color for the last axis
+ax.spines['top'].set_edgecolor('white')
 
 plt.tight_layout()
 plt.savefig('barchart.pdf')

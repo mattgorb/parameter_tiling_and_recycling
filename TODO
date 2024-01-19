@@ -172,6 +172,9 @@ nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 1500  --compressio
 
 
 
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 4   > ../results/vit_4_tiled_4_1000_epochs.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 8   > ../results/vit_4_tiled_8_1000_epochs.txt  2>&1 & #char
+
 
 
 
@@ -577,15 +580,6 @@ nohup python -u main.py --config ../configs/imagenet/resnet18-tiled-full-rerandt
 
 
 
-nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  > ../results/objectdetection_bidet.txt  2>&1 &
-
-
-nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2023-12-31 13:02:28/model_15000_loc_1.9947_conf_2.3276_reg_0.0_prior_0.0_loss_4.3222_lr_0.001.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' > ../results/objectdetection_bidet_eval.txt  2>&1 &
-nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2023-12-31 13:02:28/model_5000_loc_2.6412_conf_3.3711_reg_0.0_prior_0.0_loss_6.0123_lr_0.001.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' > ../results/objectdetection_bidet_eval_5000.txt  2>&1 &
-nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2023-12-31 13:02:28/model_55000_loc_1.5792_conf_3.7974_reg_0.0051_prior_0.3102_loss_5.6919_lr_0.0001.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' > ../results/objectdetection_bidet_eval_55000.txt  2>&1 &
-
-
-nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  --global_compression_factor=4  > ../results/objectdetection_tbn_4.txt  2>&1 &
 
 
 
@@ -593,6 +587,113 @@ nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobac
 
 
 
+ python -u performance.py  --config configs/cifar10/resnet18-kn-tiled-4.yaml --arch=tiled_vit_imagenet_measure  --compression_factor 4 
 
 
- python -u performance.py  --config configs/cifar10/resnet18-kn-tiled-4.yaml --arch=tiled_mlpmixer  --compression_factor 4 
+
+
+
+
+
+
+
+
+
+
+
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 4  --bs 256 > ../results/swin_1.txt 2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 8  --bs 256 > ../results/swin_2.txt  2>&1 &
+
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 4   > ../results/vit_1.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 8   > ../results/vit_2.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 16   > ../results/vit_3.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 32   > ../results/vit_4.txt  2>&1 & #char
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2024-01-03 10:16:29/VOC_final.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' --global_compression_factor=4  > ../results/objectdetection1.txt  2>&1 &
+nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  --global_compression_factor=4 --resume='/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2024-01-03 10:16:29/VOC_final.pth' --start_iter 300000  > ../results/objectdetection_tbn_4_again.txt  2>&1 &
+nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  --global_compression_factor=2   > ../results/objectdetection_tbn_2.txt  2>&1 &
+
+
+
+
+
+
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 4  --bs 256 > ../results/swin_1.txt 2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 8  --bs 256 > ../results/swin_2.txt  2>&1 &
+
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 4   > ../results/vit_1.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 8   > ../results/vit_2.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 16   > ../results/vit_3.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 32   > ../results/vit_4.txt  2>&1 & #char
+
+
+
+
+
+
+
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 1000  --compression_factor 16  --bs 256  > ../results/swin_5.txt 2>&1 &
+
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 1000  --compression_factor 4  --bs 256  > ../results/swin_18.txt 2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 1000  --compression_factor 8  --bs 256  > ../results/swin_19.txt 2>&1 &
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 4 > ../results/vit_8.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 8   > ../results/vit_9.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 16   > ../results/vit_10.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 32   > ../results/vit_11.txt  2>&1 & #char
+
+
+
+
+nohup  python -u train_cifar10.py --net tiled_swin --n_epochs 1000  --compression_factor 16  --bs 256 --alpha_param 'scores' > ../results/swin_6.txt 2>&1 &
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 4 --alpha_param 'scores' > ../results/vit_12.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 8  --alpha_param 'scores' > ../results/vit_13.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 16 --alpha_param 'scores'  > ../results/vit_14.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit' --compression_factor 32 --alpha_param 'scores'  > ../results/vit_15.txt  2>&1 & #char
+
+
+
+
+
+
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 4  --bs 256 > ../results/swin_17.txt 2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 8  --bs 256 > ../results/swin_8.txt  2>&1 &
+
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 4   > ../results/vit_20.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 8   > ../results/vit_21.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 16   > ../results/vit_22.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 32   > ../results/vit_23.txt  2>&1 & #char
+
+
+
+
+#SUMMING The SCores, rather than averaging. 
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 4  --bs 256 > ../results/swin_20.txt 2>&1 &
+nohup  python -u train_cifar10.py --net tiled_swin_fp --n_epochs 1000  --compression_factor 8  --bs 256 > ../results/swin_21.txt  2>&1 &
+
+
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 4   > ../results/vit_30.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 8   > ../results/vit_31.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 16   > ../results/vit_32.txt  2>&1 & #char
+nohup  python -u train_cifar10.py --patch 4 --n_epochs 1000 --net='tiled_vit_fp' --compression_factor 32   > ../results/vit_33.txt  2>&1 & #char

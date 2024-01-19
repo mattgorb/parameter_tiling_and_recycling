@@ -13,12 +13,5 @@
 
 module purge
 module load python/bundle-3.9
-#unset PYTHONPATH
-#source /s/lovelace/c/nobackup/iray/mgorb/anaconda3/bin/activate
-#conda activate quant
 
-#TORCH_DISTRIBUTED_DEBUG=DETAIL NCCL_DEBUG=INFO NCCL_MAX_ASYNC_OPS=6  
-#python -u main_parallel.py --config configs/imagenet/resnet50-biprop-tiled-params-recycle.yaml --gpu=0 --multigpu=0,1,2  --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params/biprop/prune_rate=-1/9/checkpoints/model_best.pth
-#python -u main_parallel_kestrel.py --config configs/imagenet/resnet50-biprop-tiled-params.yaml --gpu=0 --multigpu=0,1,2 --epochs=110 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params/biprop/prune_rate=-1/26/checkpoints/model_best.pth
-#python -u main.py --config configs/imagenet/resnet50-biprop-tiled-params-recycle.yaml --gpu=0 --multigpu=0,1,2  
-python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet34-tiled-full-rerandtile.yaml --gpu=0 --multigpu=0,1,2 --batch-size=256
+python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet34-tiled-full.yaml --gpu=0 --multigpu=0,1,2 --batch-size=128 --global_compression_factor=2 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet34-tiled-full/tiled/prune_rate=0.0/checkpoints/model_best.pth

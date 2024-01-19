@@ -1,0 +1,50 @@
+arch: ResNet18
+
+# ===== Dataset ===== #
+data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/
+set: ImageNet
+name: tiled
+
+# ===== Learning Rate Policy ======== #
+optimizer: sgd
+#lr: 0.1 
+lr: 0.256
+lr_policy: cosine_lr
+warmup_length: 5
+
+# ===== Network training config ===== #
+epochs: 100
+total_epochs: 125
+weight_decay: 0.000030517578125
+#weight_decay: 0.0001
+momentum: 0.875
+batch_size: 256
+label_smoothing: 0.1
+
+
+# ===== Sparsity =========== #
+layer_type: SubnetConvTiledFull
+
+global_compression_factor: 4
+min_compress_size: 64000
+
+
+model_type: binarize
+alpha_type: multiple
+
+
+
+
+
+
+#bn_type: NonAffineBatchNorm
+bn_type: LearnedBatchNorm
+
+weight_init: kaiming_normal
+scale_fan: True
+score_init: None
+
+
+
+# ===== Hardware setup ===== #
+workers: 20

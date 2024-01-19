@@ -38,9 +38,6 @@ bn_type: LearnedBatchNorm
 weight_init: kaiming_normal
 scale_fan: True
 score_init: None
-
-
-
 weight_seed: 0
 score_seed: 0
 

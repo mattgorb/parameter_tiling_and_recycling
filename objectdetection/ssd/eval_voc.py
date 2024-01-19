@@ -10,7 +10,7 @@ from torch.autograd import Variable
 from data import VOCAnnotationTransform, VOCDetection, BaseTransform
 from data import VOC_CLASSES as labelmap
 
-from bidet_ssd import build_bidet_ssd
+#from bidet_ssd import build_bidet_ssd
 
 import sys
 import os
@@ -52,6 +52,16 @@ parser.add_argument('--cuda', default=True, type=str2bool,
                     help='Use cuda to train model')
 parser.add_argument('--voc_root', default="/path/to/voc/",
                     help='Location of VOC root directory')
+
+parser.add_argument('--weight_init', default=None)
+parser.add_argument('--score_init', default=None)
+parser.add_argument('--compression_factor', default=None, type=int)
+parser.add_argument('--weight_seed', default=0)
+parser.add_argument('--score_seed', default=0)
+parser.add_argument('--alpha_param', default='weight')
+parser.add_argument('--alpha_type', default='multiple')
+parser.add_argument('--min_compress_size', default=2**17)
+parser.add_argument('--global_compression_factor', default=None, type=int)
 
 args = parser.parse_args()
 
@@ -425,8 +435,11 @@ def evaluate_detections(box_list, output_dir, dataset):
 if __name__ == '__main__':
     # load net
     num_classes = len(labelmap) + 1  # +1 for background
-    net = build_bidet_ssd('test', 300, num_classes, nms_conf_thre=args.confidence_threshold,
-                          nms_iou_thre=args.iou_threshold, nms_top_k=args.top_k)
+    from tbn_ssd import build_tiled_ssd
+    net = build_tiled_ssd('test', 300, num_classes, nms_conf_thre=args.confidence_threshold,
+                          nms_iou_thre=args.iou_threshold, nms_top_k=args.top_k, args=args)
+    #net = build_bidet_ssd('test', 300, num_classes, nms_conf_thre=args.confidence_threshold,
+                          #nms_iou_thre=args.iou_threshold, nms_top_k=args.top_k)
 
     if args.cuda:
         net = net.cuda()

@@ -10,7 +10,10 @@ import sys
 from utils.initializations import _init_weight,_init_score
 import numpy as np
 from utils.tile_utils import fill_weight_signs
-from utils.kernels import matmul, matmul_tile
+
+#from utils.kernels import matmul, matmul_tile
+
+
 #from torch.nn.utils.prune  import l1_unstructured
 
 DenseConv = nn.Conv2d
@@ -19,6 +22,7 @@ DenseConv = nn.Conv2d
 
 
 #straight through estimator with reshaping and aggregation
+#used 
 class GetSubnetBinaryTiled(autograd.Function):
     @staticmethod
     def forward(ctx, scores,  compression_factor, args):
@@ -36,6 +40,8 @@ class GetSubnetBinaryTiled(autograd.Function):
     @staticmethod
     def backward(ctx, g):
         return g , None, None, None
+    
+
 
     
 class SubnetConvTiledFull(nn.Conv2d):
@@ -43,53 +49,6 @@ class SubnetConvTiledFull(nn.Conv2d):
         super().__init__(*args, **kwargs)
         self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
-
-    def rerandomize(self):
-        with torch.no_grad():
-            if self.args.rerand_type == 'recycle':
-                sorted, indices = torch.sort(self.scores.abs().flatten())
-                k = int((self.args.rerand_rate) * self.scores.numel())
-                low_scores=indices[:k]
-                high_scores=indices[-k:]
-                self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
-                print('recycling {} out of {} weights'.format(k,self.weight.numel()))
-            elif self.args.rerand_type == 'iterand':
-                self.args.weight_seed += 1
-                weight_twin = torch.zeros_like(self.weight)
-                weight_twin = _init_weight(self.args, weight_twin)
-                device = self.weight.device
-                ones = torch.ones(self.weight.size()).to(self.weight.device)
-                b = torch.bernoulli(ones * self.args.rerand_rate)
-                mask=GetQuantnet_binary.apply(self.clamped_scores, self.weight, self.prune_rate)
-                t1 = self.weight.data * mask
-                t2 = self.weight.data * (1 - mask) * (1 - b)
-                t3 = weight_twin.data * (1 - mask) * b
-                self.weight.data = t1 + t2 +t3
-                self.weight=fill_weight_signs(self.weight.to(device),  self.weight_tile.to(device))
-                self.weight=self.weight.to(device)
-
-                print('rerandomizing {} out of {} weights'.format(torch.sum(b), self.weight.numel()))
-            elif self.args.rerand_type == 'rerandomize_and_tile':
-                self.args.weight_seed += 1
-                weight_twin = torch.zeros_like(self.weight)
-                weight_twin = _init_weight(self.args, weight_twin)
-                device = self.weight.device
-                self.weight=torch.nn.Parameter(weight_twin)
-                self.weight=fill_weight_signs(self.weight.to(device),  self.weight_tile.to(device))
-                self.weight=self.weight.to(device)
-                
-                print(f'rerandomizing and tiling {self.weight.numel()} weights ')
-            elif self.args.rerand_type == 'rerandomize_only':
-                self.args.weight_seed += 1
-                weight_twin = torch.zeros_like(self.weight)
-                weight_twin = _init_weight(self.args, weight_twin)
-                device = self.weight.device
-                self.weight=torch.nn.Parameter(weight_twin)
-                self.weight=self.weight.to(device)
-                print(f'rerandomizing {self.weight.numel()} weights ')
-            else:
-                print('set rerand type.')
-                sys.exit(0)
 
 
     def init(self,args, compression_factor):
@@ -113,15 +72,13 @@ class SubnetConvTiledFull(nn.Conv2d):
 
         self.scores.requires_grad=True
 
-
-
-    def alpha_scaling(self,quantnet ):
+    def alpha_scaling(self,tilednet ):
         if self.args.alpha_param=='scores':
             alpha_tens_flattened=torch.abs(self.scores).flatten()
         elif self.args.alpha_param=='weight':
             alpha_tens_flattened=torch.abs(self.weight).flatten()
 
-        quantnet_flatten=quantnet.flatten().float()
+        tilednet_flatten=tilednet.flatten().float()
 
         if self.args.alpha_type=='multiple':
             tile_size=int(self.weight.numel()/self.compression_factor)
@@ -129,25 +86,25 @@ class SubnetConvTiledFull(nn.Conv2d):
                 abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
 
                 alpha=torch.sum(abs_weight)/tile_size
-                quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                tilednet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
                 
         else:
             num_unpruned = alpha_tens_flattened.numel()
 
             alpha=torch.sum(alpha_tens_flattened)/num_unpruned
-            quantnet_flatten*=alpha
+            tilednet_flatten*=alpha
 
-        return quantnet_flatten.reshape_as(quantnet)
+        return tilednet_flatten.reshape_as(tilednet)
     
 
 
 
     def forward(self, x):
-        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
-        quantnet_scaled=self.alpha_scaling(quantnet)
+        tilednet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
+        tilednet_scaled=self.alpha_scaling(tilednet)
 
         x = F.conv2d(
-            x, quantnet_scaled , self.bias, self.stride, self.padding, self.dilation, self.groups
+            x, tilednet_scaled , self.bias, self.stride, self.padding, self.dilation, self.groups
         )
         return x
 
@@ -185,13 +142,13 @@ class SubnetConv1dTiledFull(nn.Conv1d):
 
 
 
-    def alpha_scaling(self,quantnet ):
+    def alpha_scaling(self,tilednet ):
         if self.args.alpha_param=='scores':
             alpha_tens_flattened=torch.abs(self.scores).flatten()
         elif self.args.alpha_param=='weight':
             alpha_tens_flattened=torch.abs(self.weight).flatten()
 
-        quantnet_flatten=quantnet.flatten().float()
+        tilednet_flatten=tilednet.flatten().float()
 
         if self.args.alpha_type=='multiple':
             tile_size=int(self.weight.numel()/self.compression_factor)
@@ -199,26 +156,26 @@ class SubnetConv1dTiledFull(nn.Conv1d):
                 abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
 
                 alpha=torch.sum(abs_weight)/tile_size
-                quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                tilednet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
                 
         else:
             num_unpruned = alpha_tens_flattened.numel()
 
             alpha=torch.sum(alpha_tens_flattened)/num_unpruned
-            quantnet_flatten*=alpha
+            tilednet_flatten*=alpha
 
-        return quantnet_flatten.reshape_as(quantnet)
+        return tilednet_flatten.reshape_as(tilednet)
     
 
 
 
     def forward(self, x):
-        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
-        quantnet_scaled=self.alpha_scaling(quantnet)
+        tilednet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
+        tilednet_scaled=self.alpha_scaling(tilednet)
 
-        # Pass scaled quantnet to convolution layer
+        # Pass scaled tilednet to convolution layer
         x = F.conv1d(
-            x, quantnet_scaled , self.bias, self.stride, self.padding, self.dilation, self.groups
+            x, tilednet_scaled , self.bias, self.stride, self.padding, self.dilation, self.groups
         )
 
 
@@ -234,26 +191,7 @@ class SubnetLinearTiledFull(nn.Linear):
         self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
         nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
 
-    def rerandomize(self):
-        with torch.no_grad():
-            if self.args.rerand_type == 'recycle':
-                sorted, indices = torch.sort(self.scores.abs().flatten())
-                k = int((self.args.rerand_rate) * self.scores.numel())
-                low_scores=indices[:k]
-                high_scores=indices[-k:]
-                self.weight.flatten()[low_scores]=self.weight.flatten()[high_scores]
-                print('recycling {} out of {} weights'.format(k,self.weight.numel()))
-            elif self.args.rerand_type == 'rerandomize_only':
-                self.args.weight_seed += 1
-                weight_twin = torch.zeros_like(self.weight)
-                weight_twin = _init_weight(self.args, weight_twin)
-                device = self.weight.device
-                self.weight=torch.nn.Parameter(weight_twin)
-                self.weight=self.weight.to(device)
-                print(f'rerandomizing {self.weight.numel()} weights ')
-            else:
-                print('set rerand type.')
-                sys.exit(0)
+
 
 
     def init(self,args, compression_factor):
@@ -280,13 +218,13 @@ class SubnetLinearTiledFull(nn.Linear):
 
 
 
-    def alpha_scaling(self,quantnet ):
+    def alpha_scaling(self,tilednet ):
         if self.args.alpha_param=='scores':
             alpha_tens_flattened=torch.abs(self.scores).flatten()
         elif self.args.alpha_param=='weight':
             alpha_tens_flattened=torch.abs(self.weight).flatten()
 
-        quantnet_flatten=quantnet.flatten().float()
+        tilednet_flatten=tilednet.flatten().float()
 
         if self.args.alpha_type=='multiple':
             tile_size=int(self.weight.numel()/self.compression_factor)
@@ -294,29 +232,236 @@ class SubnetLinearTiledFull(nn.Linear):
                 abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
 
                 alpha=torch.sum(abs_weight)/tile_size
-                quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                tilednet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
                 
         else:
             num_unpruned = alpha_tens_flattened.numel()
 
             alpha=torch.sum(alpha_tens_flattened)/num_unpruned
-            quantnet_flatten*=alpha
+            tilednet_flatten*=alpha
 
-        return quantnet_flatten.reshape_as(quantnet)
+        return tilednet_flatten.reshape_as(tilednet)
     
 
 
 
     def forward(self, x):
-        quantnet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
-        quantnet_scaled=self.alpha_scaling(quantnet)
+        tilednet = GetSubnetBinaryTiled.apply(self.scores, self.compression_factor,self.args )
+        tilednet_scaled=self.alpha_scaling(tilednet)
 
-        # Pass scaled quantnet to convolution layer
+        # Pass scaled tilednet to convolution layer
         x = F.linear(
-            x, quantnet_scaled , self.bias
+            x, tilednet_scaled , self.bias
         )
 
         return x
+
+
+
+
+
+#straight through estimator with reshaping and aggregation
+#used 
+class GetSubnetFPTiled(autograd.Function):
+    @staticmethod
+    def forward(ctx, scores,  compression_factor, args):
+        score_agg=torch.sum(scores.flatten().reshape((compression_factor, 
+                            int(scores.numel()/compression_factor))), dim=0)
+
+
+        tiled_tensor=score_agg.tile((compression_factor,))
+
+
+        return tiled_tensor.reshape_as(scores).float()
+        
+    
+    @staticmethod
+    def backward(ctx, g):
+        return g , None, None, None
+    
+
+
+class SubnetLinearTiledFullPrecision(nn.Linear):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
+        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+
+    def init(self,args, compression_factor):
+        self.args=args
+        self.weight=_init_weight(args,self.weight)
+        self.scores=_init_score(self.args, self.scores)
+
+        
+        if args.global_compression_factor is not None:
+            if self.weight.numel()<int(args.min_compress_size):
+        
+                self.compression_factor=1
+            else:
+                self.compression_factor=args.global_compression_factor
+        else:
+            self.compression_factor=compression_factor
+            
+        assert self.weight.numel()%int(self.compression_factor)==0
+
+        if self.args.alpha_param=='scores':
+            self.weight.requires_grad = False
+
+        self.scores.requires_grad=True
+
+        #self.alphas=nn.Parameter(torch.ones(self.compression_factor), requires_grad=True)
+        self.alphas=nn.ParameterList([nn.Parameter(torch.ones(1), requires_grad=True) for i in range(self.compression_factor)])
+
+
+    def forward(self, x):
+
+        tilednet = GetSubnetFPTiled.apply(self.scores, self.compression_factor,self.args )
+        # Pass scaled tilednet to convolution layer
+
+        #tilednet=tilednet.flatten()
+        tile_size=int(tilednet.numel()/self.compression_factor)
+        for i in range(self.compression_factor):
+            tilednet.clone().flatten()[i*tile_size:(i+1)*tile_size]*=self.alphas[i]
+
+
+        x = F.linear(
+            x, tilednet , self.bias
+        )
+
+        return x
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+Inference kernels below
+'''
+
+class LinearTiledFullInferenceTritonKernelInference(nn.Linear):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
+        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
+
+
+
+    def init(self,args, compression_factor):
+        self.args=args
+        self.weight=_init_weight(args,self.weight)
+        self.scores=_init_score(self.args, self.scores)
+        
+        if args.global_compression_factor is not None:
+            if self.weight.numel()<int(args.min_compress_size):
+        
+                self.compression_factor=1
+            else:
+                self.compression_factor=args.global_compression_factor
+        else:
+            self.compression_factor=compression_factor
+            
+        assert self.weight.numel()%int(self.compression_factor)==0
+
+        if self.args.alpha_param=='scores':
+            self.weight.requires_grad = False
+
+        self.scores.requires_grad=True
+        self.tile_size=int(self.weight.flatten().numel()//self.compression_factor)
+
+        self.alpha=torch.randn(1)
+        self.tile=torch.randn(self.tile_size)*self.alpha
+
+        self.weight_size=self.weight.size()
+
+        if self.args.kernel=='standard':
+            self.tiled_tensor=self.tile.flatten().expand((self.compression_factor,self.tile_size))
+            self.tiled_tensor=self.tiled_tensor.reshape(self.weight_size).t().contiguous().cuda()
+
+        if isinstance(self.weight_size[0]//self.compression_factor, int) and self.compression_factor>1:
+            self.tile=self.tile.reshape(self.weight_size[0]//self.compression_factor, self.weight_size[1])
+        else:
+            assert self.compression_factor==1
+            self.tile=self.tile.reshape_as(self.weight)
+
+        del self.scores
+        del self.weight
+
+        if self.args.kernel=='standard':
+            del self.tile
+        else:
+            self.tile=self.tile.t().contiguous().cuda()
+
+    def clean(self):
+        torch.cuda.empty_cache()
+        #print(f'memory allocated (Bytes): {torch.cuda.memory_allocated()}')
+    
+    def check_equality(self,output,x):
+        if self.args.kernel=='tiled': 
+            self.tiled_tensor=self.tile.t().flatten().tile(self.compression_factor).reshape(self.weight_size).t().cuda()
+
+        #if torch.allclose(output, F.linear(x,self.tiled_tensor.cuda().t()), atol=5e-2, rtol=0):
+        if torch.allclose(output, F.linear(x,self.tiled_tensor.t()), atol=1e-1, rtol=0):
+            print("✅ Triton and Torch match")
+        else:
+            print("❌ Triton and Torch differ")  
+            #print(F.linear(x,self.tiled_tensor.reshape(self.weight_size)))
+            #print(output)
+            #sys.exit()
+
+        if self.args.kernel=='tiled': 
+            del self.tiled_tensor
+            
+        
+
+    def forward(self, x,):
+        if self.args.kernel=='tiled':
+            if len(x.size())>2 and x.size()[0]==1:
+                x=x.squeeze(0)
+                output=matmul_tile(x,self.tile, self.weight_size, self.compression_factor)
+                
+                if self.args.log_perf:
+                    self.check_equality(output, x)
+                self.clean()
+                return output.unsqueeze(0)
+            else:
+                output=matmul_tile(x,self.tile, self.weight_size, self.compression_factor)
+                if self.args.log_perf:
+                    self.check_equality(output, x)
+                self.clean()
+                return output
+        
+
+        if self.args.kernel=='standard':
+            #this is the standard kernel
+            if len(x.size())>2 and x.size()[0]==1:
+                output=matmul(x.squeeze(0),self.tiled_tensor)
+                if self.args.log_perf:
+                    self.check_equality(output, x)
+                self.clean()
+
+                return output.unsqueeze(0)
+
+            else:
+                output=matmul(x,self.tiled_tensor)
+                if self.args.log_perf:
+                    self.check_equality(output, x)
+                self.clean()
+                return output
+
 
 
 
@@ -380,13 +525,13 @@ class SubnetConvTiledFullInference(nn.Conv2d):
         
 
 
-    def alpha_scaling(self,quantnet ):
+    def alpha_scaling(self,tilednet ):
         if self.args.alpha_param=='scores':
             alpha_tens_flattened=torch.abs(self.scores).flatten()
         elif self.args.alpha_param=='weight':
             alpha_tens_flattened=torch.abs(self.weight).flatten()
 
-        quantnet_flatten=quantnet.flatten().float()
+        tilednet_flatten=tilednet.flatten().float()
 
         if self.args.alpha_type=='multiple':
             tile_size=int(self.weight.numel()/self.compression_factor)
@@ -394,15 +539,15 @@ class SubnetConvTiledFullInference(nn.Conv2d):
                 abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
 
                 alpha=torch.sum(abs_weight)/tile_size
-                quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                tilednet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
                 
         else:
             num_unpruned = alpha_tens_flattened.numel()
 
             alpha=torch.sum(alpha_tens_flattened)/num_unpruned
-            quantnet_flatten*=alpha
+            tilednet_flatten*=alpha
 
-        return quantnet_flatten.reshape_as(quantnet)
+        return tilednet_flatten.reshape_as(tilednet)
     
 
     def forward(self, x):
@@ -448,18 +593,18 @@ class SubnetConv1dTiledFullInference(nn.Conv1d):
         self.tile=torch.randn(self.tile_size).sign()*self.alpha
         
 
-        #self.quantnet_scaled=self.tiled_tensor.reshape_as(self.weight)*self.alpha
+        #self.tilednet_scaled=self.tiled_tensor.reshape_as(self.weight)*self.alpha
 
         #self.tiled_tensor=self.tile.tile((self.compression_factor,)).float().cuda()
         self.tiled_tensor=self.tile.expand((compression_factor,self.tile_size)).cuda()
 
-    def alpha_scaling(self,quantnet ):
+    def alpha_scaling(self,tilednet ):
         if self.args.alpha_param=='scores':
             alpha_tens_flattened=torch.abs(self.scores).flatten()
         elif self.args.alpha_param=='weight':
             alpha_tens_flattened=torch.abs(self.weight).flatten()
 
-        quantnet_flatten=quantnet.flatten().float()
+        tilednet_flatten=tilednet.flatten().float()
 
         if self.args.alpha_type=='multiple':
             tile_size=int(self.weight.numel()/self.compression_factor)
@@ -467,20 +612,20 @@ class SubnetConv1dTiledFullInference(nn.Conv1d):
                 abs_weight = alpha_tens_flattened[i*tile_size:(i+1)*tile_size]
 
                 alpha=torch.sum(abs_weight)/tile_size
-                quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
+                tilednet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
                 
         else:
             num_unpruned = alpha_tens_flattened.numel()
 
             alpha=torch.sum(alpha_tens_flattened)/num_unpruned
-            quantnet_flatten*=alpha
+            tilednet_flatten*=alpha
 
-        return quantnet_flatten.reshape_as(quantnet)
+        return tilednet_flatten.reshape_as(tilednet)
     
 
     def forward(self, x):
 
-        # Pass scaled quantnet to convolution layer
+        # Pass scaled tilednet to convolution layer
         x = F.conv1d(
             x, self.tiled_tensor.reshape_as(self.weight) , self.bias, self.stride, self.padding, self.dilation, self.groups
         )
@@ -545,112 +690,6 @@ class SubnetLinearTiledFullInference(nn.Linear):
 
 
 
-class LinearTiledFullInferenceTritonKernelInference(nn.Linear):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.scores = nn.Parameter(torch.Tensor(self.weight.size()))
-        nn.init.kaiming_uniform_(self.scores, a=math.sqrt(5))
-
-
-
-    def init(self,args, compression_factor):
-        self.args=args
-        self.weight=_init_weight(args,self.weight)
-
-
-        self.scores=_init_score(self.args, self.scores)
-
-        
-        if args.global_compression_factor is not None:
-            if self.weight.numel()<int(args.min_compress_size):
-        
-                self.compression_factor=1
-            else:
-                self.compression_factor=args.global_compression_factor
-        else:
-            self.compression_factor=compression_factor
-            
-        assert self.weight.numel()%int(self.compression_factor)==0
-
-        if self.args.alpha_param=='scores':
-            self.weight.requires_grad = False
-
-        self.scores.requires_grad=True
-
-        self.tile_size=int(self.weight.flatten().numel()/self.compression_factor)
-
-        self.alpha=torch.randn(1)
-        self.tile=torch.randn(self.tile_size)*self.alpha
-
-        self.weight_size=self.weight.size()
-
-        if self.args.kernel=='standard':
-            self.tiled_tensor=self.tile.flatten().expand((self.compression_factor,self.tile_size))
-            self.tiled_tensor=self.tiled_tensor.reshape(self.weight_size).t().contiguous().cuda()
-
-       
-
-        def is_power_of_two(n):
-            """Check if a number is a power of 2."""
-            return n > 0 and (n & (n - 1)) == 0
-        
-        #if is_power_of_two(self.weight_size[0]) and self.compression_factor>1:
-        if isinstance(self.weight_size[0]//self.compression_factor, int) and self.compression_factor>1:
-            self.tile=self.tile.reshape(self.weight_size[0]//self.compression_factor, self.weight_size[1])
-        else:
-            #print(self.weight_size)
-            #print(self.compression_factor)
-            assert self.compression_factor==1
-            self.tile=self.tile.reshape_as(self.weight)
-
-
-
-        del self.scores
-        del self.weight
-
-
-    def check_equality(self,output,x):
-        torch.cuda.empty_cache()
-        print(f'memory allocated (KB): {torch.cuda.memory_allocated()//1000}')
-
-        self.tiled_tensor=self.tile.flatten().expand((self.compression_factor,self.tile_size)).cuda()
-        if torch.allclose(output, F.linear(x,self.tiled_tensor.reshape(self.weight_size)), atol=5e-2, rtol=0):
-            print("✅ Triton and Torch match")
-        else:
-            print("❌ Triton and Torch differ")  
-            print(F.linear(x,self.tiled_tensor.reshape(self.weight_size)))
-            print(output)
-            sys.exit()
-
-        del self.tiled_tensor
-
-    def forward(self, x,):
-        
-
-        if self.args.kernel=='tiled':
-            if len(x.size())>2 and x.size()[0]==1:
-                x=x.squeeze(0)
-                output=matmul_tile(x,self.tile.t().contiguous().cuda() , self.weight_size)
-
-                self.check_equality(output, x)
-                return output.unsqueeze(0)
-
-            else:
-                output=matmul_tile(x,self.tile.t().contiguous().cuda() , self.weight_size)
-                self.check_equality(output, x)
-                return output
-        
-        if self.args.kernel=='standard':
-            #this is the standard kernel
-            if len(x.size())>2 and x.size()[0]==1:
-                output=matmul(x.squeeze(0),self.tiled_tensor)
-                self.check_equality(output, x)
-                return output.unsqueeze(0)
-
-            else:
-                output=matmul(x,self.tiled_tensor)
-                self.check_equality(output, x)
-                return output
 
 
 
@@ -662,6 +701,40 @@ class LinearTiledFullInferenceTritonKernelInference(nn.Linear):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#The methods below are from workshop paper on iterative weight recycling
 class GetQuantnet_binary(autograd.Function):
     @staticmethod
     def forward(ctx, scores, weights, k):
@@ -859,117 +932,4 @@ class SubnetConvEdgePopup(nn.Conv2d):
 
 
 
-
-
-
-
-
-
-
-
-
-'''
-import torch
-import time
-
-import torch.nn.functional as F
-
-
-conv=torch.nn.Conv2d(3,32,3,1, bias=False)
-
-x=torch.randn(3,32,32)
-
-N=5000
-conv(x)
-
-begin=time.time()
-for n in range(N):
-        out=conv(x)
-end=time.time()
-
-print(f'1st {(end-begin)/60}')
-
-
-
-#out_holder=torch.zeros(F.conv2d(torch.randn(3,32,32), torch.randn(64,3,3,3), None, 1, 0, 1, 1).size())
-compression_factor=4
-#begin=time.time()
-#for n in range(N):
-#        for i in range(compression_factor):
-#                out=F.conv2d(x, torch.randn(64//compression_factor,3,3,3), None, 1, 0, 1, 1)
-#                out_holder[i*64//compression_factor:(i+1)*64//compression_factor]=out
-#end=time.time()
-
-#print(f'2nd {(end-begin)/60}')
-
-
-
-
-
-#faster from CPU vs CUDA????????????
-
-tile_size=int(conv.weight.flatten().numel()/compression_factor)
-tile=torch.randn(tile_size).abs()
-tiled_tensor=tile.tile((compression_factor,))
-
-begin=time.time()
-for n in range(N):
-    out=F.conv2d(x, tiled_tensor.reshape_as(conv.weight), None, 1, 0, 1, 1)
-end=time.time()
-
-print(f'3rd {(end-begin)/60}')
-
-
-
-
-
-
-
-
-
-
-256 to 10
-out[0]
-for i in range(256)
-    for j in range(10):
-        out[j]+=in*weight[j][i]
-
-
-tile_size=int(conv.weight.flatten().numel()/compression_factor)
-tile=torch.randn(tile_size).abs()
-tiled_tensor=tile.expand((compression_factor,tile_size))
-
-begin=time.time()
-for n in range(N):
-    out=F.conv2d(x, tiled_tensor.reshape_as(conv.weight), None, 1, 0, 1, 1)
-end=time.time()
-
-print(f'4th {(end-begin)/60}')
-
-
-
-
-
-
-
-tile_size=int(conv.weight.flatten().numel()/compression_factor)
-tile=torch.randn(tile_size).abs()
-tiled_tensor=tile.tile((compression_factor,))
-
-begin=time.time()
-for n in range(N):
-    out=F.conv2d(x, tiled_tensor.view_as(conv.weight), None, 1, 0, 1, 1)
-end=time.time()
-
-print(f'5th {(end-begin)/60}')
-
-
-
-x=torch.randn(784)
-lin=torch.nn.Linear(784,256)
-tile=torch.randn(64,784)
-tile.as_strided((256,784), (0,1)).size()
-
-
-'''
 

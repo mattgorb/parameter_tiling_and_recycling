@@ -173,7 +173,7 @@ def matmul_tile_kernel(
         # Pointers to matrices
         a_ptr, b_ptr, c_ptr,
         # Matrix dimensions
-        M, N, K,compression_factor,
+        M, N, K, compression_factor,
         # The stride variables represent how much to increase the ptr by when moving by 1
         # element in a particular dimension. E.g. `stride_am` is how much to increase `a_ptr`
         # by to get the element one row down (A has M rows).
@@ -194,7 +194,7 @@ def matmul_tile_kernel(
     # See above `L2 Cache Optimizations` section for details.
     pid = tl.program_id(axis=0)
     num_pid_m = tl.cdiv(M, BLOCK_SIZE_M)
-    num_pid_n = tl.cdiv(N//compression_factor, BLOCK_SIZE_N)
+    num_pid_n = tl.cdiv(N, BLOCK_SIZE_N)
 
     num_pid_in_group = GROUP_SIZE_M * num_pid_n
     group_id = pid // num_pid_in_group
@@ -252,28 +252,29 @@ def matmul_tile_kernel(
     tl.store(c_ptrs, c, mask=c_mask)
 
 
-def matmul_tile(a, b, weight_size,):
-
+def matmul_tile(a, b, weight_size,compression_factor):
 
     # Check constraints.
     assert a.shape[1] == b.shape[0], "Incompatible dimensions"
     assert a.is_contiguous(), "Matrix A must be contiguous"
     assert b.is_contiguous(), "Matrix B must be contiguous"
-
+    #print(b)
     M, K = a.shape
     K, N = weight_size[1], weight_size[0]
     # Allocates output.
     c = torch.empty((M, N), device=a.device, dtype=a.dtype)
-    compression_factor=N//b.shape[1]
-    print(f'compression factor: {compression_factor}')
+
+    #print(f'compression factor: {compression_factor}')
+    #print(N//compression_factor)
     # 1D launch kernel where each block gets its own program.
     grid = lambda META: (triton.cdiv(M, META['BLOCK_SIZE_M']) * triton.cdiv(N, META['BLOCK_SIZE_N']), )
     matmul_tile_kernel[grid](
-        a, b, c,  #
+        a, b, c, 
         M, N, K, compression_factor,
         a.stride(0), a.stride(1),  #
         b.stride(0), b.stride(1),  #
         c.stride(0), c.stride(1),  #
 
     )
+
     return c

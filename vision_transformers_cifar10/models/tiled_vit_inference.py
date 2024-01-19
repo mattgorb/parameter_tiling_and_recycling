@@ -26,7 +26,8 @@ from utils.layer_type import *
 
 
 def init_linear(in_channel, out_channel,args):
-    layer=LinearTiledFullInferenceTritonKernelInference(in_channel, out_channel)
+    layer=LinearTiledFullInferenceTritonKernelInference(in_channel, out_channel, bias=False)
+    #layer=SubnetLinearTiledFullInference(in_channel, out_channel)
     if layer.weight.numel()<64000:
         layer.init(args, compression_factor=1)
     else:

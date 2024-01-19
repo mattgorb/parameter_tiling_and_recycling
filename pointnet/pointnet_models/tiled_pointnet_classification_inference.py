@@ -12,7 +12,7 @@ import torch.nn.functional as F
 
 import sys
 
-#from pointnet.pointnet_models.tiled_pointnet_util import * 
+from pointnet.pointnet_models.tiled_pointnet_util import * 
 
 sys.path.insert(0, '/s/chopin/l/grad/mgorb/parameter_tiling_and_recycling/')
 
@@ -28,7 +28,8 @@ def init_conv1d(in_channel, out_channel,kernel_size,args):
     return layer
 
 def init_linear(in_channel, out_channel,args):
-    layer=SubnetLinearTiledFullInference(in_channel, out_channel)
+    #layer=SubnetLinearTiledFullInference(in_channel, out_channel)
+    layer=LinearTiledFullInferenceTritonKernelInference(in_channel, out_channel)
     if layer.weight.numel()<int(args.min_compress_size):
         layer.init(args, compression_factor=1)
     else:

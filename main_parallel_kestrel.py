@@ -1,3 +1,11 @@
+
+import warnings
+
+warnings.filterwarnings("ignore")
+# Filter out the specific SciPy warning
+warnings.filterwarnings("ignore", category=UserWarning, message="A NumPy version >=1.17.3 and <1.25.0 is required for this version of SciPy")
+
+
 import os
 import pathlib
 import random
@@ -11,6 +19,7 @@ import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
+
 
 
 from utils.logging import AverageMeter, ProgressMeter
@@ -33,8 +42,7 @@ from utils.initializations import set_seed
 
 
 import os
-import warnings
-warnings.filterwarnings("ignore")
+
 
 
 def set_gpu(args, model):

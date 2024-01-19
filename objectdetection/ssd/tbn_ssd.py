@@ -102,7 +102,6 @@ def init_model(model, args):
                 m.bias.data.zero_()
         
         if isinstance(m, SubnetConvTiledFull):
-            print("HERE")
             m.init(args, args.compression_factor)
 
 

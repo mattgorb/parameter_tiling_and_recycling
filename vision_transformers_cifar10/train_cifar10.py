@@ -211,6 +211,21 @@ def main(args):
         emb_dropout = 0.1, 
         args=args
     )
+    elif args.net=="tiled_vit_fp":
+        # ViT for cifar10
+        from models.tiled_vit_fp import TiledViT
+        net = TiledViT(
+        image_size = size,
+        patch_size = args.patch,
+        num_classes = 10,
+        dim = int(args.dimhead),
+        depth = 6,
+        heads = 8,
+        mlp_dim = 512,
+        dropout = 0.1,
+        emb_dropout = 0.1, 
+        args=args
+    )
     elif args.net=="tiled_mlpmixer":
         from models.tiled_mlpmixer import TiledMLPMixer
         net = TiledMLPMixer(
@@ -243,10 +258,25 @@ def main(args):
         net = tiled_swin_t(window_size=args.patch,
                     num_classes=10,
                     downscaling_factors=(2,2,2,1), args=args)
+    elif args.net=="tiled_swin_fp":
+        from models.tiled_swin_fp import tiled_swin_t
+        net = tiled_swin_t(window_size=args.patch,
+                    num_classes=10,
+                    downscaling_factors=(2,2,2,1), args=args)
+    elif args.net=='mobile_vit':
 
-    model_stats(net)
+        from models.mobile_vit import MobileViT
+
+        net = MobileViT(
+            image_size = (256, 256),
+            dims = [96, 120, 144],
+            channels = [16, 32, 48, 48, 64, 64, 80, 80, 96, 96, 384],
+            num_classes = 1000
+        )
 
 
+    print(model_stats(net))
+    sys.exit()
     # For Multi-GPU
     if 'cuda' in device:
         print(device)

@@ -13,7 +13,7 @@ MEANS = (104, 117, 123)
 voc = {
     'num_classes': 21,
     'lr_steps': (30000, 80000, 200000),
-    'max_iter': 300000,
+    'max_iter': 300000*10,
     'feature_maps': [38, 19, 10, 5, 3, 1],
     'num_box': [4, 6, 6, 6, 4, 4],
     'min_dim': 300,
