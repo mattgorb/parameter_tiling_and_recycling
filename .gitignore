@@ -170,3 +170,4 @@ scratch
 setup
 figures/*.png
 figures/*.pdf
+test/test
