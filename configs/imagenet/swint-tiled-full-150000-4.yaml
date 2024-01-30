@@ -1,4 +1,4 @@
-arch: ResNet34
+arch: SwinT
 
 # ===== Dataset ===== #
 data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/
@@ -6,19 +6,19 @@ set: ImageNet
 name: tiled
 
 # ===== Learning Rate Policy ======== #
-optimizer: sgd
-lr: 0.256
+optimizer: adamw
+#lr: 0.256
 #lr: 0.1
 lr_policy: cosine_lr
 warmup_length: 20
 
 # ===== Network training config ===== #
-epochs: 150
-total_epochs: 300
+epochs: 300
+total_epochs: 450
 weight_decay: 0.000030517578125
 #weight_decay: 0.0001
 momentum: 0.875
-batch_size: 256
+batch_size: 350
 label_smoothing: 0.1
 
 

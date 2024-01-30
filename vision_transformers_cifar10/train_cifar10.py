@@ -273,9 +273,29 @@ def main(args):
             channels = [16, 32, 48, 48, 64, 64, 80, 80, 96, 96, 384],
             num_classes = 1000
         )
-
-
+    elif args.net=="tiled_swin_imagenet":
+        from models.tiled_swin import tiled_swin_t
+        net = tiled_swin_t(window_size=args.patch,
+                    num_classes=1000,
+                    downscaling_factors=(2,2,2,1), args=args)
+    elif args.net=='vit_imagenet':
+        from vision_transformers_cifar10.models.vit import ViT
+        net = ViT(
+        image_size = 256,
+        patch_size = 32,
+        num_classes = 1000,
+        dim = 1024,
+        depth = 6,
+        heads = 16,
+        mlp_dim = 2048,
+        dropout = 0.1,
+        emb_dropout = 0.1, 
+        #args=args
+    )
     print(model_stats(net))
+    x=net(torch.randn(1,3,256,256))
+
+    print(x.size())
     sys.exit()
     # For Multi-GPU
     if 'cuda' in device:

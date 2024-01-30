@@ -21,4 +21,4 @@ module load python/bundle-3.9
 #TORCH_DISTRIBUTED_DEBUG=DETAIL NCCL_DEBUG=INFO NCCL_MAX_ASYNC_OPS=6 
 #python -u main_parallel_peregrine.py --config configs/imagenet/resnet50-biprop-tiled-params-iterand.yaml --gpu=0 --multigpu=0 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet50-biprop-tiled-params-iterand/biprop/prune_rate=-1/49/checkpoints/model_best.pth
 
-python -u ../main_parallel_peregrine.py --config ../configs/imagenet/resnet18-tiled-full.yaml --gpu=0 --multigpu=0,1 --batch-size=128  --global_compression_factor=2
+python -u ../main_parallel_swint_peregrine.py --config ../configs/imagenet/swint-tiled-full-150000-4.yaml --gpu=0 --multigpu=0,1 --batch-size=256  --global_compression_factor=2 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/swint-tiled-full-150000-4/tiled/prune_rate=0.0/8/checkpoints/model_best.pth

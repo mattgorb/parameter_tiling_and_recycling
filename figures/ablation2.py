@@ -106,14 +106,14 @@ df4_test_acc=smooth(df4_test_acc, 0.7)
 plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
 plt.subplot(1, 1, 1)
 
-plt.plot([ i for i in range(len(df1_test_acc))], df1_test_acc, label=r'MLPMixer, $TBN_4$, S, Many $\alpha$', color=colors[0], linestyle='solid',marker='.', markevery=1)
+plt.plot([ i for i in range(len(df1_test_acc))], df1_test_acc, label=r'MLPMixer, $TBN_4$, W, Many $\alpha$', color=colors[0], linestyle='solid',marker='.', markevery=1)
 plt.errorbar([ i for i in range(len(df1_test_acc))], df1_test_acc,0.8, errorevery=(1, 25),color=colors[0], )#marker='^',
 
-plt.plot([ i for i in range(len(df2_test_acc))], df2_test_acc, label=r'MLPMixer, $TBN_4$, S+A, Many $\alpha$', color=colors[1], linestyle='dotted',marker='.', markevery=1 )
+plt.plot([ i for i in range(len(df2_test_acc))], df2_test_acc, label=r'MLPMixer, $TBN_4$, W+A, Many $\alpha$', color=colors[1], linestyle='dotted',marker='.', markevery=1 )
 plt.errorbar([ i for i in range(len(df2_test_acc))], df2_test_acc, 0.5,  errorevery=(1, 25),color=colors[1], )#marker='^',
 
 
-plt.plot([ i for i in range(len(df4_test_acc))], df4_test_acc, label=r'MLPMixer, $TBN_4$, S+A, Single $\alpha$', color=colors[2], linestyle='dashed',marker='.', markevery=1)
+plt.plot([ i for i in range(len(df4_test_acc))], df4_test_acc, label=r'MLPMixer, $TBN_4$, W+A, Single $\alpha$', color=colors[2], linestyle='dashed',marker='.', markevery=1)
 plt.errorbar([ i for i in range(len(df4_test_acc))], df4_test_acc, 0.7,  errorevery=(1, 25),color=colors[2], )#marker='^',
 
 
@@ -124,7 +124,7 @@ plt.errorbar([ i for i in range(len(df4_test_acc))], df4_test_acc, 0.7,  errorev
 result_df4, df4_std=mean_std('csv/176.csv', 'csv/177.csv') #resnet18,8,multiple/single
 result_df5, df5_std=mean_std('csv/180.csv', 'csv/181.csv') #resnet18,8,multiple/single, scores only
 result_df6, df6_std=mean_std('csv/205.csv', 'csv/205.csv') #resnet18,8,multiple/single, scores only
-plt.plot(result_df4['Step'], result_df4['Mean'], linestyle='dashdot', label=r'ResNet18, $TBN_8$, S+A, Single $\alpha$',color=colors[4], marker='.', markevery=1)
+plt.plot(result_df4['Step'], result_df4['Mean'], linestyle='dashdot', label=r'ResNet18, $TBN_8$, W+A, Single $\alpha$',color=colors[4], marker='.', markevery=1)
 plt.errorbar(result_df4['Step'].values , result_df4['Mean'].values , 0.5,  errorevery=(1, 25),color=colors[4], )#marker='^',
 
 plt.plot(result_df6['Step'], result_df6['Mean'], linestyle=(5,(10,3)), label=r'ResNet18, $TBN_8$, Global Tiling',color=colors[6],marker='.', markevery=1)

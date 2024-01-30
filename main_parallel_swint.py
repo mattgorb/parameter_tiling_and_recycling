@@ -5,7 +5,7 @@ warnings.filterwarnings("ignore")
 # Filter out the specific SciPy warning
 warnings.filterwarnings("ignore", category=UserWarning, message="A NumPy version >=1.17.3 and <1.25.0 is required for this version of SciPy")
 
-
+from torch.optim.lr_scheduler import CosineAnnealingLR, LambdaLR
 import os
 import pathlib
 import random
@@ -66,7 +66,7 @@ def set_gpu(args, model):
         
         model.cuda(f"cuda:{args.gpu}")
         args.batch_size = int(args.batch_size / args.world_size)
-        args.workers = 10 #10 with bs 1024 #works #int((args.workers + args.world_size - 1) / args.world_size)
+        args.workers = 12 #10 with bs 1024 #works #int((args.workers + args.world_size - 1) / args.world_size)
         #args.batch_size = int(args.batch_size / ngpus_per_node)
         #args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=False)
@@ -79,7 +79,7 @@ def main_worker(rank, args):
     train, validate, modifier,validate_pretrained = get_trainer(args,)
 
     ngpus_per_node=args.world_size
-    gpu = rank % 2
+    gpu = rank % ngpus_per_node
 
     args.gpu=gpu
     print(f' GPU {gpu}')
@@ -212,6 +212,9 @@ def main_worker(rank, args):
         )
 
 
+
+
+
     initial_lr = 0.001
     weight_decay = 0.05
     epochs = 300
@@ -225,6 +228,8 @@ def main_worker(rank, args):
         else:
             return 0.5 * (1 + torch.cos((current_epoch - warmup_epochs) / (epochs - warmup_epochs) * 3.1415))
 
+    scheduler = LambdaLR(optimizer, lr_lambda)
+
     # Start training
     if args.total_epochs is None:
         args.total_epochs=args.epochs
@@ -233,9 +238,13 @@ def main_worker(rank, args):
         data.train_sampler.set_epoch(epoch)
         data.val_sampler.set_epoch(epoch)
 
-        if epoch<args.epochs:
-            lr_policy(epoch, iteration=None)
-        else:
+        if epoch < warmup_epochs:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = initial_lr * (epoch + 1) / warmup_epochs
+
+        #if epoch<args.epochs:
+            #lr_policy(epoch, iteration=None)
+        #else:
             #keep at minimum
             #lr_policy(args.epochs, iteration=None)
 
@@ -245,8 +254,8 @@ def main_worker(rank, args):
             #works for epochs=100 and rerand freq=20
             #cosine decay at rerand_freq
             
-            epoch_adjustment=int(args.epochs-(5-epoch%5))
-            lr_policy(epoch_adjustment, iteration=None)
+            #epoch_adjustment=int(args.epochs-(5-epoch%5))
+            #lr_policy(epoch_adjustment, iteration=None)
         
         modifier(args, epoch, model)
 
@@ -323,7 +332,7 @@ def main_worker(rank, args):
         end_epoch = time.time()
         torch.cuda.empty_cache()
 
-
+        scheduler.step()
 
     if args.rank % ngpus_per_node == 0:
         write_result_to_csv(
@@ -584,7 +593,7 @@ if __name__ == "__main__":
 
     #ngpus_per_node
     #I think we can fit 2 processes into each GPU
-    args.world_size = 2
+    args.world_size = 4
 
     mp.spawn(main_worker, nprocs=args.world_size, args=( args,))
 

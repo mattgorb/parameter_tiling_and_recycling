@@ -66,7 +66,7 @@ def set_gpu(args, model):
         
         model.cuda(f"cuda:{args.gpu}")
         args.batch_size = int(args.batch_size / args.world_size)
-        args.workers = 10 #10 with bs 1024 #works #int((args.workers + args.world_size - 1) / args.world_size)
+        args.workers = 12 #10 with bs 1024 #works #int((args.workers + args.world_size - 1) / args.world_size)
         #args.batch_size = int(args.batch_size / ngpus_per_node)
         #args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=False)
@@ -79,7 +79,7 @@ def main_worker(rank, args):
     train, validate, modifier,validate_pretrained = get_trainer(args,)
 
     ngpus_per_node=args.world_size
-    gpu = rank % 2
+    gpu = rank % ngpus_per_node
 
     args.gpu=gpu
     print(f' GPU {gpu}')
@@ -584,7 +584,7 @@ if __name__ == "__main__":
 
     #ngpus_per_node
     #I think we can fit 2 processes into each GPU
-    args.world_size = 2
+    args.world_size = 4
 
     mp.spawn(main_worker, nprocs=args.world_size, args=( args,))
 

@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+performance_scripts/perf_log
+
+
+main_parallel_peregrine.py
+main_parallel_swint.py
+main_parallel.py

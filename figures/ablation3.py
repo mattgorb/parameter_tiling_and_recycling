@@ -111,10 +111,10 @@ plt.errorbar([ i for i in range(len(df1_test_acc))], smooth(df1_test_acc, 0.95) 
 plt.plot([ i for i in range(len(df2_test_acc))], smooth(df2_test_acc, 0.85), label='S Only, Multiple Alphas',color=colors[1], linestyle='dashed')
 plt.errorbar([ i for i in range(len(df2_test_acc))], smooth(df2_test_acc, 0.85) , 0.008, linestyle='None', errorevery=(1, 100), color=colors[1])
 
-plt.plot([ i for i in range(len(df3_test_acc))], smooth(df3_test_acc, 0.85), label='S+A'', Multiple Alpha ',color=colors[2] , linestyle='solid')
+plt.plot([ i for i in range(len(df3_test_acc))], smooth(df3_test_acc, 0.85), label='W+A'', Multiple Alpha ',color=colors[2] , linestyle='solid')
 plt.errorbar([ i for i in range(len(df3_test_acc))], smooth(df3_test_acc, 0.85) , 0.0075, linestyle='None', errorevery=(1, 100), color=colors[2])
 
-plt.plot([ i for i in range(len(df4_test_acc))], smooth(df4_test_acc, 0.85), label='S+A'', Single Alpha', color=colors[3], linestyle='dashdot')
+plt.plot([ i for i in range(len(df4_test_acc))], smooth(df4_test_acc, 0.85), label='W+A'', Single Alpha', color=colors[3], linestyle='dashdot')
 plt.errorbar([ i for i in range(len(df4_test_acc))], smooth(df4_test_acc, 0.85) , 0.007, linestyle='None', errorevery=(1, 100), color=colors[3])
 
 

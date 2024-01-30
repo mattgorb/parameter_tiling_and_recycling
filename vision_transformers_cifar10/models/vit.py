@@ -32,6 +32,13 @@ class FeedForward(nn.Module):
             nn.Dropout(dropout)
         )
     def forward(self, x):
+        print('feed forward')
+        print(f'input: {x.size()}')
+        print(f'weight1: {self.net[0].weight.size()}')
+        print(f'weight2: {self.net[3].weight.size()}')
+        print(f'output: {self.net(x).size()}')
+        
+
         return self.net(x)
 
 class Attention(nn.Module):
@@ -52,6 +59,7 @@ class Attention(nn.Module):
         ) if project_out else nn.Identity()
 
     def forward(self, x):
+
         qkv = self.to_qkv(x).chunk(3, dim = -1)
         q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h = self.heads), qkv)
 
@@ -61,6 +69,17 @@ class Attention(nn.Module):
 
         out = torch.matmul(attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
+        
+        print('\nattention: ')
+        print(f'in: {x.size()}')
+
+        
+        print(f'qkv size (each):{q.size()}')
+
+        print(f'out weiht: {self.to_out[0].weight.size()}')
+        print(f'out: {self.to_out(out).size()}')
+
+        
         return self.to_out(out)
 
 class Transformer(nn.Module):

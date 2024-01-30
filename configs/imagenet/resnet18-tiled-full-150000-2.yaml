@@ -1,4 +1,4 @@
-arch: ResNet34
+arch: ResNet18
 
 # ===== Dataset ===== #
 data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/
@@ -10,11 +10,11 @@ optimizer: sgd
 lr: 0.256
 #lr: 0.1
 lr_policy: cosine_lr
-warmup_length: 20
+warmup_length: 5
 
 # ===== Network training config ===== #
 epochs: 150
-total_epochs: 300
+total_epochs: 200
 weight_decay: 0.000030517578125
 #weight_decay: 0.0001
 momentum: 0.875
@@ -24,12 +24,12 @@ label_smoothing: 0.1
 
 # ===== Sparsity =========== #
 layer_type: SubnetConvTiledFull
-global_compression_factor: 4
+global_compression_factor: 2
 min_compress_size: 150000
 
 model_type: binarize
 alpha_type: multiple
-alpha_param: scores
+alpha_param: weight
 
 
 

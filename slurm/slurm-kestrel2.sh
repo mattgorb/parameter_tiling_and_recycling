@@ -14,4 +14,4 @@
 module purge
 module load python/bundle-3.9
 
-python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet34-tiled-full.yaml --gpu=0 --multigpu=0,1,2 --batch-size=128 --global_compression_factor=2 --resume /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/runs/resnet34-tiled-full/tiled/prune_rate=0.0/checkpoints/model_best.pth
+python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet18-tiled-full-150000-2.yaml --gpu=0 --multigpu=0,1,2 --batch-size=256

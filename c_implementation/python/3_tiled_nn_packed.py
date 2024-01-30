@@ -54,11 +54,8 @@ class LinearSubnet(nn.Linear):
         tiled_vector=self.tile.tile(self.compression_factor)
         tiled_vector.reshape(self.weight_shape)
 
-        #print()
         print(f'tize size { self.tile.size()}')
         print(f'alphas: {self.alphas}')
-
-        
 
     def init(self,args, compression_factor):
         self.args=args
@@ -87,8 +84,6 @@ class LinearSubnet(nn.Linear):
         elif self.args.alpha_param=='weight':
             alpha_tens_flattened=torch.abs(self.weight).flatten()
 
-        #quantnet_flatten=quantnet.flatten().float()
-
         if self.args.alpha_type=='multiple':
             tile_size=int(self.weight.numel()/self.compression_factor)
             for i in range(self.compression_factor):
@@ -96,16 +91,12 @@ class LinearSubnet(nn.Linear):
 
                 alpha=torch.sum(abs_weight)/tile_size
                 self.alphas.append(nn.Parameter(alpha))
-                #quantnet_flatten[i*tile_size:(i+1)*tile_size]*=alpha
-                #self.alphas.append(nn.Parameter(alpha))
                 
         else:
             num_unpruned = alpha_tens_flattened.numel()
 
             alpha=torch.sum(alpha_tens_flattened)/num_unpruned
             self.alphas.append(nn.Parameter(alpha))
-            #quantnet_flatten*=alpha
-            #self.alphas.append(alpha)
 
     
     def alpha_scaling(self,quantnet):
@@ -438,6 +429,7 @@ def pack(parameter):
     packed_tensor = torch.tensor(result_list, dtype=torch.uint8)
     print(f'packed size: {packed_tensor.size()}')
     return packed_tensor
+
 
 def main():
     global args

@@ -5,7 +5,7 @@ warnings.filterwarnings("ignore")
 # Filter out the specific SciPy warning
 warnings.filterwarnings("ignore", category=UserWarning, message="A NumPy version >=1.17.3 and <1.25.0 is required for this version of SciPy")
 
-
+from torch.optim.lr_scheduler import CosineAnnealingLR, LambdaLR
 import os
 import pathlib
 import random
@@ -212,6 +212,9 @@ def main_worker(rank, args):
         )
 
 
+
+
+
     initial_lr = 0.001
     weight_decay = 0.05
     epochs = 300
@@ -223,7 +226,9 @@ def main_worker(rank, args):
         if current_epoch < warmup_epochs:
             return current_epoch / warmup_epochs
         else:
-            return 0.5 * (1 + torch.cos((current_epoch - warmup_epochs) / (epochs - warmup_epochs) * 3.1415))
+            return optimizer.param_groups[0]["lr"]*(0.5 * (1 + torch.cos(torch.tensor((current_epoch - warmup_epochs) / (epochs - warmup_epochs) * 3.1415))))
+
+    scheduler = LambdaLR(optimizer, lr_lambda)
 
     # Start training
     if args.total_epochs is None:
@@ -233,9 +238,13 @@ def main_worker(rank, args):
         data.train_sampler.set_epoch(epoch)
         data.val_sampler.set_epoch(epoch)
 
-        if epoch<args.epochs:
-            lr_policy(epoch, iteration=None)
-        else:
+        if epoch < warmup_epochs:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = initial_lr * (epoch + 1) / warmup_epochs
+
+        #if epoch<args.epochs:
+            #lr_policy(epoch, iteration=None)
+        #else:
             #keep at minimum
             #lr_policy(args.epochs, iteration=None)
 
@@ -245,8 +254,8 @@ def main_worker(rank, args):
             #works for epochs=100 and rerand freq=20
             #cosine decay at rerand_freq
             
-            epoch_adjustment=int(args.epochs-(5-epoch%5))
-            lr_policy(epoch_adjustment, iteration=None)
+            #epoch_adjustment=int(args.epochs-(5-epoch%5))
+            #lr_policy(epoch_adjustment, iteration=None)
         
         modifier(args, epoch, model)
 
@@ -323,7 +332,7 @@ def main_worker(rank, args):
         end_epoch = time.time()
         torch.cuda.empty_cache()
 
-
+        scheduler.step()
 
     if args.rank % ngpus_per_node == 0:
         write_result_to_csv(

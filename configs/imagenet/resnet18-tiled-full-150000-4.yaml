@@ -1,4 +1,4 @@
-arch: ResNet34
+arch: ResNet18
 
 # ===== Dataset ===== #
 data: /s/babbage/b/nobackup/nblancha/public-datasets/subnetworks/
@@ -14,7 +14,7 @@ warmup_length: 20
 
 # ===== Network training config ===== #
 epochs: 150
-total_epochs: 300
+total_epochs: 350
 weight_decay: 0.000030517578125
 #weight_decay: 0.0001
 momentum: 0.875

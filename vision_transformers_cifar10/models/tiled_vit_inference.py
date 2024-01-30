@@ -26,14 +26,22 @@ from utils.layer_type import *
 
 
 def init_linear(in_channel, out_channel,args):
-    layer=LinearTiledFullInferenceTritonKernelInference(in_channel, out_channel, bias=False)
-    #layer=SubnetLinearTiledFullInference(in_channel, out_channel)
-    if layer.weight.numel()<64000:
-        layer.init(args, compression_factor=1)
-    else:
-        layer.init(args,compression_factor=args.compression_factor)
-    return layer
+    if args.layer_type=='fp_inference':
+        layer=LinearTiledFullInferenceTritonKernelInference(in_channel, out_channel, bias=False)
+        if layer.weight.numel()<args.min_compress_size:
+            layer.init(args, compression_factor=1)
+        else:
+            layer.init(args,compression_factor=args.compression_factor)
+        return layer
 
+    elif args.layer_type=='bin_inference':
+        layer=LinearBinaryInferenceKernel(in_channel, out_channel, bias=False)
+        layer.init(args,)
+        return layer
+    elif args.layer_type=='bin_tiled_inference':
+        layer=LinearBinaryTiledInferenceKernel(in_channel, out_channel, bias=False)
+        layer.init(args,)
+        return layer
 
 def pair(t):
     return t if isinstance(t, tuple) else (t, t)

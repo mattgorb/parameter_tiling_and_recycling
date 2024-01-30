@@ -7,7 +7,7 @@ import math
 import torch
 import torch.nn as nn
 from utils.layer_type import SubnetConvEdgePopup, SubnetConvBiprop,SubnetConvTiledFull, SubnetConv1dTiledFull
-from utils.layer_type import SubnetLinearTiledFull, SubnetConv1dTiledFullInference,SubnetConvTiledFullInference,SubnetLinearTiledFullInference,LinearTiledFullInferenceTritonKernelInference
+from utils.layer_type import SubnetLinearTiledFull, SubnetConv1dTiledFullInference,SubnetConvTiledFullInference,SubnetLinearTiledFullInference,LinearTiledFullInferenceTritonKernelInference,LinearBinaryTiledInferenceKernel,LinearBinaryInferenceKernel
 
 import torch.nn as nn
 
@@ -231,7 +231,8 @@ def model_stats(model):
     }
     for n, m in model.named_modules():
         if hasattr(m, "weight") and m.weight is not None :
-            if isinstance(m, SubnetLinearTiledFull) or isinstance(m, SubnetLinearTiledFullInference)  or isinstance(m, LinearTiledFullInferenceTritonKernelInference):
+            if isinstance(m, SubnetLinearTiledFull) or isinstance(m, SubnetLinearTiledFullInference) \
+            or isinstance(m, LinearTiledFullInferenceTritonKernelInference) :
                 model_layer_params['linear']+=m.weight.numel()/m.compression_factor+m.compression_factor*32
                 print(f'layer {n} compression rate: {m.compression_factor}')
             elif isinstance(m, nn.BatchNorm2d) :
@@ -254,7 +255,8 @@ def model_stats(model):
                     #print("add instance before continuing!!!!!!!")
                     #sys.exit()
         if  hasattr(m, "weight_size"):
-            if  isinstance(m, LinearTiledFullInferenceTritonKernelInference):
+            if  isinstance(m, LinearTiledFullInferenceTritonKernelInference)or isinstance(m, LinearBinaryTiledInferenceKernel)\
+            or isinstance(m, LinearBinaryInferenceKernel):
                 model_layer_params['linear']+=m.weight_size[0]*m.weight_size[1]/m.compression_factor+m.compression_factor*32
                 print(f'layer {n} compression rate: {m.compression_factor}')
         if hasattr(m, "bias") and m.bias is not None:
