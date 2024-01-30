@@ -164,3 +164,9 @@ c_implementation/python/mnist/*
 
 figures/csv/
 objectdetection/eval/test/
+
+old_runs
+scratch
+setup
+figures/*.png
+figures/*.pdf
