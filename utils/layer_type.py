@@ -626,7 +626,7 @@ class LinearBinaryTiledInferenceKernel(nn.Linear):
 
     def clean(self):
         torch.cuda.empty_cache()
-        print(f'memory allocated (MB): {torch.cuda.memory_allocated()/(1024*1024)}')
+        print(f'memory allocated (MB): {torch.cuda.memory_allocated()/12}')
     
     def check_equality(self,output,x):
         #if self.args.kernel=='tiled': 
