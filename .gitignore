@@ -153,7 +153,9 @@ vision-transformers-cifar10/checkpoint/
 vision-transformers-cifar10/log/
 
 
-
+main_parallel_kestrel.py
+main_parallel_peregrine.py
+main_parallel_swint.py
 
 objectdetection/logs/
 
