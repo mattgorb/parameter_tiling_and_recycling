@@ -223,10 +223,11 @@ def main_worker(rank, args):
 
     # Define the learning rate scheduler
     def lr_lambda(current_epoch):
-        if current_epoch < warmup_epochs:
-            return current_epoch / warmup_epochs
-        else:
+        if current_epoch > warmup_epochs:
             return optimizer.param_groups[0]["lr"]*(0.5 * (1 + torch.cos(torch.tensor((current_epoch - warmup_epochs) / (epochs - warmup_epochs) * 3.1415))))
+        else:
+            return optimizer.param_groups[0]["lr"]
+            
 
     scheduler = LambdaLR(optimizer, lr_lambda)
 

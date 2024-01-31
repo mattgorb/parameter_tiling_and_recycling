@@ -13,8 +13,8 @@ lr_policy: cosine_lr
 warmup_length: 5
 
 # ===== Network training config ===== #
-epochs: 150
-total_epochs: 200
+epochs: 400
+total_epochs: 400
 weight_decay: 0.000030517578125
 #weight_decay: 0.0001
 momentum: 0.875

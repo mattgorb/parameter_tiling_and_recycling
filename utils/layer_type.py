@@ -13,16 +13,12 @@ from utils.tile_utils import fill_weight_signs
 
 from utils.kernels import matmul, matmul_tile, matmul_binary,matmul_binary_tiled
 
-
-#from torch.nn.utils.prune  import l1_unstructured
-
 DenseConv = nn.Conv2d
 
 
 
  
 #straight through estimator with reshaping and aggregation
-#used 
 class GetSubnetBinaryTiled(autograd.Function):
     @staticmethod
     def forward(ctx, scores,  compression_factor, args):
@@ -32,10 +28,9 @@ class GetSubnetBinaryTiled(autograd.Function):
         out=torch.where(score_agg>0, 1, -1)
         tiled_tensor=out.tile((compression_factor,))
 
-        #important: convert back to float in here.  
-        #if you don't scores param won't get gradients. 
+        #important: convert back to float custom grad engine here.  
+        #if you don't, scores param won't get gradients. 
         return tiled_tensor.reshape_as(scores).float()
-        
     
     @staticmethod
     def backward(ctx, g):
@@ -417,9 +412,6 @@ class LinearTiledFullInferenceTritonKernelInference(nn.Linear):
             print("✅ Triton and Torch match")
         else:
             print("❌ Triton and Torch differ")  
-            #print(F.linear(x,self.tiled_tensor.reshape(self.weight_size)))
-            #print(output)
-            #sys.exit()
 
         if self.args.kernel=='tiled': 
             del self.tiled_tensor
@@ -582,7 +574,6 @@ class LinearBinaryTiledInferenceKernel(nn.Linear):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-
     def init(self,args,):
         self.args=args
         self.weight=_init_weight(args,self.weight)
@@ -591,18 +582,11 @@ class LinearBinaryTiledInferenceKernel(nn.Linear):
 
         if args.global_compression_factor is not None:
             if self.weight.numel()<int(args.min_compress_size):
-        
                 self.compression_factor=1
             else:
                 self.compression_factor=self.args.global_compression_factor
             
         assert self.weight.numel()%int(self.args.global_compression_factor)==0
-
-
-        #self.weight=torch.nn.Parameter(torch.where(self.weight>0,1,0).to(torch.uint8), requires_grad=False)
-
-
-
         self.tile_size=int(self.weight.flatten().numel()//self.args.global_compression_factor)
         
 
@@ -616,12 +600,10 @@ class LinearBinaryTiledInferenceKernel(nn.Linear):
         del self.weight
 
     def pack(self,parameter):
-        #print(parameter.size())
         packed_param=np.packbits(parameter.numpy(), axis=1, bitorder='little')
         return torch.nn.Parameter(torch.tensor(packed_param).to(torch.uint8), requires_grad=False)
     
     def unpack(self,):
-        #return self.weight.to(torch.float32)
         return torch.tensor(np.unpackbits(self.tile.t().cpu().numpy(), axis=0, bitorder='little')).to(torch.float32).t().cuda()
 
     def clean(self):
@@ -629,20 +611,12 @@ class LinearBinaryTiledInferenceKernel(nn.Linear):
         print(f'memory allocated (MB): {torch.cuda.memory_allocated()/12}')
     
     def check_equality(self,output,x):
-        #if self.args.kernel=='tiled': 
-            #self.tiled_tensor=self.tile.t().flatten().tile(self.compression_factor).reshape(self.weight_size).t().cuda()
-        #print(self.weight_size)
-        #print(self.tile.size())
-        #print(output.size())
-        #print(self.unpack().size())
-        #sys.exit()
         if torch.allclose(output.t(), F.linear(x,self.unpack()), atol=1e-1, rtol=0):
             print("✅ Triton and Torch match")
             sys.exit()
         else:
             print("❌ Triton and Torch differ")
-
-            #sys.exit()
+            sys.exit()
 
         if self.args.kernel=='tiled':
             del self.tiled_tensor
@@ -650,24 +624,20 @@ class LinearBinaryTiledInferenceKernel(nn.Linear):
         
 
     def forward(self, x,):
-
-
         if self.weight_size[1]<16:
             return F.linear(x,self.unpack())
-        #this is the standard kernel
+
         elif len(x.size())>2 and x.size()[0]==1:
 
             output=matmul_binary_tiled(x.squeeze(0),self.tile.t().contiguous(), self.weight_size,self.args.global_compression_factor)
-            #if self.args.log_perf:
-                #self.check_equality(output, x)
+            if self.args.log_perf:
+                self.check_equality(output, x)
             self.clean()
-
             return output.unsqueeze(0)
-
         else:
             output=matmul_binary_tiled(x,self.tile.t().contiguous(), self.weight_size,self.args.global_compression_factor)
-            #if self.args.log_perf:
-                #self.check_equality(output, x)
+            if self.args.log_perf:
+                self.check_equality(output, x)
             self.clean()
             return output
 

@@ -13,8 +13,8 @@ lr_policy: cosine_lr
 warmup_length: 5
 
 # ===== Network training config ===== #
-epochs: 200
-total_epochs: 250
+epochs: 400
+total_epochs: 400
 weight_decay: 0.000030517578125
 #weight_decay: 0.0001
 momentum: 0.875
@@ -29,7 +29,7 @@ min_compress_size: 150000
 
 model_type: binarize
 alpha_type: multiple
-alpha_param: scores
+alpha_param: weight
 
 
 
