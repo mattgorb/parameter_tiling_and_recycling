@@ -17,16 +17,6 @@
 
 
 
-nohup python -u ssd/eval_voc.py --weight_path '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2024-01-03 10:16:29/VOC_final.pth' --voc_root '/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit' --global_compression_factor=4  > ../results/objectdetection1.txt  2>&1 &
-nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  --global_compression_factor=4 --resume='/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/logs/VOC/2024-01-03 10:16:29/VOC_final.pth' --start_iter 300000  > ../results/objectdetection_tbn_4_again.txt  2>&1 &
-nohup python -u ssd/train_ssd.py --dataset='VOC' --data_root=/s/lovelace/c/nobackup/iray/mgorb/objectdetection/voc/VOCdevkit --batch_size=16  --global_compression_factor=2   > ../results/objectdetection_tbn_2.txt  2>&1 &
-
-
-
-
-
-nohup  download.sh  > out.txt  2>&1 &
-
 
 nohup  python -u ../main_parallel_kestrel.py --config ../configs/imagenet/resnet18-tiled-full-150000-2.yaml --gpu=0 --multigpu=0,1,2 --batch-size=256   > resnet18_2x_1.txt  2>&1 &
 

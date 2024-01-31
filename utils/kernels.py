@@ -342,10 +342,6 @@ def matmul_kernel_binarytiled(
     offs_am = (pid_m * BLOCK_SIZE_M + tl.arange(0, BLOCK_SIZE_M)) % M
     
     offs_bn = (pid_n * BLOCK_SIZE_N + tl.arange(0, BLOCK_SIZE_N)) % (N//compression_factor) 
-    #offs_bn = pid_n * BLOCK_SIZE_N + tl.arange(0, BLOCK_SIZE_N)
-               
-    #offs_am = pid_m * BLOCK_SIZE_M + tl.arange(0, BLOCK_SIZE_M)
-    #offs_bn = pid_n * BLOCK_SIZE_N + tl.arange(0, BLOCK_SIZE_N)
 
     offs_k = tl.arange(0, BLOCK_SIZE_K)
 
@@ -359,20 +355,14 @@ def matmul_kernel_binarytiled(
     # of fp32 values for higher accuracy.
     # `accumulator` will be converted back to fp16 after the loop.
     accumulator = tl.zeros((BLOCK_SIZE_M, BLOCK_SIZE_N), dtype=tl.float32)
-
-    #tl.device_print("sf", b_ptrs)
-    #print(offs_k)
     shifter =  offs_k % 8
-    #print(shifter[:, None])
 
     for k in range(0, tl.cdiv(K, BLOCK_SIZE_K)):
-    #for k in range(0, 1):
         # Load the next block of A and B, generate a mask by checking the K dimension.
         # If it is out of bounds, set it to 0.
         a = tl.load(a_ptrs, mask=offs_k[None, :] < K - k * BLOCK_SIZE_K, other=0.0)
         b = tl.load(b_ptrs, mask=offs_k[:, None] < K - k * BLOCK_SIZE_K, other=0.0)
 
-        #tl.device_print("pre extraction", b.to(tl.float32))
         b = ((b >> shifter[:, None]) & 1) #0x1  # Extract the 1-bit values
 
         # We accumulate along the K dimension.
@@ -400,8 +390,6 @@ def matmul_binary_tiled(a, b, weight_size, compression_factor,activation=""):
     assert b.is_contiguous(), "Matrix B must be contiguous"
     M, K = a.shape
     K, N = b.shape[1], weight_size[0]
-
-
 
 
     # Allocates output.
